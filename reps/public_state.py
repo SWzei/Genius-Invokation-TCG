@@ -23,6 +23,7 @@ from .schema import (
     EntitySnapshot,
     PlayerSnapshot,
     StateSnapshot,
+    public_dice_count,
     TrajectoryStep,
 )
 
@@ -164,6 +165,15 @@ class PublicStateTracker:
         phase = str(state.phase)
         if phase not in {"roll", "action", "end"}:
             return 0.0
+        # 2026-11: the engine view carries the opponent's exact dice count (hidden
+        # faces). Prefer it over the "8 minus observed spending" estimate, which
+        # misses generated/converted dice and card effects. Snapshots without the
+        # count (older fixtures, ``dice_count == -1``) keep the estimate.
+        players = getattr(state, "players", ())
+        if len(players) == 2:
+            exact = int(getattr(players[1 - self.player_id], "dice_count", -1))
+            if exact >= 0:
+                return float(exact)
         round_number = int(state.round_number)
         spent = int(self._opponent_spent_by_round.get(round_number, 0))
         return float(max(0, min(self.initial_dice_per_round, self.initial_dice_per_round - spent)))
@@ -295,6 +305,7 @@ def mask_state_for_player(state: StateSnapshot, *, perspective_player: int) -> S
                 ),
                 pile_cards=visible_pile_cards,
                 dice=tuple() if player_index != perspective_player else player.dice,
+                dice_count=public_dice_count(player),
                 declared_end=player.declared_end,
                 legend_used=player.legend_used,
                 can_charged=player.can_charged,

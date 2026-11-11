@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27）
+# STATUS — 当前状态（2026-10-27；2026-11-11 审查增补 D27）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -39,7 +39,7 @@
 | init / eval / 温度采样 seed | ✅ | 模型构造前 seed；`#t>0` 用 per-policy `torch.Generator`；`--seed-start` 不再双倍偏移 |
 | 价值语义 / dice | ✅ | `PriorResolver.value_probability()`；identity→概率；acting→p0；dice i.i.d. |
 | A2 重做（150ep，dgeo/dvalin） | ⏳ 等 A800 | `scripts/p0_a2_rerun.sh` 已封装 |
-| seat 覆盖 A/B（p0-only vs 双边） | ⏳ 未跑 | f07 已确认 store `acting_player` 1128/1128 为 p0；需 200 局 A/B |
+| seat 覆盖 A/B（p0-only vs 双边） | ◐ 模仿层面已测；胜率未测 | D27：`#seatrel=1` 使 1 号位留出 CE −0.008（第 1 回合 −0.018）、top-1 不变；`--sides both`/v1s/v2 已实现（opt-in）。胜率 A/B 见 `reports/review/2026-11_technical_review.md` §8 R2/R3 |
 
 ## 4. 当前排产
 
@@ -66,8 +66,11 @@
 1. **A800 不可随时可用**：A2 150ep 重做、GPU 放大训练依赖窗口；采集/评测不要放窗口（D21）。
 2. **本机 CPU 是共享资源**：采集/评测/训练不要同时开满；评测 worker 设 `OMP_NUM_THREADS=1`。
 3. **旧 compact 语料不能用于 id 特征训练**：缺 exact id；只能用于非 id 模型或重采。
-4. **P0-E seat 覆盖未验证**：side=1 的分布偏移可能仍在；在 A/B 前不要把 side=1 的强度差异归因于模型。
-5. **文档迁移已落地主体**：`docs/` 骨架、`AGENTS.md`/`README.md`、`STATUS`/`PLAYBOOK`/`EVAL_PROTOCOL`、
+4. **P0-E seat 覆盖（2026-11 更新，D27）**：机制已确认（训练只在 0 号位 + global token 绝对座位 one-hot），
+   模仿层面影响小；评测报告现已按座位分报（`summary.per_side`、`paired_vs_baseline.per_side`）。
+   PG 阶梯仍只在 0 号位采样，1 号位策略从未被 RL 更新——双座位 PG 未认证前，不要把 1 号位强度差异归因于模型。
+5. **H5 matchup 重加权的负结果无效（D27）**：实现按局分组，测的是“输局加权 BC”；已修复，`failures/003` 已更正。
+6. **文档迁移已落地主体**：`docs/` 骨架、`AGENTS.md`/`README.md`、`STATUS`/`PLAYBOOK`/`EVAL_PROTOCOL`、
    `failures/`、`environments/`、`decisions/`、`howto/` 已建；旧报告保留在 `reports/`。
    仍待持续清理：模块 README 的历史状态、全部报告的 front-matter、`PLAN §10` 之外的旧状态句。
 

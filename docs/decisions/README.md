@@ -30,6 +30,7 @@
 | D24 | 数据先行结论 | **limited** | “总量不显著”≠“每 matchup 密度不显著” |
 | D25 | A2 复核与 P0 门禁 | **current** | A2 无效；parity 未过冻结新结构 |
 | D26 | 搜索因果限定/价值语义 | **current** | 修 cfr_probe/dice；搜索重开需门禁 |
+| D27 | 2026-11 审查：座位/对手骰数/H5 | **current** | H5 改判 invalid；v1s/v2 特征档 opt-in；`--sides`；按座位报分 |
 
 ## 使用
 

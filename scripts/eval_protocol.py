@@ -477,6 +477,9 @@ def _print_report(report: dict[str, Any]) -> None:
           f"wilson95=[{summary['pooled_ci_low']:.3f},{summary['pooled_ci_high']:.3f}] "
           f"cluster95=[{summary['cluster_ci_low']:.3f},{summary['cluster_ci_high']:.3f}] "
           f"(bootstrap [{summary['cluster_boot_ci_low']:.3f},{summary['cluster_boot_ci_high']:.3f}])")
+    for side, row in sorted((summary.get("per_side") or {}).items()):
+        print(f"[eval] seat {side}: rate={row['rate']:.3f} "
+              f"[{row['ci_low']:.3f},{row['ci_high']:.3f}] n={row['games']}")
     print("[eval] per-opponent (contestant rate):")
     for opponent, row in sorted(summary["per_opponent"].items(), key=lambda kv: kv[1]["rate"]):
         flag = "  <-- floor" if opponent in summary["floor_violations"] else ""
@@ -503,6 +506,9 @@ def _print_report(report: dict[str, Any]) -> None:
               f"95%=[{paired['ci_low']:+.3f},{paired['ci_high']:+.3f}] "
               f"n={paired['n_pairs']} noninferior={merge.get('noninferior')} "
               f"clean={merge.get('clean')} merge_accept={merge.get('accept')}")
+        for side, row in sorted((paired.get("per_side") or {}).items()):
+            print(f"[eval]   seat {side}: delta={row['delta']:+.3f} "
+                  f"95%=[{row['ci_low']:+.3f},{row['ci_high']:+.3f}] n={row['n_pairs']}")
 
 
 def _print_sample_sizes() -> None:

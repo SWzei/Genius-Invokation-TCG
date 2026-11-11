@@ -198,6 +198,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.init_from:
         from train.model import load_cvpn_model
 
+        from train.model import checkpoint_encoder_config
+        from envs.observation import encoder_from_config
+
+        init_encoder = encoder_from_config(checkpoint_encoder_config(args.init_from))
+        if init_encoder.to_dict() != encoder.to_dict():
+            print(
+                f"[warn] --init-from checkpoint was trained with encoder profile "
+                f"{init_encoder.profile!r} but this store uses {encoder.profile!r}; the "
+                "saved checkpoint will carry the store's encoder (intended when "
+                "migrating v1 -> v2, a bug otherwise)",
+                flush=True,
+            )
         source = load_cvpn_model(args.init_from)
         try:
             missing_ids = load_state_dict_compatible(model, source.state_dict())

@@ -104,3 +104,67 @@ def test_run_batch_weighting_changes_the_loss_but_not_the_default_path():
     _, ones = run_batch(model, store, index, "cpu", 0.5, 0.5, False, Config(), None, [1.0] * n)
     assert abs(plain["ce"] - ones["ce"]) < 1e-9          # None == explicit all-ones
     assert abs(plain["ce"] - weighted["ce"]) > 1e-6      # real reweighting moves it
+
+
+# --------------------------------------------------------------------------- #
+# 2026-11 regression: realistic store keys (one seed per game)
+# --------------------------------------------------------------------------- #
+def _realistic_store(matchups: dict[str, list[float]], steps_per_game: int = 3) -> Store:
+    """``matchups`` maps an opponent to per-game outcomes; each game has its own seed.
+
+    This is the layout ``load_store``/``datafirst_bc_store`` actually produce:
+    ``(deck, opponent, seed, step)`` with one episode outcome repeated over the
+    game's decisions. The historical fixture above put every sample of a matchup on
+    seed 0, which hid that the grouping was per game.
+    """
+    empty = torch.zeros(0)
+    keys, values = [], []
+    for opponent, outcomes in matchups.items():
+        for seed, outcome in enumerate(outcomes):
+            for step in range(steps_per_game):
+                keys.append(("deck", opponent, 100 + seed, step))
+                values.append(float(outcome))
+    n = len(keys)
+    return Store(
+        tokens=[torch.zeros(2, 4) for _ in range(n)],
+        options=[torch.tensor([[0.0, 1.0], [1.0, 0.0]]) for _ in range(n)],
+        teacher=[0] * n, value=values,
+        b_hand=[empty] * n, b_deck=[empty] * n, b_hist=[empty] * n,
+        b_hsize=[0.0] * n, b_burst=[0.0] * n, b_mask=[False] * n,
+        keys=keys,
+    )
+
+
+def test_deficit_weights_are_constant_within_a_matchup_across_games():
+    # "weak" wins 1 of 4 games (rate 0.25 < floor); "strong" wins 3 of 4.
+    store = _realistic_store({"strong": [1, 1, 1, 0], "weak": [1, 0, 0, 0]})
+    weights = matchup_weights_for_store(store, mode="deficit", strength=1.0, floor=0.45)
+    by_group: dict[str, set[float]] = {}
+    for weight, key in zip(weights, store.keys):
+        by_group.setdefault(key[1], set()).add(round(weight, 9))
+    # One weight per matchup: a lost game inside "strong" is not up-weighted.
+    assert len(by_group["strong"]) == 1
+    assert len(by_group["weak"]) == 1
+    (strong,), (weak,) = by_group["strong"], by_group["weak"]
+    assert abs(weak / strong - 1.2) < 1e-9   # 1 + (0.45 - 0.25) vs 1 + 0
+
+
+def test_balance_equalises_matchups_not_games():
+    # 6 games vs "many", 2 games vs "few": balance must equalise the two
+    # matchups' total weight (the historical per-game grouping equalised games).
+    store = _realistic_store({"many": [1, 0, 1, 0, 1, 0], "few": [1, 0]})
+    weights = matchup_weights_for_store(store, mode="balance")
+    totals: dict[str, float] = {}
+    for weight, key in zip(weights, store.keys):
+        totals[key[1]] = totals.get(key[1], 0.0) + weight
+    assert abs(totals["many"] - totals["few"]) < 1e-9
+
+
+def test_matchup_of_key_handles_all_store_layouts():
+    from scripts.train_bc_scale import game_of_key, matchup_of_key
+
+    assert matchup_of_key(("opp", 7, 3)) == ("opp",)                    # oldest layout
+    assert matchup_of_key(("deck", "opp", 7, 3)) == ("deck", "opp")     # seat 0
+    assert matchup_of_key(("deck", "opp", 7, 1, 3)) == ("deck", "opp")  # seat 1
+    assert game_of_key(("deck", "opp", 7, 1, 3)) == ("deck", "opp", 7, 1)
+    assert game_of_key(("deck", "opp", 7, 3)) == ("deck", "opp", 7)

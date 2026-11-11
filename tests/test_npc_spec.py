@@ -107,6 +107,11 @@ def test_skill_damage_table_matches_engine_gts():
         for skill_id, damage in enemy.damage_by_skill_definition_id().items():
             found = definitions.get(skill_id)
             if found is None:
+                if not REFS_CHARACTERS.exists():
+                    # Stock engine characters (e.g. Fatui Pyro Agent, Mirror
+                    # Maiden) are defined in refs/, not in the overlay; without a
+                    # refs/ checkout they cannot be cross-checked here.
+                    continue
                 mismatches.append((enemy.id, skill_id, "missing in .gts"))
                 continue
             _skill_type, gts_damage = found

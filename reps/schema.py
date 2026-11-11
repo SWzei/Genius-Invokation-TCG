@@ -113,6 +113,18 @@ class PlayerSnapshot:
     phase_damage_log: tuple[Any, ...] = ()
     phase_reaction_log: tuple[Any, ...] = ()
     removed_entities: tuple[Any, ...] = ()
+    # Public dice *count*, including the dice whose faces are hidden from this
+    # view. The engine sends the opponent's dice as ``DICE_UNSPECIFIED`` (0)
+    # entries; ``dice`` drops those (faces are private), which historically also
+    # dropped the count — public information (rules: dice count is visible).
+    # ``-1`` = unknown (snapshots built by older code / hand-written fixtures).
+    dice_count: int = -1
+
+
+def public_dice_count(player: "PlayerSnapshot") -> int:
+    """Number of dice ``player`` holds as visible to the viewer (faces may be hidden)."""
+    count = int(getattr(player, "dice_count", -1))
+    return count if count >= 0 else len(player.dice)
 
 
 @dataclass(frozen=True)

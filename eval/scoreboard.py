@@ -230,9 +230,26 @@ def summarize(
         if row["games"] > 0 and row["rate"] < floor
     )
 
+    # 2026-11: per-seat breakdown. Seat 0 always moves first in round 1 and every
+    # collector trains the contestant on seat 0, so a seat gap is the first thing
+    # to check before attributing strength changes to a model.
+    per_side: dict[str, dict[str, Any]] = {}
+    for side in sorted({int(o.side) for o in valid}):
+        group = [o for o in valid if int(o.side) == side]
+        score = sum(o.score for o in group)
+        lo, hi = wilson_interval(score, len(group), z=z)
+        per_side[str(side)] = {
+            "games": len(group),
+            "score": score,
+            "rate": score / len(group) if group else 0.0,
+            "ci_low": lo,
+            "ci_high": hi,
+        }
+
     return {
         "games": n_total,
         "matches": len(outcomes),
+        "per_side": per_side,
         "pooled_rate": pooled_rate,
         "pooled_ci_low": p_low,
         "pooled_ci_high": p_high,
@@ -375,8 +392,28 @@ def paired_difference(
         "cluster_boot_ci_low": boot_low,
         "cluster_boot_ci_high": boot_high,
         "per_opponent": per_opponent,
+        "per_side": _paired_per_side(a, b, keys, z=z),
         "significant_positive": low > 0.0,
     }
+
+
+def _paired_per_side(
+    a: Mapping[tuple, MatchOutcome],
+    b: Mapping[tuple, MatchOutcome],
+    keys: Sequence[tuple],
+    *,
+    z: float = Z95,
+) -> dict[str, dict[str, Any]]:
+    """Paired delta restricted to each seat (key = (opponent, seed, side))."""
+    out: dict[str, dict[str, Any]] = {}
+    for side in sorted({int(k[2]) for k in keys}):
+        diffs = [a[k].score - b[k].score for k in keys if int(k[2]) == side]
+        n = len(diffs)
+        mean = _mean(diffs)
+        se = _sd(diffs) / math.sqrt(n) if n else 0.0
+        low, high = _normal_ci(mean, se, z=z)
+        out[str(side)] = {"n_pairs": n, "delta": mean, "ci_low": low, "ci_high": high}
+    return out
 
 
 def noninferiority_gate(

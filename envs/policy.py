@@ -117,37 +117,55 @@ def expert_policy(slug: str, *, seed: int | None = None) -> ScriptedPolicy:
     return ScriptedPolicy(agent, name=f"expert:{slug}")
 
 
-def _neural_policy(spec: str, *, seed: int) -> Policy:
-    """Load a CVPN checkpoint as a greedy/sampled policy.
-
-    Spec: ``<path>[#t=<temp>][#d=<device>]`` (options may be ``#``-joined in any
-    order). ``d=cuda`` routes inference to the GPU (MX550); the default is CPU.
-    """
+def _parse_neural_spec(spec: str) -> tuple[str, dict[str, str]]:
+    """Split ``<path>[#k=v...]`` into the checkpoint path and its options."""
     path, _, suffix = spec.partition("#")
-    temperature = 0.0
-    device = "cpu"
+    options: dict[str, str] = {}
     for option in suffix.split("#"):
         if not option:
             continue
         key, _, value = option.partition("=")
-        if key == "t":
-            temperature = float(value)
-        elif key == "d":
-            device = value or "cpu"
-        else:
+        if key not in ("t", "d", "seatrel"):
             raise KeyError(f"unknown neural spec option: {option!r}")
-    from agents.neural import load_neural_policy
+        options[key] = value
+    return path, options
+
+
+def neural_spec_encoder(spec: str) -> Any:
+    """The observation encoder a ``neural:`` spec body runs with.
+
+    The checkpoint's saved encoder config (legacy default when absent), plus the
+    ``#seatrel=1`` override: encode the turn/acting-player flags relative to the
+    acting player. For a checkpoint trained only on seat 0 (every pre-2026-11
+    corpus) this is byte-identical on seat 0 and maps seat-1 positions into the
+    layout the network was trained on, instead of an all-zero-in-training column.
+    """
+    path, options = _parse_neural_spec(spec)
+    from envs.observation import encoder_from_config
     from train.model import checkpoint_encoder_config
 
-    encoder_config = checkpoint_encoder_config(path)
-    if encoder_config is not None:
-        from reps.observation_encoder import TokenObservationEncoder
+    encoder = encoder_from_config(checkpoint_encoder_config(path))
+    seatrel = options.get("seatrel")
+    if seatrel not in (None, "", "0"):
+        if seatrel != "1":
+            raise KeyError(f"neural spec option seatrel must be 0/1, got {seatrel!r}")
+        encoder = encoder.with_flags(seat_relative_turn=True)
+    return encoder
 
-        encoder = TokenObservationEncoder.from_dict(encoder_config)
-    else:
-        from envs.observation import default_encoder
 
-        encoder = default_encoder()
+def _neural_policy(spec: str, *, seed: int) -> Policy:
+    """Load a CVPN checkpoint as a greedy/sampled policy.
+
+    Spec: ``<path>[#t=<temp>][#d=<device>][#seatrel=1]`` (options may be
+    ``#``-joined in any order). ``d=cuda`` routes inference to the GPU (MX550);
+    the default is CPU. ``seatrel=1`` see :func:`neural_spec_encoder`.
+    """
+    path, options = _parse_neural_spec(spec)
+    temperature = float(options.get("t", 0.0) or 0.0)
+    device = options.get("d") or "cpu"
+    from agents.neural import load_neural_policy
+
+    encoder = neural_spec_encoder(spec)
     return load_neural_policy(
         path, encoder, temperature=temperature, device=device, seed=seed
     )

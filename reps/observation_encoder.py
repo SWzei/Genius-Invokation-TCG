@@ -22,7 +22,14 @@ from .opponent_identity import (
     opponent_tags,
     stable_hash_id,
 )
-from .schema import DecisionContext, DecisionType, OptionKind, StateSnapshot, TrajectoryStep
+from .schema import (
+    DecisionContext,
+    DecisionType,
+    OptionKind,
+    StateSnapshot,
+    TrajectoryStep,
+    public_dice_count,
+)
 
 _TOKEN_TYPES = (
     "global",
@@ -91,6 +98,38 @@ class TokenObservationEncoderConfig:
     max_dice_tokens: int = 8
     include_belief_targets: bool = True
     include_opponent_tag: bool = True
+    # --- encoder profile "v2" (2026-11 review), both off = historical "v1" ------
+    # ``seat_relative_turn``: the global token's ``current_turn``/``acting_player``
+    # one-hots were absolute seats. Every collector trains the contestant on seat 0
+    # (which the engine always makes the round-1 first player), so the
+    # ``acting_player == 1`` column was constant 0 in training -- its weights stay
+    # at their random init -- and evaluation on seat 1 (half of every protocol run)
+    # fed an input the network never saw. When on, slot 0 means "the acting
+    # player" / "it is the acting player's turn" and slot 1 "the opponent", which
+    # is byte-identical to v1 on seat 0 and maps seat 1 into the same layout.
+    seat_relative_turn: bool = False
+    # ``public_opponent_dice``: the opponent's dice *count* is public, but the
+    # snapshot dropped hidden (face 0) dice, so the opponent ``player_summary``
+    # dice scalar was always 0. When on, it carries the real public count.
+    public_opponent_dice: bool = False
+
+
+# Encoder flags added after v1. ``to_dict`` omits them while they hold their
+# legacy value so v1 configs (collect fingerprints, checkpoints, store metas)
+# serialise byte-for-byte as before; ``from_dict`` defaults a missing key to the
+# legacy value so every existing checkpoint keeps its exact encoding.
+_POST_V1_FLAGS: dict[str, bool] = {
+    "seat_relative_turn": False,
+    "public_opponent_dice": False,
+}
+
+ENCODER_PROFILES: dict[str, dict[str, bool]] = {
+    "v1": {"seat_relative_turn": False, "public_opponent_dice": False},
+    # v1 + seat-relative flags only: the upgrade path for existing v1 checkpoints
+    # (``neural:<ckpt>#seatrel=1`` encodes exactly like this).
+    "v1s": {"seat_relative_turn": True, "public_opponent_dice": False},
+    "v2": {"seat_relative_turn": True, "public_opponent_dice": True},
+}
 
 
 @dataclass(frozen=True)
@@ -177,7 +216,29 @@ class TokenObservationEncoder:
         return int(self.config.deck_vocab_size)
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self.config)
+        payload = asdict(self.config)
+        for key, legacy in _POST_V1_FLAGS.items():
+            if payload.get(key) == legacy:
+                payload.pop(key, None)
+        return payload
+
+    @property
+    def profile(self) -> str:
+        """``"v1"``/``"v2"`` when the post-v1 flags match a named profile, else ``"custom"``."""
+        flags = {key: bool(getattr(self.config, key)) for key in _POST_V1_FLAGS}
+        for name, wanted in ENCODER_PROFILES.items():
+            if flags == wanted:
+                return name
+        return "custom"
+
+    def with_flags(self, **flags: bool) -> "TokenObservationEncoder":
+        """A copy of this encoder with some post-v1 flags overridden."""
+        from dataclasses import replace
+
+        unknown = set(flags) - set(_POST_V1_FLAGS)
+        if unknown:
+            raise KeyError(f"unknown encoder flag(s): {sorted(unknown)}")
+        return TokenObservationEncoder(replace(self.config, **{k: bool(v) for k, v in flags.items()}))
 
     @classmethod
     def from_dict(cls, payload: dict[str, object]) -> "TokenObservationEncoder":
@@ -196,6 +257,10 @@ class TokenObservationEncoder:
                 max_dice_tokens=int(payload.get("max_dice_tokens", 8)),
                 include_belief_targets=bool(payload.get("include_belief_targets", True)),
                 include_opponent_tag=bool(payload.get("include_opponent_tag", False)),
+                **{
+                    key: bool(payload.get(key, legacy))
+                    for key, legacy in _POST_V1_FLAGS.items()
+                },
             )
         )
 
@@ -223,6 +288,8 @@ class TokenObservationEncoder:
             visible_dice_count = float(len(player.dice))
             if owner == "opponent" and opponent_public_dice_count is not None:
                 visible_dice_count = max(0.0, min(8.0, float(opponent_public_dice_count)))
+            elif owner == "opponent" and self.config.public_opponent_dice:
+                visible_dice_count = float(public_dice_count(player))
             tokens.append(
                 self._build_token(
                     token_type="player_summary",
@@ -454,14 +521,21 @@ class TokenObservationEncoder:
     def _encode_global_token(self, context: DecisionContext, *, opponent_tag: str) -> tuple[float, ...]:
         visible_state = context.player_view
         assert visible_state is not None
+        current_turn = visible_state.current_turn
+        acting_player = context.acting_player
+        if self.config.seat_relative_turn:
+            # slot 0 = the acting player ("self"), slot 1 = the opponent.
+            if current_turn is not None and current_turn in (0, 1):
+                current_turn = 0 if int(current_turn) == int(acting_player) else 1
+            acting_player = 0
         return self._build_token(
             token_type="global",
             owner="neutral",
             phase=visible_state.phase,
             request_type=context.request_type,
             round_number=visible_state.round_number,
-            current_turn=visible_state.current_turn,
-            acting_player=context.acting_player,
+            current_turn=current_turn,
+            acting_player=acting_player,
             opponent_tag=opponent_tag,
             scalars=(
                 self._safe_ratio(len(context.legal_low_level_codes), 64.0),

@@ -1,7 +1,7 @@
 ---
 title: "003 — matchup 重加权 / 胜局筛选"
 kind: failure
-status: negative
+status: negative  # 胜局筛选；H5 部分见文末 2026-11 更正（invalid）
 freshness: 2026-10-27
 machines: [local]
 authority: evidence
@@ -45,3 +45,16 @@ related: ["reports/explore/plan_strength_2day_kaggle.md", "reports/explore/lit/f
 - 不要用 `--matchup-weight deficit` 原实现。
 - 不要用整局回报做过滤/条件化。
 - 不要只采失败 matchup。
+
+## 2026-11 更正：H5 的实验实现无效（不改上文原文）
+
+- `scripts/train_bc_scale.matchup_weights_for_store` 按 `key[:-1]` 分组；真实 store 的键是
+  `(deck, opponent, seed, step)`，所以分组单位是**局**而不是 matchup。每局只有一个回报值，`deficit`
+  实际上等于「输局权重 ×1.45、胜局 ×1.0 再归一化」；`balance` 等于按局均衡。
+- 旁证：上文「多数 matchup 权重只在 0.84–1.22」正是该 bug 的两点分布（输局约 40% 时
+  1.45/1.18≈1.23、1/1.18≈0.85），而不是 matchup 粒度的连续权重。
+- 单测之所以没抓到：fixture 把同一 matchup 的所有样本都放在 seed 0。
+- 修复与回归：`matchup_of_key()`；`tests/test_matchup_weights.py` 新增真实布局用例（旧实现 2 例失败）。
+- 结论修订：H5 的 −9.1pp/−3.4pp 测的是「输局加权 BC」，不是 matchup 重加权；**matchup 重加权本身未被检验**。
+  上文「归因」中关于 teacher 胜负方向、样本稀少、无新信息的论证仍然成立，因此重开条件不变：
+  优先采集层混合，而不是 loss 层权重。证据：`reports/review/2026-11_technical_review.md` §3.1。

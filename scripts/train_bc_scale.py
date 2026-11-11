@@ -57,7 +57,7 @@ from torch.nn import functional as F
 
 from common.lock import load_engine_lock, runtime_metadata
 from common.paths import ensure_dir
-from envs.observation import default_encoder
+from envs.observation import default_encoder, encoder_from_config
 from train.model import CVPN, TransformerCVPN, config_for_encoder, transformer_config_for_encoder
 
 
@@ -104,14 +104,54 @@ def _is_val(seed: int, seed_start: int, val_every: int) -> bool:
     return ((int(seed) - int(seed_start)) % int(val_every)) == 0
 
 
-def _game_key(record: dict[str, Any]) -> tuple[str, str, int]:
-    """Full game identity ``(deck, opponent, seed)``.
+def _game_key(record: dict[str, Any]) -> tuple[Any, ...]:
+    """Full game identity ``(deck, opponent, seed[, side])``.
 
     ``deck`` is part of the key (A7): a multi-deck corpus collected with each deck
     restarting ``--seed-start 0`` has overlapping ``(opponent, seed)`` pairs, so
     dropping the deck would silently dedup distinct games away (H1).
+
+    ``side`` (2026-11, both-seat collection) is appended only when the teacher
+    sat on seat 1, so every seat-0 key -- i.e. every pre-existing corpus -- keeps
+    its exact historical value and ordering, while the seat-1 game on the same
+    seed is no longer dropped as a "duplicate". The seed stays at index 2, which
+    is what the train/val split rule reads.
     """
-    return (str(record.get("deck", "")), str(record["opponent"]), int(record["seed"]))
+    key: tuple[Any, ...] = (
+        str(record.get("deck", "")), str(record["opponent"]), int(record["seed"])
+    )
+    side = int(record.get("side", 0) or 0)
+    return key + (side,) if side else key
+
+
+def replay_encoder_config(replay_dirs: Sequence[str]) -> dict:
+    """Encoder config recorded by the collector(s) of ``replay_dirs``.
+
+    Each ``train.collect`` manifest records ``encoder_config`` (2026-11). Dirs
+    without it predate encoder profiles and were written by the v1 default.
+    Mixing dirs written with different encoder layouts is refused: a store must
+    have one feature semantics.
+    """
+    configs: dict[str, dict] = {}
+    for replay_dir in replay_dirs:
+        path = Path(replay_dir)
+        manifest_path = (path if path.is_dir() else path.parent) / "manifest.json"
+        config = None
+        if manifest_path.exists():
+            try:
+                config = json.loads(manifest_path.read_text(encoding="utf-8")).get("encoder_config")
+            except json.JSONDecodeError:
+                config = None
+        if not config:
+            config = default_encoder().to_dict()
+        configs[json.dumps(config, sort_keys=True)] = config
+    if len(configs) > 1:
+        profiles = sorted(encoder_from_config(c).profile for c in configs.values())
+        raise SystemExit(
+            f"replay dirs were written with different encoder configs ({profiles}); "
+            "build one store per encoder profile"
+        )
+    return next(iter(configs.values())) if configs else default_encoder().to_dict()
 
 
 def _iter_replay_records(replay_dirs: Sequence[str]) -> Iterator[dict[str, Any]]:
@@ -149,8 +189,8 @@ def _plan_budgets(
     (completion-order) file layout. Only identities + counts are held (never the
     samples), so the pass stays memory-bounded even on a huge corpus.
     """
-    manifest: dict[tuple[str, str, int], int] = {}
-    seen: set[tuple[str, str, int]] = set()
+    manifest: dict[tuple[Any, ...], int] = {}
+    seen: set[tuple[Any, ...]] = set()
     skipped = duplicates = 0
     for record in _iter_replay_records(replay_dirs):
         if record.get("error"):
@@ -235,7 +275,7 @@ def load_store(
                 continue
             seen.add(game_key)
             budget = None
-        deck, opponent, seed = game_key
+        seed = int(game_key[2])
         is_val = _is_val(seed, seed_start, val_every)
         dest = val if is_val else train
         payloads = record.get("samples", ())
@@ -270,7 +310,7 @@ def load_store(
                 or any(float(v) > 0.0 for v in bt.get("hand_histogram", ()))
             )
             dest.b_mask.append(bool(sig))
-            dest.keys.append((deck, opponent, seed, int(payload.get("step_index", 0))))
+            dest.keys.append(game_key + (int(payload.get("step_index", 0)),))
         n_games += 1
         if progress_every and n_games % progress_every == 0:
             print(
@@ -292,6 +332,7 @@ def load_store(
         "load_seconds": round(time.perf_counter() - t0, 1),
         "seed_start": seed_start,
         "val_every": val_every,
+        "encoder_config": replay_encoder_config(replay_dirs),
     }
     return train, val, meta
 
@@ -309,8 +350,8 @@ def matchup_weights_for_store(store: Store, *, mode: str, strength: float = 1.0,
                               floor: float = 0.45) -> list[float] | None:
     """Per-sample weights that rebalance matchups (H5, floor attack).
 
-    Groups are ``(deck, opponent)`` — everything in the key but the step index — and
-    the group's own win rate comes from the stored episode scores. ``None`` means
+    Groups are ``(deck, opponent)`` matchups (:func:`matchup_of_key`) and the
+    group's own win rate comes from the stored episode scores. ``None`` means
     "unweighted" so callers can skip the multiply entirely (the default path stays
     byte-for-byte the historical BC loss).
 
@@ -325,7 +366,11 @@ def matchup_weights_for_store(store: Store, *, mode: str, strength: float = 1.0,
     groups: dict[Any, list[int]] = {}
     scores: dict[Any, list[float]] = {}
     for i, key in enumerate(store.keys):
-        group = tuple(key[:-1])
+        # 2026-11 fix: the historical code grouped by ``key[:-1]`` =
+        # ``(deck, opponent, seed)``, i.e. per *game*. With one episode outcome per
+        # game, "deficit" then up-weighted every lost game (rate 0 < floor) and
+        # "balance" equalised games, not matchups. Group by the matchup instead.
+        group = matchup_of_key(key)
         groups.setdefault(group, []).append(i)
         scores.setdefault(group, []).append(float(store.value[i]))
     counts = {g: len(idx) for g, idx in groups.items()}
@@ -356,6 +401,30 @@ def _apply_sample_weights(loss_per_sample: torch.Tensor, index: Sequence[int],
     w = torch.tensor([float(sample_weights[i]) for i in index],
                      dtype=loss_per_sample.dtype, device=loss_per_sample.device)
     return (w * loss_per_sample).mean()
+
+
+def matchup_of_key(key: Sequence[Any]) -> tuple[Any, ...]:
+    """The ``(deck, opponent)`` matchup a store key belongs to.
+
+    Store keys come in three layouts, all ending in the step index:
+
+    * ``(opponent, seed, step)`` — the oldest store builder (single deck);
+    * ``(deck, opponent, seed, step)`` — current, contestant on seat 0;
+    * ``(deck, opponent, seed, side, step)`` — contestant on seat ``side`` != 0
+      (both-seat collection, 2026-11).
+
+    The matchup is everything before the seed; seed/side/step identify a game
+    *within* the matchup and must not split it.
+    """
+    key = tuple(key)
+    if len(key) <= 3:
+        return key[:1]
+    return key[:2]
+
+
+def game_of_key(key: Sequence[Any]) -> tuple[Any, ...]:
+    """The game a store key belongs to (everything but the trailing step)."""
+    return tuple(key)[:-1]
 
 
 def _game_last_steps(store: Store) -> dict[tuple[Any, ...], int]:
@@ -793,8 +862,10 @@ def main(argv: list[str] | None = None) -> int:
     # P0: seed before constructing the model (the historical order let the model
     # initialise from the process RNG, so same --seed meant different weights).
     torch.manual_seed(int(args.seed))
-    encoder = default_encoder()
     train_store, val_store, meta, _cached = load_or_build_store(args)
+    # The checkpoint must carry the encoder the corpus was written with (2026-11);
+    # store caches built before this fix have no config and were all v1.
+    encoder = encoder_from_config(meta.get("encoder_config")) if isinstance(meta, dict) else default_encoder()
     if args.build_only:
         print(f"[store] built train={len(train_store)} val={len(val_store)} (build-only)", flush=True)
         return 0

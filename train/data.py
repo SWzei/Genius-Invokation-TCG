@@ -145,8 +145,13 @@ def collect_samples(
     teacher_spec: str | None = None,
     opponent_spec: str | None = None,
     capture_targets: bool = True,
+    teacher_side: int = 0,
 ) -> list[Sample]:
-    """Collect teacher-labelled samples for ``deck`` (player 0) vs ``opponent``.
+    """Collect teacher-labelled samples for ``deck`` vs ``opponent``.
+
+    ``teacher_side`` is the seat the teacher plays (0 = historical default). The
+    engine always gives seat 0 the first move of round 1, so a seat-0-only corpus
+    never shows the contestant moving second in round 1 (2026-11 review).
 
     With ``capture_targets`` (default) the match runs with a god-view
     ``full_state`` so the encoder can fill the *label* fields
@@ -154,28 +159,40 @@ def collect_samples(
     observations still come from the masked ``player_view`` (no leak). Pass
     ``False`` for the legacy zeros-target format.
     """
+    side = int(teacher_side)
+    if side not in (0, 1):
+        raise ValueError(f"teacher_side must be 0 or 1, got {teacher_side!r}")
     samples: list[Sample] = []
     for seed in seeds:
+        # Seat 0 keeps the historical seed derivation byte-for-byte.
+        teacher_role = "p0" if side == 0 else "p1"
+        opponent_role = "p1" if side == 0 else "p0"
         teacher = build_policy(
-            teacher_spec or f"expert:{deck}", seed=derive_seed(seed, "p0", deck), role="p0"
+            teacher_spec or f"expert:{deck}",
+            seed=derive_seed(seed, teacher_role, deck),
+            role=teacher_role,
         )
         capture = _CaptureTeacher(teacher)
         opp = build_policy(
             opponent_spec or f"expert:{opponent}",
-            seed=derive_seed(seed, "p1", opponent),
-            role="p1",
+            seed=derive_seed(seed, opponent_role, opponent),
+            role=opponent_role,
         )
+        if side == 0:
+            deck0, deck1, policy0, policy1 = deck_spec(deck), deck_spec(opponent), capture, opp
+        else:
+            deck0, deck1, policy0, policy1 = deck_spec(opponent), deck_spec(deck), opp, capture
         record = run_match(
-            deck_spec(deck),
-            deck_spec(opponent),
-            capture,
-            opp,
+            deck0,
+            deck1,
+            policy0,
+            policy1,
             seed=int(seed),
             full_state_for_agents=capture_targets,
         )
         if record.error:
             continue
-        value = outcome_score(record.winner, 0)
+        value = outcome_score(record.winner, side)
         for built, code in capture.items:
             context = built.context
             codes = list(int(c) for c in context.legal_low_level_codes)

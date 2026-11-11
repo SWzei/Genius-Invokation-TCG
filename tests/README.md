@@ -17,6 +17,16 @@
 - `test_belief_dice.py`：hidden dice 是 i.i.d. 采样，不再是确定性轮转。
 - `test_cfr_probe_value.py`：identity 价值头→概率；acting-player→player-0。
 
+## 2026-11 审查新增
+
+- `test_matchup_weights.py`（追加）：用真实布局（每局一个 seed）的 store 键回归 H5 分组 bug——历史实现按
+  `key[:-1] = (deck, opponent, seed)` 分组，等于按**局**加权（deficit = 给输局加权）。
+- `test_encoder_profiles.py`：v1 特征/采集指纹逐字节不变；v1s/v2 在 0 号位与 v1 相同、1 号位映射到同一布局；
+  v2 只暴露对手骰子**数量**不暴露骰面；`neural:...#seatrel=1`；`collect_samples(teacher_side=1)`；
+  `neural:` teacher 与采集特征档不一致时拒绝；`seat_probe` 的 v2→v1/v1s 转换与直接编码逐元素一致。
+- `test_seat_coverage.py`：评测按座位分报（含配对 Δ）；双座位语料同 seed 不被去重、同 seed 两座位同属 train/val；
+  store 记录语料的编码档并拒绝混档。
+
 ## 主要测试（历史清单，持续更新）
 
 - `test_info_hiding.py`：`public_state.mask_state_for_player` 隐藏对手手牌/骰子/牌堆、保留己方与公开信息、幂等。

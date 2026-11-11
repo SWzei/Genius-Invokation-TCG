@@ -282,6 +282,7 @@ def _deserialize_player_snapshot(payload: dict[str, Any]) -> PlayerSnapshot:
         phase_damage_log=tuple(payload.get("phase_damage_log", ())),
         phase_reaction_log=tuple(payload.get("phase_reaction_log", ())),
         removed_entities=tuple(payload.get("removed_entities", ())),
+        dice_count=int(payload.get("dice_count", -1)),
     )
 
 

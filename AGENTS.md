@@ -44,7 +44,7 @@ cd "$REPO"
 
 - `envs/match.py` 在 Python 侧按种子预洗牌并设 `NO_SHUFFLE=1`；每局开始 `reset_default_hierarchical_action_codebook()`。
 - 训练标签/embedding 用语义 key，不用裸 `action_code`（仅单局内稳定）。
-- policy spec 统一走 `envs.policy.build_policy`：`expert:<slug>` / `neural:<ckpt>[#t=<temp>]` / `heuristic` / `legal_random` / `random`。
+- policy spec 统一走 `envs.policy.build_policy`：`expert:<slug>` / `neural:<ckpt>[#t=<temp>][#seatrel=1]` / `heuristic` / `legal_random` / `random`。
 - 搜索分叉只在 `Game.is_resumable()` 边界取快照；fork 用 `envs/snapshot.fork_game(game_attrs=...)`；在线搜索必须子进程（`workers>=1`）。
 - `gitcg 0.21.0`：`ActionRequest.action` 候选列表；`ActionResponse(chosen_action_index=..., used_dice=[...])`；`game.status()` 是方法；`State.query` 跨版本不兼容，用前小样本验证。
 

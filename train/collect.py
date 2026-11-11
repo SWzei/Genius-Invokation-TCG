@@ -128,6 +128,11 @@ class CollectTask:
     payload_format: str = "jsonl"
     compact_dtype: str = "float16"
     include_privileged_state: bool = True
+    # 2026-11: which seat the teacher plays (0 = historical; the engine always
+    # gives seat 0 the first move of round 1) and which encoder profile encodes
+    # the samples (``envs.observation.encoder_for_profile``).
+    side: int = 0
+    encoder_profile: str = "v1"
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -141,6 +146,8 @@ class CollectTask:
             "payload_format": self.payload_format,
             "compact_dtype": self.compact_dtype,
             "include_privileged_state": bool(self.include_privileged_state),
+            "side": int(self.side),
+            "encoder_profile": self.encoder_profile,
         }
 
     @classmethod
@@ -157,15 +164,17 @@ class CollectTask:
             payload_format=payload.get("payload_format", "jsonl"),
             compact_dtype=payload.get("compact_dtype", "float16"),
             include_privileged_state=bool(payload.get("include_privileged_state", True)),
+            side=int(payload.get("side", 0)),
+            encoder_profile=str(payload.get("encoder_profile", "v1")),
         )
 
 
-@lru_cache(maxsize=1)
-def _worker_encoder():
-    """Encoder cached per process (worker reuse across tasks)."""
-    from envs.observation import default_encoder
+@lru_cache(maxsize=4)
+def _worker_encoder(profile: str = "v1"):
+    """Encoder cached per process and profile (worker reuse across tasks)."""
+    from envs.observation import encoder_for_profile
 
-    return default_encoder()
+    return encoder_for_profile(profile)
 
 
 _WORKER_BRIDGES: dict[int, Any] = {}
@@ -206,6 +215,8 @@ def run_search_collect_task(task: CollectTask) -> dict[str, Any]:
 
     search = task.search
     assert search is not None
+    if int(task.side) != 0:
+        raise ValueError("search-teacher collection only supports side 0")
     error: str | None = None
     payloads: list[dict[str, Any]] = []
     try:
@@ -213,7 +224,7 @@ def run_search_collect_task(task: CollectTask) -> dict[str, Any]:
             task.deck,
             task.opponent,
             [task.seed],
-            encoder=_worker_encoder(),
+            encoder=_worker_encoder(task.encoder_profile),
             bridge=_worker_bridge(search.bridge_workers),
             iterations=search.iterations,
             depth=search.depth,
@@ -253,14 +264,15 @@ def run_collect_task(task: CollectTask) -> dict[str, Any]:
             task.deck,
             task.opponent,
             [task.seed],
-            encoder=_worker_encoder(),
+            encoder=_worker_encoder(task.encoder_profile),
             teacher_spec=task.teacher_spec,
             opponent_spec=task.opponent_spec,
+            teacher_side=int(task.side),
         )
         payloads = [_payload_for(task, sample) for sample in samples]
     except Exception as exc:  # engine/IO failures are otherwise swallowed by cffi
         error = f"{type(exc).__name__}: {exc}"
-    return {
+    record = {
         "index": task.index,
         "deck": task.deck,
         "opponent": task.opponent,
@@ -268,6 +280,10 @@ def run_collect_task(task: CollectTask) -> dict[str, Any]:
         "error": error,
         "samples": payloads,
     }
+    if int(task.side) != 0:
+        # Additive: seat-0 records keep their historical layout byte-for-byte.
+        record["side"] = int(task.side)
+    return record
 
 
 @dataclass(frozen=True)
@@ -284,28 +300,41 @@ class CollectSpec:
     format: str = "jsonl"
     compact_dtype: str = "float16"
     include_privileged_state: bool = True
+    # 2026-11 (both default to the historical behaviour, and only non-default
+    # values enter the fingerprint, so existing replay dirs still resume):
+    # ``sides`` = seats the teacher plays; ``encoder_profile`` = feature profile.
+    sides: tuple[int, ...] = (0,)
+    encoder_profile: str = "v1"
 
     def tasks(self) -> list[CollectTask]:
         tasks: list[CollectTask] = []
         index = 0
         for opponent in self.opponents:
             for seed in self.seeds:
-                tasks.append(
-                    CollectTask(
-                        index=index,
-                        deck=self.deck,
-                        opponent=opponent,
-                        seed=int(seed),
-                        teacher_spec=self.teacher_spec,
-                        opponent_spec=self.opponent_spec,
-                        search=self.search,
-                        payload_format=self.format,
-                        compact_dtype=self.compact_dtype,
-                        include_privileged_state=self.include_privileged_state,
+                for side in self.sides:
+                    tasks.append(
+                        CollectTask(
+                            index=index,
+                            deck=self.deck,
+                            opponent=opponent,
+                            seed=int(seed),
+                            teacher_spec=self.teacher_spec,
+                            opponent_spec=self.opponent_spec,
+                            search=self.search,
+                            payload_format=self.format,
+                            compact_dtype=self.compact_dtype,
+                            include_privileged_state=self.include_privileged_state,
+                            side=int(side),
+                            encoder_profile=self.encoder_profile,
+                        )
                     )
-                )
-                index += 1
+                    index += 1
         return tasks
+
+    def encoder_config(self) -> dict[str, Any]:
+        from envs.observation import encoder_for_profile
+
+        return encoder_for_profile(self.encoder_profile).to_dict()
 
     def format_block(self) -> dict[str, Any]:
         block: dict[str, Any] = {
@@ -319,8 +348,6 @@ class CollectSpec:
         return block
 
     def fingerprint(self) -> str:
-        from envs.observation import default_encoder
-
         # ``bridge_workers`` is an execution knob, not a property of the data:
         # exclude it so a resume with a different worker count is not refused.
         search = self.search
@@ -339,7 +366,9 @@ class CollectSpec:
                 "teacher_spec": self.teacher_spec,
                 "opponent_spec": self.opponent_spec,
                 "search": search_spec,
-                "encoder": default_encoder().to_dict(),
+                # v1 serialises exactly as the historical ``default_encoder()``.
+                "encoder": self.encoder_config(),
+                **({} if tuple(self.sides) == (0,) else {"sides": [int(v) for v in self.sides]}),
                 # Only the compact format adds the payload block, so a default
                 # jsonl spec keeps the *exact* pre-A6 fingerprint and existing
                 # replay dirs still resume (A6 is additive; PLAN discipline).
@@ -436,7 +465,12 @@ def collect(
                 "opponent_spec": spec.opponent_spec,
                 "search": None if spec.search is None else spec.search.as_dict(),
                 **spec.format_block(),
+                "sides": [int(v) for v in spec.sides],
+                "encoder_profile": spec.encoder_profile,
             },
+            # The exact encoder layout the samples were written with; store
+            # builders read it instead of assuming today's default (2026-11).
+            "encoder_config": spec.encoder_config(),
             "engine_lock": load_engine_lock(),
             "runtime": runtime_metadata(),
         }
@@ -482,6 +516,9 @@ def collect(
         )
 
     _done, total_games, total_samples, total_errors = _scan_samples(samples_path)
+    # Older manifests predate ``encoder_config``; the fingerprint check above
+    # guarantees this run used the same encoder, so recording it is truthful.
+    manifest.setdefault("encoder_config", spec.encoder_config())
     manifest.update(
         {
             "updated": _dt.datetime.now().isoformat(timespec="seconds"),
@@ -519,6 +556,32 @@ def collect(
                 flush=True,
             )
     return summary
+
+
+def check_teacher_encoder(spec: CollectSpec) -> None:
+    """Refuse a ``neural:`` teacher whose encoder differs from the stored samples'.
+
+    The teacher decides from its checkpoint's encoder, while the samples are
+    encoded with ``spec.encoder_profile``. For PG rounds (teacher = the policy
+    being updated) a mismatch means the log-probabilities are trained on
+    features the sampling policy never saw (2026-11 review).
+    """
+    teacher = spec.teacher_spec or ""
+    if not teacher.startswith("neural:"):
+        return
+    from envs.policy import neural_spec_encoder
+
+    used = neural_spec_encoder(teacher.split(":", 1)[1]).to_dict()
+    stored = spec.encoder_config()
+    if used != stored:
+        from envs.observation import encoder_from_config
+
+        raise SystemExit(
+            f"teacher {teacher!r} encodes with profile "
+            f"{encoder_from_config(used).profile!r} but samples would be written with "
+            f"--encoder-profile {spec.encoder_profile!r}; pass the matching profile "
+            "(a v1 checkpoint run as #seatrel=1 matches --encoder-profile v1s)"
+        )
 
 
 def _tolerant_read_manifest(path: Path) -> dict[str, Any] | None:
@@ -579,6 +642,19 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="drop the (large) privileged_state vector from compact payloads",
     )
+    parser.add_argument(
+        "--sides",
+        choices=("0", "1", "both"),
+        default="0",
+        help="seat(s) the teacher plays: 0 (historical; always round-1 first player), 1, or both",
+    )
+    parser.add_argument(
+        "--encoder-profile",
+        choices=("v1", "v1s", "v2"),
+        default="v1",
+        help="observation features: v1 (historical), v1s (v1 + seat-relative turn flags; "
+        "use with a neural:<v1 ckpt>#seatrel=1 teacher) or v2 (v1s + opponent dice count)",
+    )
     return parser
 
 
@@ -614,7 +690,12 @@ def main(argv: list[str] | None = None) -> int:
         format=args.format,
         compact_dtype=args.compact_dtype,
         include_privileged_state=not args.no_privileged_state,
+        sides=(0, 1) if args.sides == "both" else (int(args.sides),),
+        encoder_profile=args.encoder_profile,
     )
+    if search is not None and spec.sides != (0,):
+        raise SystemExit("--search collection only supports --sides 0")
+    check_teacher_encoder(spec)
     summary = collect(
         spec,
         tag=args.tag,

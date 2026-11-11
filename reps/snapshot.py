@@ -97,6 +97,7 @@ def _snapshot_player_from_json(player: dict[str, Any]) -> PlayerSnapshot:
             _snapshot_entity_from_json(entity) for entity in player.get("pile", [])
         ),
         dice=tuple(int(die) for die in player.get("dice", []) if int(die) != 0),
+        dice_count=len(player.get("dice", []) or ()),
         declared_end=bool(player.get("declaredEnd", False)),
         legend_used=bool(player.get("legendUsed", False)),
         can_charged=bool(player.get("canCharged", False)),
@@ -137,6 +138,7 @@ def _snapshot_player_from_proto(player: Any) -> PlayerSnapshot:
         hand_cards=tuple(_snapshot_proto_entity(entity) for entity in player.hand_card),
         pile_cards=tuple(_snapshot_proto_entity(entity) for entity in player.pile_card),
         dice=tuple(int(die) for die in player.dice if int(die) != 0),
+        dice_count=len(player.dice),
         declared_end=bool(player.declared_end),
         legend_used=bool(player.legend_used),
         can_charged=bool(getattr(player, "can_charged", False)),
