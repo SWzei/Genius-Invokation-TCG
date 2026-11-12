@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11-11 审查增补 D27）
+# STATUS — 当前状态（2026-10-27；2026-11-11 审查增补 D27、MASD-ADM 兼容层 D28）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -41,6 +41,19 @@
 | A2 重做（150ep，dgeo/dvalin） | ⏳ 等 A800 | `scripts/p0_a2_rerun.sh` 已封装 |
 | seat 覆盖 A/B（p0-only vs 双边） | ◐ 模仿层面已测；胜率未测 | D27：`#seatrel=1` 使 1 号位留出 CE −0.008（第 1 回合 −0.018）、top-1 不变；`--sides both`/v1s/v2 已实现（opt-in）。胜率 A/B 见 `reports/review/2026-11_technical_review.md` §8 R2/R3 |
 
+## 3b. MASD-ADM / VCSD 兼容层（D28，2026-11-11）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 决策监督契约（`DecisionSupervision`）、精确符号检验门控 | ✅ 已实现并测试 | `reps/strategy.py`、`tests/test_masd_adm.py` |
+| 知识库 / 赛事牌组适配 | ✅（知识单元 14/70 有条件检测器；人类数据仅牌组与胜负） | `reps/knowledge.py`、`envs/tournament_decks.py` |
+| 信息合法反事实证据（label-only、公共信念根） | ✅ 已实现并测试 | `train/evidence.py`、`scripts/collect_evidence.py` |
+| 蒸馏挂钩（默认关，关闭时权重逐位相同） | ✅ 已实现并测试 | `train/strategy_targets.py`、`datafirst_bc_train --supervision` |
+| 文本/LLM 学生、自适应门控 | ◐ 接口与信息边界已测；无 LLM 后端；门控未做强度评测 | `train/student.py`、`envs/adaptive.py` |
+| 蒸馏臂强度 | ✗ 未认证（最小闭环只验证连通性） | `reports/review/2026-11_masd_adm_compat.md` §5 |
+
+用法与边界：`docs/howto/masd-adm.md`。
+
 ## 4. 当前排产
 
 | 优先级 | 实验 | 目的 | 预算 | 停止条件 |
@@ -70,7 +83,13 @@
    模仿层面影响小；评测报告现已按座位分报（`summary.per_side`、`paired_vs_baseline.per_side`）。
    PG 阶梯仍只在 0 号位采样，1 号位策略从未被 RL 更新——双座位 PG 未认证前，不要把 1 号位强度差异归因于模型。
 5. **H5 matchup 重加权的负结果无效（D27）**：实现按局分组，测的是“输局加权 BC”；已修复，`failures/003` 已更正。
-6. **文档迁移已落地主体**：`docs/` 骨架、`AGENTS.md`/`README.md`、`STATUS`/`PLAYBOOK`/`EVAL_PROTOCOL`、
+6. **引擎随机种子 0 退化（D28）**：种子 0 的对局每次掷骰都是同一面，不是正常分布内的对局。
+   `--seed-start 0` 采的语料含这类对局，且按 `val_every` 划分时它们固定落在 val；新采集从种子 1 起，
+   旧语料上依据 `val_ce` 的选型要按此复核。对局行为未改，重映射与否待定。
+7. **belief-root 搜索的两个历史缺陷（D28，已修）**：约 1% 的边界快照把 `hands` 内联序列化，旧实现在这些决策上
+   抛异常并被吞成回退动作；确定化还会清掉行动方自己手牌上的附着，使合法动作列表与现场不一致、按下标注入的
+   动作可能不是原动作。对 D22/D23 搜索结果的影响未量化。
+8. **文档迁移已落地主体**：`docs/` 骨架、`AGENTS.md`/`README.md`、`STATUS`/`PLAYBOOK`/`EVAL_PROTOCOL`、
    `failures/`、`environments/`、`decisions/`、`howto/` 已建；旧报告保留在 `reports/`。
    仍待持续清理：模块 README 的历史状态、全部报告的 front-matter、`PLAN §10` 之外的旧状态句。
 

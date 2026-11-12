@@ -116,6 +116,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--init-from", default=None,
                    help="initialize the weights from a checkpoint (continued training / PG rounds); "
                         "the architecture must match (same --arch / --d-model / head config)")
+    p.add_argument("--supervision", nargs="*", default=None,
+                   help="MASD-ADM: decision supervision JSONL files (train.evidence / "
+                        "scripts.collect_evidence). Only used with --distill-coef > 0")
+    p.add_argument("--distill-coef", type=float, default=0.0,
+                   help="weight of the KL term to the strategy targets (0 = off, the default; "
+                        "the run is then identical to one without --supervision)")
+    p.add_argument("--distill-target", choices=["expert", "evidence_gated", "evidence_soft"],
+                   default="evidence_gated",
+                   help="expert = one-hot expert action (plumbing check); evidence_gated = only "
+                        "decisions whose evidence passes the sign-test gate; evidence_soft = "
+                        "softmax of raw rollout means (ungated search estimate, ablation)")
+    p.add_argument("--distill-weighting", choices=["uniform", "reliability"], default="reliability")
+    p.add_argument("--distill-alpha", type=float, default=0.05, help="gate level for evidence_gated")
+    p.add_argument("--distill-min-pairs", type=int, default=8, help="paired rollouts the gate requires")
+    p.add_argument("--distill-temperature", type=float, default=0.25, help="evidence_soft temperature")
     p.add_argument("--out", required=True)
     p.add_argument("--report", default=None)
     return p
@@ -245,10 +260,34 @@ def main(argv: list[str] | None = None) -> int:
         save_best=args.save_best,
         select_metric=args.select_metric,
         best_path=str(best_out) if args.save_best else None,
+        distill_coef=float(args.distill_coef),
     )
+    decision_targets = None
+    distill_report = None
+    if args.supervision and args.distill_coef > 0.0:
+        from reps.strategy import read_supervision
+        from train.strategy_targets import DecisionTargets, TargetSpec
+
+        records = [record for path in args.supervision for record in read_supervision(path)]
+        # Built against the (possibly sub-sampled) training store actually used.
+        decision_targets = DecisionTargets.for_store(
+            train_store, records,
+            TargetSpec(mode=args.distill_target, weighting=args.distill_weighting,
+                       alpha=args.distill_alpha, min_pairs=args.distill_min_pairs,
+                       temperature=args.distill_temperature),
+        )
+        distill_report = {"supervision": list(args.supervision), **decision_targets.stats}
+        print(f"[distill] {json.dumps(distill_report, ensure_ascii=False)}", flush=True)
+        if len(decision_targets) == 0:
+            print("[warn] no strategy target matched the training store; this run is plain "
+                  f"--loss {args.loss}", flush=True)
+    elif args.supervision or args.distill_coef > 0.0:
+        print("[warn] strategy supervision needs both --supervision and --distill-coef > 0; "
+              "ignored", flush=True)
     history, train_seconds = train(
         train_store, val_store, model, config, has_belief,
         encoder_config=encoder.to_dict(),
+        decision_targets=decision_targets,
     )
     model.save(str(out), encoder_config=encoder.to_dict())
     report = {
@@ -273,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
         "best_metric": config.best_metric,
         "n_definition_ids": n_definition_ids,
         "n_events": n_events,
+        **({} if distill_report is None else {"distill": distill_report}),
         "engine_lock": load_engine_lock(),
         "runtime": runtime_metadata(),
     }

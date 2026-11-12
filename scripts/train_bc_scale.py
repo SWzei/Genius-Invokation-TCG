@@ -544,7 +544,7 @@ def _value_loss(value: torch.Tensor, targets: torch.Tensor, config, model) -> to
 
 
 def run_batch(model, store, index, device, value_coef, belief_coef, has_belief,
-              config=None, q_scale=None, sample_weights=None):
+              config=None, q_scale=None, sample_weights=None, decision_targets=None):
     tokens, token_mask, options, option_mask, teacher, values = _collate(store, index, device)
     if has_belief:
         logits, value, belief = model.forward_all(tokens, token_mask, options, option_mask)
@@ -601,6 +601,15 @@ def run_batch(model, store, index, device, value_coef, belief_coef, has_belief,
     mse = _value_loss(value, values, config, model)
     bl = _belief_loss(belief, _belief_batch(store, index, device)) if has_belief else torch.zeros((), device=device)
     loss = policy_loss + value_coef * mse + belief_coef * bl
+    # 2026-11 (MASD-ADM): optional decision-level strategy supervision
+    # (``train.strategy_targets``). Off unless targets are passed *and*
+    # ``config.distill_coef > 0``, so every historical call is unchanged.
+    distill_coef = float(getattr(config, "distill_coef", 0.0) or 0.0) if config is not None else 0.0
+    if decision_targets is not None and distill_coef > 0.0:
+        distill, n_supervised = decision_targets.kl_term(logits, index)
+        loss = loss + distill_coef * distill
+        extra["distill"] = float(distill.item())
+        extra["distill_n"] = float(n_supervised)
     with torch.no_grad():
         acc = (logits.argmax(dim=-1) == teacher).float().mean()
     return loss, {"ce": float(policy_loss.item()), "value": float(mse.item()),
@@ -685,6 +694,11 @@ class Config:
     pg_entropy: float = 0.01
     pg_advantage_norm: bool = True
     grad_clip: float = 0.0     # 0 = off; PG rounds use 1.0
+    # --- decision-level strategy supervision (MASD-ADM / VCSD) -----------------
+    # Weight of the KL term to the targets passed as ``train(decision_targets=...)``
+    # (``train.strategy_targets.DecisionTargets``). 0 = off (default): the loss
+    # and the optimisation trajectory are exactly the historical ones.
+    distill_coef: float = 0.0
 
 
 def train(
@@ -695,6 +709,7 @@ def train(
     has_belief: bool,
     *,
     encoder_config: dict[str, Any] | None = None,
+    decision_targets: Any = None,
 ):
     torch.manual_seed(config.seed)
     model.to(config.device)
@@ -734,7 +749,7 @@ def train(
             if not index:
                 continue
             opt.zero_grad(set_to_none=True)
-            loss, info = run_batch(model, train_store, index, config.device, config.value_coef, config.belief_coef, has_belief, config, q_scale, sample_weights)
+            loss, info = run_batch(model, train_store, index, config.device, config.value_coef, config.belief_coef, has_belief, config, q_scale, sample_weights, decision_targets)
             loss.backward()
             if getattr(config, "grad_clip", 0.0):
                 torch.nn.utils.clip_grad_norm_(model.parameters(), float(config.grad_clip))
@@ -742,6 +757,10 @@ def train(
             agg["loss"] += float(loss.item())
             for k in ("ce", "value", "belief", "acc"):
                 agg[k] += info[k]
+            if "distill" in info:
+                # Present only when strategy supervision is active.
+                agg["distill"] = agg.get("distill", 0.0) + info["distill"]
+                agg["distill_n"] = agg.get("distill_n", 0.0) + info["distill_n"]
             nb += 1
         for k in agg:
             agg[k] /= max(1, nb)

@@ -428,6 +428,11 @@ class _StatePatcher:
 
     def ref_list(self, owner: dict[str, Any], field_name: str) -> list[Any]:
         field_ref = owner.get(field_name)
+        if isinstance(field_ref, list):
+            # The engine serialises a zone either behind a store ref or inline on
+            # the player node (seen for ``hands``/``pile`` as well as ``dice``,
+            # 2026-11). The inline list is patched in place.
+            return field_ref
         if not isinstance(field_ref, dict) or "$" not in field_ref:
             raise ValueError(f"scaffold node is missing '{field_name}'")
         value = self.store[int(field_ref["$"])]
@@ -476,12 +481,15 @@ class _StatePatcher:
 
     def zone_definition_ids(self, owner: dict[str, Any], field_name: str) -> tuple[int, ...]:
         zone_ref = owner.get(field_name)
-        if not isinstance(zone_ref, dict) or "$" not in zone_ref:
+        if isinstance(zone_ref, list):
+            zone_items = zone_ref          # inline zone (see ``ref_list``)
+        elif not isinstance(zone_ref, dict) or "$" not in zone_ref:
             return ()
-        try:
-            zone_items = self.store[int(zone_ref["$"])]
-        except Exception:
-            return ()
+        else:
+            try:
+                zone_items = self.store[int(zone_ref["$"])]
+            except Exception:
+                return ()
         if not isinstance(zone_items, list):
             return ()
         definition_ids: list[int] = []
@@ -543,13 +551,24 @@ class _StatePatcher:
                 and int(public_card.definition_id) == int(definition_id)
                 and int(definition_id) > 0
             )
+            # 2026-11: a card the root player can see (its own hand) keeps its
+            # variables and attachments when the scaffold node already *is* that
+            # card. They are part of what the player observes and they change the
+            # card's cost / legality; wiping them made the determinized world
+            # offer different legal options than the live decision.
+            same_entity = (
+                visible_match
+                and isinstance(card_node.get("id"), int)
+                and int(card_node["id"]) == int(public_card.id)
+            )
             if visible_match:
                 card_node["id"] = int(public_card.id)
             else:
                 card_node["id"] = self.synthetic_id()
             card_node["definition"] = self.definition_ref("entities", int(definition_id))
-            card_node["variables"] = {}
-            card_node["attachments"] = []
+            if not same_entity:
+                card_node["variables"] = {}
+                card_node["attachments"] = []
 
     def patch_primitive_zone(
         self, owner: dict[str, Any], field_name: str, values: Sequence[int]

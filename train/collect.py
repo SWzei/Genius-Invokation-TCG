@@ -695,6 +695,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     if search is not None and spec.sides != (0,):
         raise SystemExit("--search collection only supports --sides 0")
+    if 0 in spec.seeds:
+        # 2026-11: engine random seed 0 is degenerate (every die rolls the same
+        # face). Behaviour is unchanged -- existing corpora must stay resumable --
+        # but new collections should start at seed 1.
+        import sys
+
+        print("[warn] seed 0 gives a degenerate engine RNG (every die rolls the same face); "
+              "prefer --seed-start >= 1 for new corpora", file=sys.stderr, flush=True)
     check_teacher_encoder(spec)
     summary = collect(
         spec,

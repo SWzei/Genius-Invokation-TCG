@@ -31,9 +31,10 @@
 | D25 | A2 复核与 P0 门禁 | **current** | A2 无效；parity 未过冻结新结构 |
 | D26 | 搜索因果限定/价值语义 | **current** | 修 cfr_probe/dice；搜索重开需门禁 |
 | D27 | 2026-11 审查：座位/对手骰数/H5 | **current** | H5 改判 invalid；v1s/v2 特征档 opt-in；`--sides`；按座位报分 |
+| D28 | MASD-ADM / VCSD 兼容层 | **current** | 监督记录契约；信息合法证据；蒸馏挂钩默认关；知识只作标注；belief 根两处保真修复；种子 0 退化 |
 
 ## 使用
 
-- 写新决策：在 `PLAN.md §0` 追加 D27…，再在本表加一行。
+- 写新决策：在 `PLAN.md §0` 追加 D29…，再在本表加一行。
 - 改验收口径：必须同时更新 `docs/EVAL_PROTOCOL.md` 与 `docs/STATUS.md`。
 - 旧决策被推翻：标 `superseded`/`limited` 并链接新决策，不改原文。

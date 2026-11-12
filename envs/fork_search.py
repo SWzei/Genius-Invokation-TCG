@@ -86,9 +86,27 @@ class SearchDecision:
     searched: bool
     prior: dict[int, float] | None = None
     belief_roots: int = 1
+    # 2026-11 (MASD-ADM evidence). ``scores[option][r]`` is the outcome of
+    # rollout ``r`` for that option (``None`` = that fork errored). Rollout ``r``
+    # uses the same root particle and the same rollout seed for every option,
+    # so ``scores[a][r] - scores[b][r]`` is a paired (common-random-number)
+    # difference. ``errors`` counts discarded forks by reason.
+    scores: dict[int, tuple[float | None, ...]] | None = None
+    errors: dict[str, int] | None = None
+    root_kind: str = "live"
+    acted_on: bool = True
 
     def as_dict(self) -> dict[str, Any]:
+        extra: dict[str, Any] = {}
+        if self.scores is not None:
+            extra = {
+                "scores": {str(k): list(v) for k, v in self.scores.items()},
+                "errors": dict(self.errors or {}),
+                "root_kind": self.root_kind,
+                "acted_on": bool(self.acted_on),
+            }
         return {
+            **extra,
             "player": self.player,
             "ordinal": self.ordinal,
             "request_type": self.request_type,
@@ -213,8 +231,26 @@ class ForkSearchPolicy:
     belief_root: bool = False
     belief_samples: int = 1
     name: str = field(default="fork_search")
+    # --- 2026-11 additive knobs (defaults reproduce the historical policy) -----
+    # ``act_on_search=False``: label-only -- evaluate the candidates and log the
+    # ``SearchDecision`` but always play the base choice (evidence generation).
+    act_on_search: bool = True
+    # Restrict searching to these request types (``None`` = all, as before).
+    request_types: tuple[str, ...] | None = None
+    # Skip decisions whose fork would have to replay decisions made since the
+    # boundary snapshot. Under a belief root those prefix indices were recorded
+    # in the *true* world and need not denote the same actions in a determinized
+    # one; an empty prefix makes the fork start exactly at this decision.
+    require_empty_prefix: bool = False
+    # Verify, inside each fork, that the injected option carries the same
+    # semantic key as in the live decision (``ForkTask.inject_key``).
+    verify_inject_key: bool = False
+    # Optional adaptive-budget hook: ``gate(built, prior_probs, base_idx) -> bool``;
+    # ``False`` skips the search for this decision (``envs.adaptive``).
+    gate: Any = None
     _calls: int = field(default=0, init=False, repr=False)
     _n_searched: int = field(default=0, init=False, repr=False)
+    _n_gated: int = field(default=0, init=False, repr=False)
 
     @property
     def _default_rollout(self) -> str:
@@ -264,9 +300,21 @@ class ForkSearchPolicy:
             or (self.max_searches is not None and self._n_searched >= self.max_searches)
         ):
             return base_code
+        if self.request_types is not None:
+            request_type = str(getattr(built.context.request_type, "value", built.context.request_type))
+            if request_type not in self.request_types:
+                return base_code
+        if self.require_empty_prefix and (
+            self.context.prefix(self.player) or self.context.prefix(1 - self.player)
+        ):
+            return base_code
+        if self.gate is not None and not self.gate(built, prior_probs, base_idx):
+            self._n_gated += 1
+            return base_code
 
         self._n_searched += 1
-        return self._search(built, codes, base_idx, prior_probs)
+        chosen_code = self._search(built, codes, base_idx, prior_probs)
+        return chosen_code if self.act_on_search else base_code
 
     def _search(
         self,
@@ -297,14 +345,29 @@ class ForkSearchPolicy:
         rollout0, rollout1 = (roll_spec, opp_spec) if acting == 0 else (opp_spec, roll_spec)
 
         ordinal_inject = len(prefix_self) + 1
+        inject_keys: dict[int, Any] = {}
+        if self.verify_inject_key:
+            from reps.action_hierarchy import semantic_action_key_for_spec
+
+            from envs.fork_bridge import legal_keys_digest
+
+            specs = tuple(built.context.legal_low_level_specs)
+            legal = legal_keys_digest(specs)
+            inject_keys = {
+                option: {"option": semantic_action_key_for_spec(specs[option]), "legal": legal}
+                for option in candidates
+                if option < len(specs)
+            }
         tasks: list[ForkTask] = []
         index_map: dict[int, int] = {}
+        rollout_of: dict[int, int] = {}
         order: list[int] = []
         for option in candidates:
             for r in range(self.rollouts):
                 task_index = len(order)
                 order.append(option)
                 index_map[task_index] = option
+                rollout_of[task_index] = r
                 rollout_seed = derive_seed(
                     context.base_seed, "fork-search", acting, ordinal, r
                 )
@@ -324,16 +387,30 @@ class ForkSearchPolicy:
                         rollout1=rollout1,
                         rollout_seed=rollout_seed,
                         max_steps=self.max_steps,
+                        inject_key=inject_keys.get(option),
                     )
                 )
 
         results = context.bridge.evaluate(tasks)
         scores: dict[int, list[float]] = {option: [] for option in candidates}
+        # Per-rollout record (paired across options by rollout index ``r``).
+        per_rollout: dict[int, list[float | None]] = {
+            option: [None] * int(self.rollouts) for option in candidates
+        }
+        errors: dict[str, int] = {}
         for result in results:
             option = index_map.get(result.index)
             if option is None:
                 continue
-            scores[option].append(result.outcome(acting))
+            if getattr(result, "error", None) and self.verify_inject_key:
+                # Evidence mode: an errored/misaligned fork is discarded, never
+                # scored (the historical path below scores it as-is).
+                reason = str(result.error).split(":", 1)[0]
+                errors[reason] = errors.get(reason, 0) + 1
+                continue
+            value = result.outcome(acting)
+            scores[option].append(value)
+            per_rollout[option][rollout_of[result.index]] = float(value)
 
         means = {o: (sum(v) / len(v) if v else 0.0) for o, v in scores.items()}
         counts = {o: len(v) for o, v in scores.items()}
@@ -359,9 +436,17 @@ class ForkSearchPolicy:
                 prior=None
                 if prior_probs is None
                 else {opt: prior_probs[opt] for opt in candidates},
+                scores={option: tuple(values) for option, values in per_rollout.items()},
+                errors=errors,
+                root_kind="belief" if (self.belief_root and root_snapshots != [snapshot]) else "live",
+                acted_on=bool(self.act_on_search),
             )
         )
+        self._on_searched(built, context.searches[-1])
         return chosen_code
+
+    def _on_searched(self, built, decision: "SearchDecision") -> None:
+        """Hook for subclasses that need the decision context of a search."""
 
 
 def _observe_public_record(tracker: Any, player: int, built: Any, code: int) -> None:
@@ -492,8 +577,16 @@ def run_search_match(
     record_final_state: bool = False,
     belief_root: bool = False,
     belief_samples: int = 1,
+    search_policy_cls: Any = None,
+    search_policy_kwargs: Mapping[str, Any] | None = None,
+    on_decision: Any = None,
 ) -> SearchMatchResult:
     """Play one game in which ``search_players`` refine their moves with fork search.
+
+    ``search_policy_cls``/``search_policy_kwargs`` (2026-11) let a caller swap in a
+    ``ForkSearchPolicy`` subclass or set its additive knobs (label-only evidence,
+    request-type filter, gate); ``on_decision(player, built, code)`` observes every
+    live decision. All three default to the historical behaviour.
 
     Non-search players use an expert policy for their own deck; search players use
     their base policy plus fork search. ``prior_policies`` (per player) are optional
@@ -534,6 +627,8 @@ def run_search_match(
         for tracker in trackers:
             if tracker is not None:
                 _observe_public_record(tracker, player, built, code)
+        if on_decision is not None:
+            on_decision(player, built, code)
 
     context = SearchContext(
         bridge=bridge,
@@ -555,7 +650,8 @@ def run_search_match(
         if base is None:
             base = build_policy(f"expert:{deck_slug}", seed=derive_seed(seed, f"p{player}", "search-base"), role=f"p{player}")
         if player in search_set:
-            policy: Policy = ForkSearchPolicy(
+            policy: Policy = (search_policy_cls or ForkSearchPolicy)(
+                **dict(search_policy_kwargs or {}),
                 player=player,
                 context=context,
                 deck0=deck0,

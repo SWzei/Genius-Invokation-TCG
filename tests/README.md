@@ -27,6 +27,23 @@
 - `test_seat_coverage.py`：评测按座位分报（含配对 Δ）；双座位语料同 seed 不被去重、同 seed 两座位同属 train/val；
   store 记录语料的编码档并拒绝混档。
 
+## 2026-11 MASD-ADM 兼容层新增（D28）
+
+- `test_masd_adm.py`（快测）：监督记录 schema——精确符号检验、按 rollout 配对、门控三态
+  （`alternative_supported` / `expert_supported` / `inconclusive`）、用了真实隐藏状态的证据永不 verified、
+  JSONL 往返与 schema 版本校验、决策键与 `_game_key` 同布局；知识库与赛事牌组适配（夹具文件；设了
+  `GITCG_KB_DIR` / `GITCG_DATA_RELEASE` 时再对真实数据核对检测器与规则引用）；target 三种模式互不混用、
+  按键对齐并拒绝选项数/专家下标不符的记录；one-hot KL ≡ CE；padding 与部分覆盖下损失与梯度有限；
+  **蒸馏关闭时训练权重逐位相同、固定种子可复现**；`datafirst_bc_train --supervision` 端到端；
+  门控只分配预算（label-only 永远打基座动作）；文本学生只读记录里的公开文本；`ForkTask.inject_key` 往返；
+  `hands` 内联的边界快照也能生成信念根（回归：历史实现在这类快照上抛异常，被 `PolicyPlayer` 吞掉后改打回退动作）；
+  信念根保留行动方自己手牌上的附着与变量、对手手牌上的不保留（回归：历史实现一律清空）；
+  证据 CLI 断点续跑、丢弃未完成对局的残留记录、规格漂移时拒绝续跑；PG 损失与蒸馏项可叠加；两种网络结构的学生加载。
+- `test_masd_adm.py`（slow，信息安全）：label-only 证据对局与 `collect_samples` 同局逐决策一致
+  （step / 选项数 / 专家下标 / 结果）；每个 fork 任务前缀为空、带注入 key、根快照里对手手牌为合成 id；
+  同一决策的候选共用根粒子与 rollout 种子；知识标注、状态文本、选项文本在去掉 `full_state` 后不变；
+  注入 key 不符、或合法动作列表与现场不符的 fork 报错而不计分；同一证据规格换 worker 数重跑得分逐项相同。
+
 ## 主要测试（历史清单，持续更新）
 
 - `test_info_hiding.py`：`public_state.mask_state_for_player` 隐藏对手手牌/骰子/牌堆、保留己方与公开信息、幂等。

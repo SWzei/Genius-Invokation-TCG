@@ -79,6 +79,13 @@ class ForkTask:
     kind: str = "rollout"
     # Optional CVPN checkpoint for the probe's depth-limited frontier value.
     value_spec: str = ""
+    # 2026-11 (MASD-ADM evidence): JSON-safe semantic key the injected option is
+    # expected to carry (``reps.action_hierarchy.semantic_action_key_for_spec``).
+    # When set, the fork fails with an ``inject key mismatch`` error instead of
+    # silently evaluating a different action -- a positional index is only the
+    # same action if the fork reproduces the acting player's own view (it does
+    # for a belief root with empty prefixes; this makes that checkable).
+    inject_key: Any = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -100,6 +107,7 @@ class ForkTask:
             "capture_terminal": bool(self.capture_terminal),
             "kind": str(self.kind),
             "value_spec": str(self.value_spec),
+            **({} if self.inject_key is None else {"inject_key": _jsonable_key(self.inject_key)}),
         }
 
     @classmethod
@@ -124,6 +132,7 @@ class ForkTask:
             capture_terminal=bool(payload.get("capture_terminal", False)),
             kind=str(payload.get("kind", "rollout")),
             value_spec=str(payload.get("value_spec", "")),
+            inject_key=payload.get("inject_key"),
         )
 
 
@@ -242,6 +251,20 @@ class PositionalReplayPolicy:
         return int(codes[idx])
 
 
+def legal_keys_digest(specs: Sequence[Any]) -> str:
+    """Digest of a decision's legal options (semantic keys, engine order).
+
+    The acting player observes its legal options, so a forked world that offers a
+    different list at the injected decision is not a world the player could be in.
+    """
+    import hashlib
+
+    from reps.action_hierarchy import semantic_action_key_for_spec
+
+    keys = [_jsonable_key(semantic_action_key_for_spec(spec)) for spec in specs]
+    return hashlib.sha256(json.dumps(keys, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
 @dataclass
 class InjectionPolicy:
     """Replay ``prefix`` for earlier decisions, force one option, then ``rollout``."""
@@ -251,17 +274,49 @@ class InjectionPolicy:
     ordinal: int
     option_index: int
     name: str = "inject"
+    expect_key: Any = None
+    key_mismatch: str | None = field(default=None, init=False)
     _n: int = field(default=0, init=False, repr=False)
 
     def choose(self, built) -> int:
         self._n += 1
         if self._n == self.ordinal:
             codes = [int(c) for c in built.context.legal_low_level_codes]
+            if self.expect_key is not None:
+                self._check_key(built, len(codes))
             if codes:
                 return int(codes[min(self.option_index, len(codes) - 1)])
             return int(self.rollout.choose(built))
         inner = self.prefix if self._n < self.ordinal else self.rollout
         return int(inner.choose(built))
+
+    def _check_key(self, built, option_count: int) -> None:
+        from reps.action_hierarchy import semantic_action_key_for_spec
+
+        specs = tuple(built.context.legal_low_level_specs)
+        index = int(self.option_index)
+        # ``PolicyPlayer`` swallows policy exceptions and falls back to a default
+        # action, so the mismatch is *recorded* here and turned into the task's
+        # ``error`` by ``run_fork_task`` (the branch result is then discarded).
+        if index >= option_count or index >= len(specs):
+            self.key_mismatch = (
+                f"option {index} out of range ({option_count} legal options)"
+            )
+            return
+        actual = _jsonable_key(semantic_action_key_for_spec(specs[index]))
+        expected = _jsonable_key(self.expect_key)
+        legal_digest = None
+        if isinstance(expected, dict):
+            # {"option": key, "legal": digest}: also require the *whole* legal
+            # option list to be the one the player saw (see ``legal_keys_digest``).
+            expected, legal_digest = expected.get("option"), expected.get("legal")
+        if actual != expected:
+            self.key_mismatch = f"option {index}: expected {expected!r}, got {actual!r}"
+        elif legal_digest is not None and legal_keys_digest(specs) != legal_digest:
+            self.key_mismatch = (
+                f"inject legal-list mismatch: the fork offers a different legal option list "
+                f"({len(specs)} options) than the live decision"
+            )
 
 
 @dataclass
@@ -323,6 +378,7 @@ def run_fork_task(task: ForkTask) -> dict[str, Any]:
                     rollout=rollout,
                     ordinal=int(task.inject_ordinal),
                     option_index=int(task.inject_option),
+                    expect_key=task.inject_key,
                 )
             )
         else:
@@ -359,6 +415,10 @@ def run_fork_task(task: ForkTask) -> dict[str, Any]:
             error = f"aborted: {game.error()}"
         except Exception:
             error = "aborted"
+    for policy in policies:
+        mismatch = getattr(policy, "key_mismatch", None)
+        if mismatch:
+            error = mismatch if mismatch.startswith("inject ") else f"inject key mismatch: {mismatch}"
 
     return {
         "index": task.index,

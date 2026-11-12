@@ -13,6 +13,8 @@ python -m train.collect --deck <deck> --all-opponents \
 - 一行一局，`data/replays/<tag>/samples.jsonl`；manifest 指纹护栏、按 `task_index` 断点续跑。
 - 新 compact 语料带 `token_definition_ids` / `option_definition_ids`（exact id）；旧 fp16 语料不能用于 id 特征训练。
 - 采集种子避开 val 残差（`val_every=10` 时取模 10 余 1–9）。
+- **不要用种子 0（D28）**：引擎随机种子为 0 时每次掷骰都是同一面；`train.collect` 遇到会告警（行为不改，旧语料可续跑）。
+  新语料用 `--seed-start 1`，建 store 时相应传 `--seed-start`。
 - **2026-11（D27）座位与特征档**：`--sides {0,1,both}`（默认 0 = 历史行为；引擎固定 0 号位为第 1 回合先手，
   只采 0 号位则模型从未见过「第 1 回合后手」）与 `--encoder-profile {v1,v1s,v2}`（默认 v1 = 历史特征，
   逐字节不变；v1s = 座位相对的回合/行动方标志；v2 = v1s + 对手公开骰子数）。两者都只在非默认时进入指纹，
@@ -48,3 +50,7 @@ python -m scripts.datafirst_bc_train --store-cache data/store/<tag>.pt \
 ## 评测
 
 见 `docs/EVAL_PROTOCOL.md`；认证用 `scripts/eval_protocol.py`，配对种子、双方、纯策略。
+
+## 决策级策略监督（MASD-ADM / VCSD）
+
+反事实证据采集与 `--supervision` / `--distill-coef` 蒸馏训练见 [`masd-adm.md`](masd-adm.md)。

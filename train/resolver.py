@@ -138,9 +138,10 @@ def prior_resolver_from_checkpoint(checkpoint: str, *, temperature: float = 1.0)
     for older checkpoints. Feed it to ``ForkSearchPolicy.prior``/``base`` or pass it
     as a ``base_policies`` entry of ``envs.fork_search.run_search_match``.
     """
-    from train.model import CVPN, checkpoint_encoder_config
+    from train.model import checkpoint_encoder_config, load_cvpn_model
 
-    model = CVPN.load(checkpoint)
+    # Dispatches on the checkpoint's ``arch`` (CVPN / TransformerCVPN).
+    model = load_cvpn_model(checkpoint)
     config = checkpoint_encoder_config(checkpoint)
     if config is not None:
         from reps.observation_encoder import TokenObservationEncoder

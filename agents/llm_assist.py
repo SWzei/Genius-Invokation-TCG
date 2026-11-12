@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Sequence
 
 from reps.action_adapter import BuiltDecisionContext
-from reps.schema import DecisionContext, OptionKind
+from reps.schema import DecisionContext, OptionKind, public_dice_count
 
 from envs.policy import Policy
 
@@ -127,7 +127,7 @@ class ContextDescriber:
                 + (" DEFEATED" if c.defeated else "")
                 for c in opp.characters
             ),
-            f"opponent hand size={len(opp.hand_cards)} dice≈{len(opp.dice)}",
+            f"opponent hand size={len(opp.hand_cards)} dice={public_dice_count(opp)}",
             f"my declared_end={me.declared_end}",
         ]
         return "\n".join(lines)
