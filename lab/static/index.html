@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>七圣召唤 实验台</title>
+<style>
+:root{
+  --bg:#f4f2ee; --panel:#fffdf9; --ink:#22201c; --muted:#6f6a60; --line:#ddd7cb; --accent:#8a4b2a;
+  --accent-ink:#fff; --good:#2f7d4f; --bad:#b3382c; --warn:#a36a00; --chip:#ece7dc; --focus:#2b6cb0;
+  --cryo:#7cc6e8; --hydro:#3f83f8; --pyro:#e5533d; --electro:#a264e0; --anemo:#3fbf9a; --geo:#d99a1c; --dendro:#7fb82e; --omni:#8d8778;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1b1a18; --panel:#24231f; --ink:#ece8df; --muted:#a39c8e; --line:#3a3832; --accent:#d08a5c;
+    --accent-ink:#1b1a18; --good:#5fbf86; --bad:#ec7a6c; --warn:#e0b04a; --chip:#33312b; --focus:#7fb3e6; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0;letter-spacing:.04em}
+nav{display:flex;gap:4px}
+nav button{border:0;background:none;color:var(--muted);padding:6px 12px;border-radius:6px;font:inherit;cursor:pointer}
+nav button[aria-selected=true]{background:var(--chip);color:var(--ink);font-weight:600}
+#status{margin-left:auto;color:var(--muted);font-size:12px}
+main{padding:16px;max-width:1500px;margin:0 auto}
+[hidden]{display:none !important}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.play{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;align-items:start}
+@media (max-width:1000px){.grid2,.play{grid-template-columns:1fr}}
+h2{font-size:14px;margin:0 0 10px;letter-spacing:.03em}
+h3{font-size:13px;margin:12px 0 6px;color:var(--muted);font-weight:600}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px}
+select,input[type=text],input[type=number],textarea{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{resize:vertical;min-height:56px}
+button{font:inherit}
+.btn{border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:6px 12px;border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.small{padding:3px 8px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)} .good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+.tag{display:inline-block;padding:1px 7px;border-radius:10px;background:var(--chip);font-size:12px;margin-right:4px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+tr.sel{background:var(--chip)}
+/* board */
+.side{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+.side h3{margin-top:0}
+.chars{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.char{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg)}
+.char.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.char.dead{opacity:.45}
+.char .name{font-weight:600}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:4px 0}
+.bar i{display:block;height:100%;background:var(--good)}
+.zone{margin-top:8px;font-size:13px}
+.zone b{color:var(--muted);font-weight:600;margin-right:6px}
+.die{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;color:#fff;font-weight:700;margin:2px;border:2px solid transparent;cursor:default;font-size:13px}
+.die.pick{cursor:pointer} .die.on{border-color:var(--ink);transform:translateY(-3px)}
+.d-冰{background:var(--cryo)} .d-水{background:var(--hydro)} .d-火{background:var(--pyro)} .d-雷{background:var(--electro)}
+.d-风{background:var(--anemo)} .d-岩{background:var(--geo)} .d-草{background:var(--dendro)} .d-万能{background:var(--omni)}
+.cards{display:flex;flex-wrap:wrap;gap:6px}
+.card{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);max-width:170px;font-size:12px}
+.card.pick{cursor:pointer} .card.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.card .name{font-weight:600;font-size:13px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 10px;border-radius:6px;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.opt.played{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.opt.proposed{border-color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn)}
+.opt.preferred{border-style:dashed;border-color:var(--focus)}
+.banner{padding:10px 12px;border-radius:8px;background:var(--chip);margin-bottom:10px}
+.log{max-height:420px;overflow:auto;font-size:13px}
+.log div{padding:3px 6px;border-radius:4px;cursor:pointer}
+.log div:hover,.log div.sel{background:var(--chip)}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:2px 8px;font-size:13px}
+.kv span:nth-child(odd){color:var(--muted)}
+.prob{display:grid;grid-template-columns:1fr 48px;gap:6px;align-items:center;font-size:12px;margin:2px 0}
+.prob i{display:block;height:5px;background:var(--accent);border-radius:3px}
+.chat .q{font-weight:600;margin-top:8px} .chat .a{white-space:pre-wrap;margin:2px 0 6px}
+.tabs{display:flex;gap:4px;margin-bottom:10px}
+.tabs button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--chip);color:var(--ink);font-weight:600}
+pre{white-space:pre-wrap;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;font-size:12px;margin:6px 0}
+details summary{cursor:pointer;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>七圣召唤 实验台</h1>
+  <nav role="tablist">
+    <button role="tab" data-view="new" aria-selected="true">新对局</button>
+    <button role="tab" data-view="play" aria-selected="false">对局</button>
+    <button role="tab" data-view="review" aria-selected="false">回放与导出</button>
+  </nav>
+  <span id="status"></span>
+</header>
+<main>
+<!-- ============================ new session ============================ -->
+<section id="view-new">
+  <div class="grid2">
+    <div class="panel" id="seat0"></div>
+    <div class="panel" id="seat1"></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="row">
+      <div style="width:120px"><label for="seed">随机种子（≥1）</label><input id="seed" type="number" min="1"></div>
+      <label class="row" style="margin:18px 0 0"><input type="checkbox" id="intervene"> 人工干预：AI 每步先给出提议，批准或改选后才执行</label>
+      <label class="row" style="margin:18px 0 0"><input type="checkbox" id="reveal"> 明牌：人类玩家可见 AI 的私有信息（该局不计入示范导出）</label>
+    </div>
+    <label for="note">备注</label><input id="note" type="text" placeholder="可选，例如实验编号">
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="start">开始对局</button>
+      <span id="new-error" class="bad"></span>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="panel"><h2>模型档案</h2><div id="models"></div>
+      <p class="muted" style="font-size:12px">在 <code>configs/models.toml</code> 配置；密钥只从环境变量或 <code>.env</code> 读取。<code>mock</code> 为离线占位模型。</p></div>
+    <div class="panel"><h2>知识配置</h2><div id="knowledge"></div><p id="kb-status" class="muted" style="font-size:12px"></p></div>
+  </div>
+</section>
+<!-- ============================ play ============================ -->
+<section id="view-play" hidden>
+  <div id="play-empty" class="panel muted">还没有进行中的对局。到“新对局”创建，或在“回放与导出”里打开已保存的对局。</div>
+  <div class="play" id="play-body" hidden>
+    <div>
+      <div class="banner" id="play-banner"></div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <h2 id="board-title" style="margin:0"></h2>
+          <div class="row" id="perspective-row" hidden>视角
+            <select id="perspective" style="width:auto"><option value="0">0 号位</option><option value="1">1 号位</option></select></div>
+        </div>
+        <div id="board"></div>
+      </div>
+      <div class="panel" style="margin-top:14px" id="action-panel">
+        <h2 id="action-title">行动</h2>
+        <div id="action-body" class="muted">等待中…</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="decision" aria-selected="true">决策</button>
+        <button role="tab" data-tab="log" aria-selected="false">记录</button>
+        <button role="tab" data-tab="chat" aria-selected="false">讨论</button>
+      </div>
+      <div id="tab-decision"></div>
+      <div id="tab-log" hidden><div class="log" id="log"></div></div>
+      <div id="tab-chat" hidden>
+        <p class="muted" style="font-size:12px">就当前等待输入的决策向模型提问。模型只看到该座位可见的信息。</p>
+        <div class="row"><select id="chat-model" style="flex:1"></select><select id="chat-kb" style="flex:1"></select></div>
+        <label for="chat-q">问题</label><textarea id="chat-q" placeholder="例如：这回合该先切人还是先打牌？"></textarea>
+        <div class="row" style="margin-top:6px"><button class="btn" id="chat-send">提问</button><span id="chat-error" class="bad"></span></div>
+        <div class="chat" id="chat-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================ review ============================ -->
+<section id="view-review" hidden>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">已保存的对局</h2>
+      <button class="btn small" id="refresh-sessions">刷新</button></div>
+    <div id="sessions" style="margin-top:8px"></div>
+    <div class="row" style="margin-top:10px">
+      <input id="export-name" type="text" placeholder="导出名称（字母、数字、-、_）" style="width:240px">
+      <select id="export-seats" style="width:auto"><option value="human">人类座位</option><option value="corrected">被人工改选过的 AI 座位</option><option value="all">全部座位</option></select>
+      <button class="btn" id="export-bc">导出为 BC 语料</button>
+      <button class="btn" id="export-sup">导出人工反馈（监督记录）</button>
+    </div>
+    <pre id="export-out" hidden></pre>
+  </div>
+  <div class="play" id="review-body" style="margin-top:14px" hidden>
+    <div>
+      <div class="banner" id="review-banner"></div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <div class="row"><button class="btn small" id="rv-prev">上一步</button><button class="btn small" id="rv-next">下一步</button>
+            <span id="rv-pos" class="muted"></span></div>
+          <div class="row">视角 <select id="rv-view" style="width:auto"><option value="0">0 号位</option><option value="1">1 号位</option><option value="all">全知（反馈将标记为非信息干净）</option></select></div>
+        </div>
+        <div id="rv-board"></div>
+      </div>
+      <div class="panel" style="margin-top:14px"><h2>该步的合法选项</h2><div id="rv-options" class="opts" style="max-height:420px;overflow:auto"></div></div>
+      <div class="panel" style="margin-top:14px"><h2>策略对比</h2>
+        <p class="muted" style="font-size:12px">在这局的每个决策点上，问其他策略“你会怎么走”。每个策略看到的信息与当时的行动方完全相同。</p>
+        <div class="row"><input id="cmp-specs" type="text" placeholder="策略 spec，空格分隔，例如 heuristic expert:&lt;deck&gt; llm:mock" style="flex:1">
+          <select id="cmp-seat" style="width:auto"><option value="0">0 号位</option><option value="1">1 号位</option></select>
+          <button class="btn" id="cmp-run">对比</button></div>
+        <div id="cmp-out" style="margin-top:8px;max-height:520px;overflow:auto"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="log" id="rv-log" style="max-height:260px"></div>
+      <div id="rv-detail" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+"use strict";
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const api = async (path, body) => {
+  const res = await fetch(path, body === undefined ? {} : {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  const data = await res.json().catch(() => ({error:"服务器返回了无法解析的内容"}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+};
+const ACTOR = {human:"人类", policy:"策略", override:"人工改选", autopilot:"托管", forced:"唯一选项"};
+const REQ = {action:"行动", choose_active:"选择出战", reroll_dice:"重掷骰子", switch_hands:"替换手牌", select_card:"挑选卡牌"};
+let META = null;
+const S = {id:null, since:0, events:[], pending:null, status:null, spec:null, viewer:null, views:{}, selected:null, pick:new Set(), polling:false, chat:[]};
+const R = {id:null, data:null, decisions:[], pos:0};
+
+/* ---------------- navigation ---------------- */
+function show(view){
+  $$("header nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === view));
+  ["new","play","review"].forEach(v => $("#view-"+v).hidden = v !== view);
+  if (view === "review") loadSessions();
+}
+$$("header nav button").forEach(b => b.onclick = () => show(b.dataset.view));
+$$("#view-play .tabs button").forEach(b => b.onclick = () => {
+  $$("#view-play .tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
+  ["decision","log","chat"].forEach(t => $("#tab-"+t).hidden = t !== b.dataset.tab);
+});
+
+/* ---------------- new session ---------------- */
+function seatForm(i){
+  const decks = META.decks.map(d => `<option value="${esc(d.slug)}">${esc(d.name)}（${esc(d.slug)}）</option>`).join("");
+  const local = META.policies.map(p => `<option value="${esc(p.spec)}">${esc(p.label)}</option>`).join("");
+  const models = META.models.map(m => `<option value="${esc(m.name)}" ${m.usable?"":"disabled"}>${esc(m.name)} · ${esc(m.model)}${m.usable?"":"（缺密钥）"}</option>`).join("");
+  const kbs = META.knowledge.map(k => `<option value="${esc(k.name)}">${esc(k.name)}</option>`).join("");
+  $("#seat"+i).innerHTML = `
+    <h2>${i} 号位${i===0?"（先手）":"（后手）"}</h2>
+    <label for="deck${i}">牌组</label><select id="deck${i}">${decks}</select>
+    <label for="kind${i}">由谁操作</label>
+    <select id="kind${i}"><option value="policy">AI：本地策略</option><option value="llm">AI：大模型</option><option value="human">人类（我）</option></select>
+    <div id="local${i}"><label for="policy${i}">本地策略</label><select id="policy${i}">${local}</select></div>
+    <div id="llm${i}" hidden>
+      <label for="model${i}">模型档案</label><select id="model${i}">${models}</select>
+      <label for="kb${i}">知识配置</label><select id="kb${i}">${kbs}</select>
+      <label for="fallback${i}">回退策略（模型回复不可用时）</label><select id="fallback${i}"><option value="heuristic">启发式</option><option value="expert:<deck>">脚本专家（本牌组）</option><option value="legal_random">随机合法</option></select>
+      <label for="budget${i}">每局调用上限（留空不限）</label><input id="budget${i}" type="number" min="1">
+    </div>`;
+  $("#kind"+i).onchange = () => { const k = $("#kind"+i).value; $("#local"+i).hidden = k !== "policy"; $("#llm"+i).hidden = k !== "llm"; };
+}
+function seatPayload(i){
+  const kind = $("#kind"+i).value;
+  if (kind === "human") return {kind:"human"};
+  if (kind === "policy") return {kind:"policy", policy:$("#policy"+i).value};
+  const opts = [];
+  if ($("#kb"+i).value !== "none") opts.push("kb="+$("#kb"+i).value);
+  opts.push("fallback="+$("#fallback"+i).value);
+  if ($("#budget"+i).value) opts.push("budget="+$("#budget"+i).value);
+  return {kind:"policy", policy:"llm:"+$("#model"+i).value+"#"+opts.join(",")};
+}
+async function loadMeta(){
+  META = await api("/api/meta");
+  seatForm(0); seatForm(1);
+  $("#kind1").value = "human"; $("#kind1").onchange();
+  if (META.decks.length > 1) $("#deck1").selectedIndex = 1;
+  $("#seed").value = META.next_seed;
+  $("#models").innerHTML = `<table><tr><th>档案</th><th>服务</th><th>模型</th><th>密钥</th><th>预算</th></tr>` + META.models.map(m =>
+    `<tr><td>${esc(m.name)}</td><td>${esc(m.provider)}</td><td>${esc(m.model)}</td>
+     <td class="${m.usable?"good":"bad"}">${m.protocol==="mock"?"不需要":(m.key_present?"已配置":"缺少 "+esc((m.api_key_env||[]).join(" / ")))}</td>
+     <td>${[m.budget.max_calls&&m.budget.max_calls+" 次",m.budget.max_cost&&m.budget.max_cost+" "+esc(m.currency)].filter(Boolean).join("，")||"—"}</td></tr>`).join("") + `</table>`;
+  $("#knowledge").innerHTML = `<table><tr><th>配置</th><th>规则</th><th>策略</th><th>专家示例</th><th>自定义</th></tr>` + META.knowledge.map(k =>
+    `<tr><td>${esc(k.name)}</td><td>${k.rules?"是":"—"}</td><td>${k.strategy?"是":"—"}</td><td>${k.expert_examples.length||"—"}</td><td>${k.custom.length||"—"}</td></tr>`).join("") + `</table>`;
+  $("#kb-status").innerHTML = META.kb.available ? `知识库：${esc(META.kb.root)}` : `<span class="warn">未找到知识库（设置环境变量 ${esc(META.kb.env)}）；选了规则/策略配置也不会注入内容。</span>`;
+  const opts = sel => META.models.filter(m => m.usable).map(m => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join("");
+  $("#chat-model").innerHTML = opts();
+  $("#chat-kb").innerHTML = META.knowledge.map(k => `<option value="${esc(k.name)}">知识：${esc(k.name)}</option>`).join("");
+  if (META.errors.length) $("#new-error").textContent = META.errors.join("；");
+}
+$("#start").onclick = async () => {
+  $("#new-error").textContent = "";
+  try {
+    const meta = await api("/api/sessions", {deck0:$("#deck0").value, deck1:$("#deck1").value, seats:[seatPayload(0), seatPayload(1)],
+      seed:$("#seed").value===""?undefined:Number($("#seed").value), intervene:$("#intervene").checked, reveal:$("#reveal").checked, note:$("#note").value});
+    openLive(meta.id); $("#seed").value = Number($("#seed").value) + 1;
+  } catch (e) { $("#new-error").textContent = e.message; }
+};
+
+/* ---------------- board rendering ---------------- */
+const die = (name, cls="", attrs="") => `<span class="die d-${esc(name)} ${cls}" ${attrs} title="${esc(name)}">${esc(name==="万能"?"万":name)}</span>`;
+function entities(list){ return list.map(e => `<span class="tag" title="${esc(e.text||"")}">${esc(e.name)}${e.vars?"("+Object.entries(e.vars).map(([k,v])=>k+"="+v).join(",")+")":""}</span>`).join(""); }
+function sideHtml(side, title, own, pick){
+  const chars = side.characters.map(c => `<div class="char ${c.active?"active":""} ${c.defeated?"dead":""}">
+      <div class="name">${esc(c.name)}${c.active?" · 出战":""}${c.defeated?" · 倒下":""}</div>
+      <div class="bar"><i style="width:${Math.max(0,Math.round(100*c.hp/Math.max(1,c.max_hp)))}%"></i></div>
+      <div>生命 ${c.hp}/${c.max_hp} · 充能 ${c.energy}/${c.max_energy} · 附着 ${esc(c.aura)}</div>
+      <div>${entities(c.entities)}</div></div>`).join("");
+  let extra = "";
+  for (const [key, label] of [["combat_statuses","出战状态"],["summons","召唤物"],["supports","支援区"]])
+    if (side[key].length) extra += `<div class="zone"><b>${label}</b>${entities(side[key])}</div>`;
+  if (own){
+    extra += `<div class="zone"><b>骰子 ${side.dice.length}</b>${side.dice.map((d,i)=>die(d, pick==="dice"?"pick "+(S.pick.has(i)?"on":""):"", pick==="dice"?`data-pos="${i}"`:"")).join("")||"无"}</div>`;
+    extra += `<div class="zone"><b>手牌 ${side.hand.length}</b><div class="cards">${side.hand.map((c,i)=>`<div class="card ${pick==="hand"?"pick "+(S.pick.has(i)?"on":""):""}" ${pick==="hand"?`data-pos="${i}"`:""} title="${esc(c.text)}"><div class="name">${esc(c.name)}</div><div class="muted">${esc(c.kind||"牌")} · 费用 ${esc(c.cost)}</div></div>`).join("")||"无"}</div></div>`;
+    extra += `<div class="zone muted">牌库 ${side.pile_count} 张${side.declared_end?" · 已宣布结束":""}${side.legend_used?" · 秘传已用":""}</div>`;
+  } else {
+    extra += `<div class="zone muted">手牌 ${side.hand_count} 张（不可见） · 骰子 ${side.dice_count} 个（不可见） · 牌库 ${side.pile_count} 张${side.declared_end?" · 已宣布结束":""}</div>`;
+  }
+  return `<div class="side"><h3>${esc(title)}</h3><div class="chars">${chars}</div>${extra}</div>`;
+}
+function boardHtml(state, pick){
+  if (!state) return `<div class="muted">还没有可显示的局面。</div>`;
+  return `<div class="muted" style="margin-bottom:6px">第 ${state.round} 回合 · ${esc(state.phase)} · ${state.my_turn?"轮到本视角行动":"对方行动中"}</div>`
+    + sideHtml(state.opponent, "对方（"+(1-state.seat)+" 号位）", false) + sideHtml(state.me, "本视角（"+state.seat+" 号位）", true, pick);
+}
+function detailHtml(d){
+  if (!d) return "";
+  let h = "";
+  if (d.kind === "llm"){
+    h += `<div class="kv"><span>来源</span><span>${d.source==="llm"?"模型回复":d.source==="forced"?"唯一选项":"回退策略"}${d.error?` <span class="warn">（${esc(d.error)}）</span>`:""}</span>
+      <span>模型</span><span>${esc(d.profile)} ${esc(d.model||"")}</span><span>理由</span><span>${esc(d.reason||"—")}</span>
+      <span>耗时</span><span>${d.latency_seconds}s · ${d.calls} 次调用</span>
+      <span>Token</span><span>${d.prompt_tokens} + ${d.completion_tokens}${d.cost==null?"":" · 成本 "+d.cost}</span></div>`;
+    const items = (d.knowledge && d.knowledge.items) || [];
+    if (items.length) h += `<h3>注入的知识（${esc(d.knowledge.profile)}，知识库 ${esc(d.knowledge.kb_version||"?")}）</h3>` + items.map(k =>
+      `<div><span class="tag">${k.kind==="rule"||k.kind==="custom_rule"?"规则":k.kind==="expert_example"?"专家示例":"策略观点"}</span>${esc(k.id)} ${esc(k.title)} <span class="muted">${esc(k.trust)}</span></div>`).join("");
+    if (d.knowledge && d.knowledge.warnings && d.knowledge.warnings.length) h += `<div class="warn">${d.knowledge.warnings.map(esc).join("<br>")}</div>`;
+    if (d.raw) h += `<details><summary>模型原始回复</summary><pre>${esc(d.raw)}</pre></details>`;
+  } else if (d.kind === "neural"){
+    h += `<div class="kv"><span>价值估计</span><span>${d.value ?? "—"}</span></div><h3>策略分布（前 ${ (d.top||[]).length } 项）</h3>`
+      + (d.top||[]).map(t => `<div class="prob"><div>${esc(t.text)}<i style="width:${Math.round(100*t.prob)}%"></i></div><div>${(100*t.prob).toFixed(1)}%</div></div>`).join("");
+  } else if (d.kind === "llm_assist"){
+    h += `<div class="kv"><span>模型介入</span><span>${d.called?"是":"否"}${d.changed?"（改变了基础策略的选择）":""}</span><span>理由</span><span>${esc(d.reason||"—")}</span></div>`;
+  } else if (d.kind === "scripted"){ h += `<div class="muted">脚本/启发式策略，没有可展示的内部信息。</div>`; }
+  if (d.policy_error) h += `<div class="bad">策略异常：${esc(d.policy_error)}</div>`;
+  return h;
+}
+
+/* ---------------- live play ---------------- */
+function openLive(id){
+  Object.assign(S, {id, since:0, events:[], pending:null, status:"running", spec:null, viewer:null, views:{}, selected:null, pick:new Set(), chat:[]});
+  $("#play-empty").hidden = true; $("#play-body").hidden = false; $("#chat-list").innerHTML = "";
+  // drop everything the previous session left on screen before the first poll returns
+  $("#play-banner").textContent = "正在载入对局 " + id + " …"; $("#board").innerHTML = ""; $("#log").innerHTML = "";
+  $("#action-body").innerHTML = `<span class="muted">等待中…</span>`; $("#tab-decision").innerHTML = "";
+  show("play");
+  if (!S.polling) poll();
+}
+async function poll(){
+  S.polling = true;
+  while (S.id){
+    const id = S.id;
+    try {
+      const data = await api(`/api/sessions/${id}/events?since=${S.since}&wait=15` + (S.viewer==="all" ? `&view=all` : ""));
+      if (id !== S.id) continue;
+      S.status = data.status; S.spec = data.spec; S.viewer = data.viewer; S.pending = data.pending; S.result = data.result;
+      for (const e of data.events){
+        S.since = Math.max(S.since, e.n); S.events.push(e);
+        if (e.type === "state") S.views[e.seat] = e.state;
+        if ((e.type === "request" || e.type === "proposal" || e.type === "decision") && e.state) S.views[e.seat] = e.state;
+        if (e.type === "chat") S.chat.push(e);
+        if (e.type === "end") S.result = e;
+      }
+      renderLive();
+      if (data.status !== "running") break;
+    } catch (e) { $("#status").textContent = "连接中断：" + e.message; await new Promise(r => setTimeout(r, 1500)); }
+  }
+  S.polling = false;
+}
+function perspective(){
+  if (S.viewer === "all") return Number($("#perspective").value);
+  return S.viewer;
+}
+function renderLive(){
+  if (!S.spec) return;
+  const seats = S.spec.seats.map((s,i) => `${i} 号位 ${esc(i===0?S.spec.deck0:S.spec.deck1)}：${s.kind==="human"?"人类":esc(s.policy)}`).join(" ｜ ");
+  let banner = `<b>${S.spec.mode==="ai_vs_ai"?"AI 对 AI":"人机对战"}</b> · 种子 ${S.spec.seed} · ${seats}`;
+  if (S.spec.reveal && S.spec.mode!=="ai_vs_ai") banner += ` · <span class="warn">明牌局（不计入示范导出）</span>`;
+  const end = S.events.find(e => e.type === "end");
+  const err = S.events.find(e => e.type === "error");
+  if (end) banner += `<br><b>${end.error ? "对局中止："+esc(end.error) : (end.winner==null ? "平局/双负" : end.winner+" 号位获胜")}</b> · ${end.rounds} 回合 · ${end.wall_seconds}s
+     <button class="btn small" id="to-review">进入回放</button>
+     <span style="margin-left:8px">整局评价 <select id="game-rating" style="width:auto"><option value="0">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+     <input id="game-comment" type="text" placeholder="评语" style="width:200px"><button class="btn small" id="game-fb">保存</button></span>`;
+  if (err) banner += `<br><span class="bad">${esc(err.message)}</span>`;
+  $("#play-banner").innerHTML = banner;
+  if (end){ $("#to-review").onclick = () => { show("review"); openReview(S.id); };
+    $("#game-fb").onclick = async () => { await api(`/api/sessions/${S.id}/feedback`, {scope:"game", rating:Number($("#game-rating").value), comment:$("#game-comment").value}); $("#game-fb").textContent = "已保存"; }; }
+  $("#perspective-row").hidden = S.viewer !== "all";
+  const p = S.pending;
+  if (p && S.viewer === "all") $("#perspective").value = String(p.seat);
+  const seat = perspective();
+  const pickMode = p && p.seat === seat ? (p.request_type === "reroll_dice" ? "dice" : p.request_type === "switch_hands" ? "hand" : null) : null;
+  $("#board-title").textContent = `局面（${seat} 号位视角）`;
+  $("#board").innerHTML = boardHtml(p && p.seat === seat ? p.state : S.views[seat], pickMode);
+  $$("#board [data-pos]").forEach(el => el.onclick = () => { const i = Number(el.dataset.pos); S.pick.has(i) ? S.pick.delete(i) : S.pick.add(i); renderLive(); });
+  renderAction(); renderLog(); renderDecision(); renderChat();
+  $("#status").textContent = S.status === "running" ? (p ? "等待输入" : "AI 思考/行动中…") : "对局已结束";
+}
+function act(body){ S.pick = new Set(); return api(`/api/sessions/${S.id}/act`, body).catch(e => { $("#status").textContent = e.message; }); }
+function renderAction(){
+  const p = S.pending, body = $("#action-body");
+  if (S.status !== "running"){ $("#action-title").textContent = "行动"; body.innerHTML = `<span class="muted">对局已结束。</span>`; return; }
+  if (!p){ $("#action-title").textContent = "行动"; body.innerHTML = `<span class="muted">等待对方行动…</span> <button class="btn small" id="quit">中止对局</button>`; $("#quit").onclick = () => act({cmd:"quit"}); return; }
+  const advice = [...S.events].reverse().find(e => e.type === "advice" && e.seat === p.seat && e.step === p.step);
+  if (p.type === "request"){
+    $("#action-title").textContent = `轮到你：${REQ[p.request_type]||p.request_type}（${p.seat} 号位）`;
+    let h = "";
+    if (p.request_type === "reroll_dice" || p.request_type === "switch_hands"){
+      const what = p.request_type === "reroll_dice" ? "骰子" : "手牌";
+      h += `<p>在上方局面里点选要${p.request_type==="reroll_dice"?"重掷":"替换"}的${what}（已选 ${S.pick.size} 个），然后确认。</p>
+        <div class="row"><button class="btn primary" id="confirm-pick">确认</button><button class="btn" id="clear-pick">清空选择</button></div>`;
+    } else {
+      h += `<div class="opts">` + p.options.map(o => `<button class="opt ${advice&&advice.index===o.index?"proposed":""}" data-i="${o.index}">${esc(o.text)}</button>`).join("") + `</div>`;
+    }
+    h += `<h3>辅助</h3><div class="row"><select id="advise-policy" style="width:auto">${META.policies.map(x=>`<option value="${esc(x.spec)}">${esc(x.label)}</option>`).join("")}${META.models.filter(m=>m.usable).map(m=>`<option value="llm:${esc(m.name)}">模型 ${esc(m.name)}</option>`).join("")}</select>
+      <button class="btn" id="advise">看它会怎么走</button><button class="btn" id="autopilot">交给它托管到终局</button><button class="btn" id="quit">中止对局</button></div>`;
+    if (advice) h += `<div class="banner" style="margin-top:8px">${esc(advice.policy)} 的建议：${advice.error?`<span class="bad">${esc(advice.error)}</span>`:`<b>${esc(advice.text)}</b>`}${detailHtml(advice.detail)}</div>`;
+    body.innerHTML = h;
+    $$("#action-body .opt").forEach(b => b.onclick = () => act({cmd:"act", index:Number(b.dataset.i)}));
+    if ($("#confirm-pick")){ $("#confirm-pick").onclick = () => act({cmd:"act", positions:[...S.pick]}); $("#clear-pick").onclick = () => { S.pick = new Set(); renderLive(); }; }
+    $("#advise").onclick = () => api(`/api/sessions/${S.id}/advise`, {policy:$("#advise-policy").value}).catch(e => $("#status").textContent = e.message);
+    $("#autopilot").onclick = () => act({cmd:"autopilot", policy:$("#advise-policy").value.replace("<deck>", p.seat===0?S.spec.deck0:S.spec.deck1)});
+    $("#quit").onclick = () => act({cmd:"quit"});
+  } else {
+    $("#action-title").textContent = `AI 提议（${p.seat} 号位 · ${esc(p.policy)}）：${REQ[p.request_type]||p.request_type}`;
+    const byPosition = p.request_type === "reroll_dice" || p.request_type === "switch_hands";
+    const head = `<div class="row" style="margin-bottom:8px"><button class="btn primary" id="approve">批准提议</button><button class="btn" id="approve-all">之后全部自动批准</button><button class="btn" id="quit">中止对局</button></div>`;
+    // reroll / switch-hands have one option per subset: override by picking positions instead of listing them all
+    body.innerHTML = head + (byPosition
+      ? `<div class="opt proposed">【提议】${esc(p.options[p.proposed].text)}</div>
+         <p class="muted">要改选：在上方局面里点选${p.request_type==="reroll_dice"?"要重掷的骰子":"要替换的手牌"}（已选 ${S.pick.size} 个），然后
+         <button class="btn small" id="override-pick">按所选改选</button>（记为人工纠正）。</p>`
+      : `<p class="muted">或直接点另一个选项来改选（记为人工纠正）。</p>
+         <div class="opts">` + p.options.map(o => `<button class="opt ${o.index===p.proposed?"proposed":""}" data-i="${o.index}">${o.index===p.proposed?"【提议】":""}${esc(o.text)}</button>`).join("") + `</div>`)
+      + detailHtml(p.detail);
+    $("#approve").onclick = () => act({cmd:"approve"}); $("#approve-all").onclick = () => act({cmd:"approve_all"}); $("#quit").onclick = () => act({cmd:"quit"});
+    if (byPosition) $("#override-pick").onclick = () => act({cmd:"override", positions:[...S.pick]});
+    $$("#action-body button.opt").forEach(b => b.onclick = () => act({cmd:"override", index:Number(b.dataset.i)}));
+  }
+}
+function decisionLine(e){ return `<span class="muted">${e.seat} 号位 · ${ACTOR[e.actor]||e.actor}</span> ${esc(e.text || e.public_text)}`; }
+function renderLog(){
+  const ds = S.events.filter(e => e.type === "decision");
+  $("#log").innerHTML = ds.map(e => `<div data-n="${e.n}" class="${S.selected===e.n?"sel":""}">${decisionLine(e)}</div>`).join("") || `<span class="muted">还没有决策。</span>`;
+  $$("#log div").forEach(d => d.onclick = () => { S.selected = Number(d.dataset.n); renderLog(); renderDecision(); });
+  $("#log").scrollTop = $("#log").scrollHeight;
+}
+function feedbackForm(e, prefix, viewParam){
+  const canCorrect = Array.isArray(e.options);
+  return `<h3>你的评价</h3><div class="row">
+      <button class="btn small" data-rate="1">认可</button><button class="btn small" data-rate="-1">不认可</button>
+      ${canCorrect ? `<select id="${prefix}-pref" style="flex:1"><option value="">（可选）更好的选项…</option>${e.options.map(o=>`<option value="${o.index}">${esc(o.text)}</option>`).join("")}</select>` : `<span class="muted" style="font-size:12px">对方的可选项在对局中不可见，纠正请到回放里做。</span>`}
+    </div><input id="${prefix}-comment" type="text" placeholder="评语（可选）" style="margin-top:6px"><div id="${prefix}-saved" class="good" style="font-size:12px"></div>`;
+}
+function bindFeedback(root, e, prefix, sid, view, after){
+  $$("[data-rate]", root).forEach(b => b.onclick = async () => {
+    const pref = $("#"+prefix+"-pref");
+    try {
+      await api(`/api/sessions/${sid}/feedback`, {seat:e.seat, step:e.step, rating:Number(b.dataset.rate), comment:$("#"+prefix+"-comment").value,
+        preferred_index: pref && pref.value !== "" ? Number(pref.value) : null, view});
+      $("#"+prefix+"-saved").textContent = "已保存"; if (after) after();
+    } catch (err) { $("#"+prefix+"-saved").innerHTML = `<span class="bad">${esc(err.message)}</span>`; }
+  });
+}
+function renderDecision(){
+  const ds = S.events.filter(e => e.type === "decision");
+  const e = ds.find(x => x.n === S.selected) || [...ds].reverse().find(x => x.actor !== "forced") || ds[ds.length-1];
+  const box = $("#tab-decision");
+  if (!e){ box.innerHTML = `<span class="muted">对局开始后，这里显示最近一次决策的细节。</span>`; return; }
+  let h = `<div class="kv"><span>座位</span><span>${e.seat} 号位 · ${ACTOR[e.actor]||e.actor}${e.policy&&e.actor!=="human"?" · "+esc(e.policy):""}</span>
+    <span>决策</span><span>${REQ[e.request_type]||e.request_type}（第 ${e.step} 步）</span><span>执行</span><span><b>${esc(e.text || e.public_text)}</b></span>`;
+  if (e.proposed) h += `<span>AI 原提议</span><span class="warn">${esc(e.proposed.text)}</span>`;
+  h += `</div>` + detailHtml(e.detail) + feedbackForm(e, "fb", null);
+  box.innerHTML = h; bindFeedback(box, e, "fb", S.id, undefined);
+}
+function renderChat(){
+  $("#chat-list").innerHTML = S.chat.map(c => `<div class="q">问（第 ${c.step} 步 · ${esc(c.profile)} · 知识 ${esc(c.kb)}）：${esc(c.question)}</div>
+    <div class="a">${c.error?`<span class="bad">${esc(c.error)}</span>`:esc(c.answer)}</div>`).join("");
+}
+$("#chat-send").onclick = async () => {
+  $("#chat-error").textContent = "";
+  try { await api(`/api/sessions/${S.id}/discuss`, {question:$("#chat-q").value, profile:$("#chat-model").value, kb:$("#chat-kb").value==="none"?null:$("#chat-kb").value,
+          history:S.chat.filter(c=>c.answer).slice(-3).flatMap(c=>[{role:"user",content:c.question},{role:"assistant",content:c.answer}])}); $("#chat-q").value = ""; }
+  catch (e) { $("#chat-error").textContent = e.message; }
+};
+$("#perspective").onchange = renderLive;
+
+/* ---------------- review ---------------- */
+async function loadSessions(){
+  const data = await api("/api/sessions");
+  $("#sessions").innerHTML = data.sessions.length ? `<table><tr><th></th><th>对局</th><th>模式</th><th>牌组</th><th>座位</th><th>种子</th><th>结果</th><th></th></tr>` + data.sessions.map(m => {
+    const s = m.spec, r = m.result || {};
+    const result = m.status === "running" ? "进行中" : r.error ? "中止" : r.winner == null ? "无胜者" : r.winner + " 号位胜";
+    return `<tr class="${R.id===m.id?"sel":""}"><td><input type="checkbox" data-sid="${esc(m.id)}" aria-label="选择 ${esc(m.id)}"></td><td>${esc(m.id)}${m.information_clean===false?' <span class="tag warn">明牌</span>':""}</td><td>${s.mode==="ai_vs_ai"?"AI 对 AI":"人机"}</td>
+      <td>${esc(s.deck0)} / ${esc(s.deck1)}</td><td>${s.seats.map(x=>x.kind==="human"?"人类":esc(x.policy)).join(" / ")}</td><td>${s.seed}</td><td>${result}${r.rounds?" · "+r.rounds+" 回合":""}</td>
+      <td>${m.status==="running"?`<button class="btn small" data-live="${esc(m.id)}">继续</button>`:`<button class="btn small" data-open="${esc(m.id)}">回放</button>`}</td></tr>`; }).join("") + `</table>`
+    : `<span class="muted">还没有保存的对局。</span>`;
+  $$("#sessions [data-open]").forEach(b => b.onclick = () => openReview(b.dataset.open));
+  $$("#sessions [data-live]").forEach(b => b.onclick = () => openLive(b.dataset.live));
+}
+$("#refresh-sessions").onclick = loadSessions;
+async function doExport(kind){
+  const sessions = $$("#sessions input:checked").map(x => x.dataset.sid);
+  const out = $("#export-out"); out.hidden = false;
+  try {
+    const rep = await api("/api/export", {kind, sessions, name:$("#export-name").value, seats:$("#export-seats").value});
+    out.textContent = kind === "bc"
+      ? `已写入 ${rep.path}\n${rep.games} 局 / ${rep.samples} 个样本` + (rep.skipped.length ? `\n跳过：${rep.skipped.map(s=>s.session+"（"+s.reason+"）").join("；")}` : "")
+        + `\n\n接下来：\npython -m scripts.datafirst_bc_store --replays ${rep.path} --store-cache <store.pt> --seed-start 1\npython -m scripts.datafirst_bc_train --store-cache <store.pt> --out <ckpt.pt>`
+      : `已写入 ${rep.path}\n${rep.records} 条记录：${JSON.stringify(rep.by_kind)}\n\n用法：python -m scripts.datafirst_bc_train … --supervision ${rep.path} --distill-coef 1.0 --distill-target human`;
+  } catch (e) { out.textContent = "导出失败：" + e.message; }
+}
+$("#export-bc").onclick = () => doExport("bc");
+$("#export-sup").onclick = () => doExport("supervision");
+async function openReview(id){
+  R.id = id; await loadReview(); loadSessions();
+}
+async function loadReview(){
+  const view = $("#rv-view").value;
+  R.data = await api(`/api/sessions/${R.id}/review?view=${view}`);
+  R.decisions = R.data.events.filter(e => e.type === "decision");
+  R.pos = Math.min(R.pos, Math.max(0, R.decisions.length - 1));
+  $("#review-body").hidden = false; renderReview();
+}
+function renderReview(){
+  const m = R.data.meta, s = m.spec, r = m.result || {};
+  const calls = Object.entries(R.data.calls).map(([k,v]) => `${esc(k)}：${v.calls} 次，${v.prompt_tokens}+${v.completion_tokens} token，${v.seconds}s${v.cost_known?"，成本 "+v.cost:""}${v.errors?`，<span class="bad">${v.errors} 次失败</span>`:""}`).join("；");
+  $("#review-banner").innerHTML = `<b>${esc(m.id)}</b> · ${esc(s.deck0)} 对 ${esc(s.deck1)} · 种子 ${s.seed} · ${r.error?"中止："+esc(r.error):(r.winner==null?"无胜者":r.winner+" 号位胜")}
+    ${(r.seats||[]).map((x,i)=>`<br>${i} 号位 ${esc(x.policy)}：${x.decisions} 次决策${x.fallbacks?"，"+x.fallbacks+" 次引擎回退":""}${x.llm?`，模型作答率 ${x.llm.llm_rate==null?"—":(100*x.llm.llm_rate).toFixed(0)+"%"}`:""}`).join("")}
+    ${calls?"<br>模型调用 · "+calls:""}`;
+  const view = $("#rv-view").value;
+  $("#rv-log").innerHTML = R.decisions.map((e,i) => {
+    const fb = R.data.feedback.filter(f => f.seat===e.seat && f.step===e.step);
+    return `<div data-i="${i}" class="${i===R.pos?"sel":""}">${i+1}. ${decisionLine(e)}${e.actor==="override"?' <span class="tag warn">改选</span>':""}${fb.length?' <span class="tag">已评</span>':""}</div>`; }).join("");
+  $$("#rv-log div").forEach(d => d.onclick = () => { R.pos = Number(d.dataset.i); renderReview(); });
+  const e = R.decisions[R.pos];
+  $("#rv-pos").textContent = R.decisions.length ? `${R.pos+1} / ${R.decisions.length}` : "没有决策";
+  if (!e){ $("#rv-board").innerHTML = ""; $("#rv-options").innerHTML = ""; $("#rv-detail").innerHTML = ""; return; }
+  // the board at this decision: the acting seat's own view when visible, else the viewer's last known view
+  let state = e.state;
+  if (!state){ for (let i = R.pos; i >= 0 && !state; i--) if (R.decisions[i].state && String(R.decisions[i].seat) === view) state = R.decisions[i].state; }
+  $("#rv-board").innerHTML = boardHtml(state);
+  const fbs = R.data.feedback.filter(f => f.seat===e.seat && f.step===e.step);
+  const pref = fbs.map(f => f.preferred_index).filter(x => x != null).pop();
+  $("#rv-options").innerHTML = e.options ? e.options.map(o => `<div class="opt ${o.index===e.index?"played":""} ${e.proposed&&o.index===e.proposed.index?"proposed":""} ${o.index===pref?"preferred":""}">${o.index===e.index?"【执行】":""}${e.proposed&&o.index===e.proposed.index?"【AI 原提议】":""}${o.index===pref?"【人工认为更好】":""}${esc(o.text)}</div>`).join("")
+    : `<span class="muted">这是 ${e.seat} 号位的决策；当前视角看不到它的可选项（公开信息：${esc(e.public_text)}）。</span>`;
+  let h = `<div class="kv"><span>座位</span><span>${e.seat} 号位 · ${ACTOR[e.actor]||e.actor}${e.policy?" · "+esc(e.policy):""}</span><span>决策</span><span>${REQ[e.request_type]||e.request_type}（第 ${e.step} 步）</span><span>执行</span><span><b>${esc(e.text||e.public_text)}</b></span></div>` + detailHtml(e.detail);
+  if (fbs.length) h += `<h3>已有评价</h3>` + fbs.map(f => `<div>${f.rating>0?"认可":f.rating<0?"不认可":"—"}${f.preferred_index!=null?` · 更好：${esc(e.options?e.options[f.preferred_index].text:"#"+f.preferred_index)}`:""}${f.comment?" · "+esc(f.comment):""} <span class="muted">${f.information_clean?"信息干净":"非信息干净"}</span></div>`).join("");
+  const chats = R.data.chat.filter(c => c.seat===e.seat && c.step===e.step);
+  if (chats.length) h += `<h3>当时的讨论</h3><div class="chat">` + chats.map(c => `<div class="q">${esc(c.question)}</div><div class="a">${esc(c.answer||c.error)}</div>`).join("") + `</div>`;
+  h += feedbackForm(e, "rfb", view);
+  $("#rv-detail").innerHTML = h; bindFeedback($("#rv-detail"), e, "rfb", R.id, view, loadReview);
+}
+$("#rv-prev").onclick = () => { R.pos = Math.max(0, R.pos-1); renderReview(); };
+$("#rv-next").onclick = () => { R.pos = Math.min(R.decisions.length-1, R.pos+1); renderReview(); };
+$("#rv-view").onchange = loadReview;
+$("#cmp-run").onclick = async () => {
+  const out = $("#cmp-out"); out.innerHTML = `<span class="muted">重放并询问中…</span>`;
+  try {
+    const seat = Number($("#cmp-seat").value);
+    const rep = await api(`/api/sessions/${R.id}/compare`, {policies:$("#cmp-specs").value.trim().split(/\s+/).filter(Boolean), seat});
+    const names = Object.keys(rep.policies);
+    out.innerHTML = `<div>` + names.map(n => `<span class="tag">${esc(n)}：与实际一致 ${rep.policies[n].agree_with_played==null?"—":(100*rep.policies[n].agree_with_played).toFixed(1)+"%"}（${rep.policies[n].decisions} 步）</span>`).join("")
+      + rep.pairwise.map(p => `<span class="tag">${esc(p.a)} ↔ ${esc(p.b)}：${p.agree==null?"—":(100*p.agree).toFixed(1)+"%"}</span>`).join("") + `</div>
+      <table style="margin-top:6px"><tr><th>步</th><th>实际执行</th>${names.map(n=>`<th>${esc(n)}</th>`).join("")}</tr>` + rep.rows.map(r =>
+        `<tr><td>${r.step}</td><td>${esc(r.played_text)}</td>${names.map(n => { const c = r.choices[n]; return `<td class="${c&&c.index===r.played?"":"warn"}">${c?esc(c.text):"—"}</td>`; }).join("")}</tr>`).join("") + `</table>`;
+  } catch (e) { out.innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
+};
+loadMeta().catch(e => { $("#new-error").textContent = "无法读取配置：" + e.message; });
+</script>
+</body>
+</html>

@@ -178,7 +178,9 @@ def build_policy(spec: str, *, seed: int, role: str) -> Policy:
     reproduces the same agents (M0 replay consistency).
 
     Specs: ``expert:<slug>`` | ``neural:<checkpoint>[#t=<temp>]`` | ``heuristic``
-    | ``legal_random`` | ``random``. The ``neural`` spec loads the CVPN from a
+    | ``legal_random`` | ``random`` | ``llm:<model profile>[#kb=...,fallback=...]``
+    | ``llm-assist:<model profile>#base=<spec>`` (``agents.llm_policy``; never part
+    of strength acceptance). The ``neural`` spec loads the CVPN from a
     checkpoint (with the encoder config saved beside it) so a trained checkpoint
     can run through rollout / arena / collectors like any scripted opponent.
     """
@@ -199,5 +201,15 @@ def build_policy(spec: str, *, seed: int, role: str) -> Policy:
         )
     if spec == "random":
         return RandomPolicy(seed=derive_seed(seed, role, "random"))
+    # 2026-11 (D29): model-API players. Imported lazily so the pure-policy paths
+    # (rollout / arena / collectors) keep their import footprint.
+    if spec.startswith("llm:"):
+        from agents.llm_policy import build_llm_policy
+
+        return build_llm_policy(spec.split(":", 1)[1], seed=seed, role=role)
+    if spec.startswith("llm-assist:"):
+        from agents.llm_policy import build_llm_assist_from_spec
+
+        return build_llm_assist_from_spec(spec.split(":", 1)[1], seed=seed, role=role)
     raise KeyError(f"unknown policy spec: {spec!r}")
 

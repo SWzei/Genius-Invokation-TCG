@@ -24,6 +24,13 @@ Target modes (:class:`TargetSpec`) keep the evidence classes apart:
   information-legal evidence record, gate or not. A raw ``search_estimate`` used
   as a soft label; provided for ablation, not a verified target.
 
+* ``human``          -- (D29) a person's override or correction recorded by the lab
+  (``DecisionSupervision.human``): one-hot on the option they preferred. An
+  **unverified opinion**, kept apart from ``evidence_gated``; signals given while
+  the person could see hidden information are skipped unless
+  ``require_information_legal`` is off. Demonstrations and bare ratings yield no
+  target here (a demonstration is already the BC label of its own corpus).
+
 Knowledge-unit annotations (``DecisionSupervision.knowledge``) are deliberately
 *not* turned into targets here: a strategy unit's recommendation is unverified
 text and has no defined mapping to an option distribution in this code base.
@@ -43,7 +50,7 @@ import torch
 
 from reps.strategy import DecisionSupervision, reliability, verdict
 
-MODES = ("expert", "evidence_gated", "evidence_soft")
+MODES = ("expert", "evidence_gated", "evidence_soft", "human")
 WEIGHTINGS = ("uniform", "reliability")
 
 
@@ -83,6 +90,16 @@ def target_for(record: DecisionSupervision, spec: TargetSpec) -> DecisionTarget 
 
     if spec.mode == "expert":
         return DecisionTarget(one_hot(record.expert_index), 1.0, "expert_action")
+
+    if spec.mode == "human":
+        human = record.human
+        if human is None or human.kind not in ("override", "correction"):
+            return None
+        if spec.require_information_legal and not human.information_clean:
+            return None
+        if human.preferred_index is None or not 0 <= int(human.preferred_index) < n:
+            return None
+        return DecisionTarget(one_hot(int(human.preferred_index)), 1.0, f"human_preference:{human.kind}")
 
     evidence = record.evidence
     if evidence is None:

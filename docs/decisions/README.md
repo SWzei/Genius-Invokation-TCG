@@ -32,9 +32,10 @@
 | D26 | 搜索因果限定/价值语义 | **current** | 修 cfr_probe/dice；搜索重开需门禁 |
 | D27 | 2026-11 审查：座位/对手骰数/H5 | **current** | H5 改判 invalid；v1s/v2 特征档 opt-in；`--sides`；按座位报分 |
 | D28 | MASD-ADM / VCSD 兼容层 | **current** | 监督记录契约；信息合法证据；蒸馏挂钩默认关；知识只作标注；belief 根两处保真修复；种子 0 退化 |
+| D29 | 实验平台：模型接入 / 知识配置 / 人机闭环 | **current** | 模型档案与三种协议；LLM 完整对局策略；知识分块注入；`lab/` 实验台；人工信号进监督记录；不进强度验收 |
 
 ## 使用
 
-- 写新决策：在 `PLAN.md §0` 追加 D29…，再在本表加一行。
+- 写新决策：在 `PLAN.md §0` 追加 D30…，再在本表加一行。
 - 改验收口径：必须同时更新 `docs/EVAL_PROTOCOL.md` 与 `docs/STATUS.md`。
 - 旧决策被推翻：标 `superseded`/`limited` 并链接新决策，不改原文。

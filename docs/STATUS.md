@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11-11 审查增补 D27、MASD-ADM 兼容层 D28）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -53,6 +53,21 @@
 | 蒸馏臂强度 | ✗ 未认证（最小闭环只验证连通性） | `reports/review/2026-11_masd_adm_compat.md` §5 |
 
 用法与边界：`docs/howto/masd-adm.md`。
+
+## 3c. 实验平台（D29，2026-11-12）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 模型档案与三种协议（OpenAI 兼容 / Anthropic / Gemini）、重试、预算、调用日志 | ✅ 已实现；对本地仿真服务测试 | `common/llm_providers.py`、`tests/test_llm_providers.py` |
+| 真实模型接口 | ✗ 未调用（无密钥） | 用 `scripts.llm_smoke` 自检 |
+| LLM 完整对局策略（合法性 / 回退 / 留痕） | ✅ 已实现并测试（离线模型整局对战） | `agents/llm_policy.py`、`tests/test_llm_platform.py` |
+| 知识配置（规则 / 策略 / 专家示例 / 自定义，分块、溯源、版本告警） | ✅ 已实现并测试 | `reps/knowledge_pack.py` |
+| 知识注入对强度的影响 | ✗ 未测量 | 工具：`scripts.llm_arena` |
+| Web 实验台（人机 / AI 对 AI / 干预 / 建议 / 讨论 / 评价 / 回放 / 对比 / 导出） | ✅ 已实现；API 测试 + 浏览器端到端 | `lab/`、`tests/test_lab.py` |
+| 人工数据 → BC 语料 / 监督记录 / `--distill-target human` | ✅ 已实现并测试（导出 → 建 store → 训练 1 轮） | `lab/replay.py`、`lab/export.py` |
+| 人工纠正的反事实校验 | ◐ 已实现，1 项慢测；未做规模化实验 | `lab/verify.py` |
+
+用法与限制：`docs/howto/lab.md`。实验台与 LLM 玩家不进强度验收。
 
 ## 4. 当前排产
 

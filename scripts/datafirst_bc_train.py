@@ -122,11 +122,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--distill-coef", type=float, default=0.0,
                    help="weight of the KL term to the strategy targets (0 = off, the default; "
                         "the run is then identical to one without --supervision)")
-    p.add_argument("--distill-target", choices=["expert", "evidence_gated", "evidence_soft"],
+    p.add_argument("--distill-target", choices=["expert", "evidence_gated", "evidence_soft", "human"],
                    default="evidence_gated",
                    help="expert = one-hot expert action (plumbing check); evidence_gated = only "
                         "decisions whose evidence passes the sign-test gate; evidence_soft = "
-                        "softmax of raw rollout means (ungated search estimate, ablation)")
+                        "softmax of raw rollout means (ungated search estimate, ablation); human = "
+                        "a person's overrides / corrections from the lab (unverified preference)")
     p.add_argument("--distill-weighting", choices=["uniform", "reliability"], default="reliability")
     p.add_argument("--distill-alpha", type=float, default=0.05, help="gate level for evidence_gated")
     p.add_argument("--distill-min-pairs", type=int, default=8, help="paired rollouts the gate requires")

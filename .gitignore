@@ -34,3 +34,6 @@ refs/
 
 # 引擎构建工作区（D20：refs 副本 + V8 workspace + .so，内容不入库）
 build/
+
+# 个人模型/知识档案（可含内网地址；密钥永远只放环境变量或 .env）
+configs/*.local.toml

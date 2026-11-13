@@ -3,6 +3,9 @@
 本目录放 **Web 人机调试界面** 的 Python 侧最小服务，配合
 `engine-overlay/overlay/packages/standalone/` 的浏览器端改动使用。
 
+> 2026-11（D29）：零构建、引擎跑在 Python 里的实验台在 `lab/`（`docs/howto/lab.md`）；
+> 本目录的桥接服务照旧，`--policy` 现在也接受 `llm:<模型档案>` spec。
+
 ## `ai_rpc_server.py`
 
 纯标准库（`http.server`）实现，把引擎的 `PlayerIO` RPC 用 HTTP 暴露给浏览器：

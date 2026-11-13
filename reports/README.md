@@ -9,6 +9,8 @@
 | 文件 | 内容 | 状态 |
 |---|---|---|
 | [`review/2026-11_technical_review.md`](./review/2026-11_technical_review.md) | 2026-11 技术审查：H5 分组 bug、对手骰数、座位覆盖（D27）+ 座位探针结果 | valid |
+| [`review/2026-11_masd_adm_compat.md`](./review/2026-11_masd_adm_compat.md) | MASD-ADM / VCSD 兼容层（D28）：接口、最小闭环、未证明性能收益 | valid |
+| [`review/2026-11_lab_platform.md`](./review/2026-11_lab_platform.md) | 实验平台（D29）：模型接入、知识配置、人机实验闭环；真实 API 未调用 | valid |
 | [`EXPLOIT_LADDER.md`](./EXPLOIT_LADDER.md) | 逐 deck PG 剥削阶梯：dgeo 0.880 / ungeo 0.909 | valid |
 | [`SPECIALISTS.md`](./SPECIALISTS.md) | 19 个 deck 的认证最优臂（自动生成） | generated |
 | [`explore/p0_parity_20261027.md`](./explore/p0_parity_20261027.md) | P0 parity / exact id / 干净语料 / A2 复核 | valid |

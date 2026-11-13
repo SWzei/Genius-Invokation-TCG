@@ -146,8 +146,15 @@ class ContextDescriber:
             subject = f"switch to {self._char_name(spec.subject_definition_id)}"
         elif kind == OptionKind.ACTION_ELEMENTAL_TUNING:
             subject = f"tune {self._card_name(spec.subject_definition_id)}"
-        else:
+        elif kind == OptionKind.ACTION_DECLARE_END:
             subject = "declare end"
+        else:
+            # 2026-11 (D29): choose-active / reroll / switch-hands / select-card
+            # options used to fall through to "declare end". Their wording lives in
+            # ``reps.describe``.
+            from reps.describe import DecisionDescriber
+
+            return f"[{index}] {DecisionDescriber().option(context, spec, index)['text']}"
         targets = ", ".join(
             f"{t.owner}:{t.zone}[{t.index}]" for t in spec.target_slots
         )

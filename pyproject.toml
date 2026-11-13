@@ -29,6 +29,7 @@ packages = [
     "train",
     "scripts",
     "npc",
+    "lab",
 ]
 
 [tool.pytest.ini_options]

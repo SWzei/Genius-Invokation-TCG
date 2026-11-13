@@ -1,0 +1,69 @@
+# 模型档案（D29）。本文件不含任何密钥：api_key_env 只写“环境变量名”，
+# 密钥放在进程环境或仓库根目录的 .env（已在 .gitignore 内）。
+# 个人改动写到 configs/models.local.toml（不入库）或 $GITCG_MODELS_CONFIG 指向的文件，同名档案覆盖本文件。
+#
+# 内置档案（无需配置）：mock / mock:first / mock:last / mock:random / mock:invalid / mock:error
+#   —— 离线占位模型，用来联调与测试，不调用任何 API。
+# 用法：策略 spec `llm:<档案名>`；临时换模型 `llm:<档案名>#model=<模型 id>`。
+#
+# 字段：provider（决定协议、默认地址与密钥变量名）、model（必填，以服务商当前文档为准）、
+#   temperature（写 "none" 表示不发送该参数）、max_tokens、max_tokens_param、timeout、retries、
+#   json_mode、extra_body（原样并入请求体，如推理强度）、price_in / price_out（每百万 token 价格，
+#   自行填写后才会统计成本）、[profiles.<名>.budget] max_calls / max_tokens / max_cost。
+# provider 可选：openai | anthropic(claude) | gemini | gemini-native | deepseek | glm(zhipu)
+#   | openai-compatible（自建/本地/网关，需写 base_url）| mock
+
+[profiles.deepseek-chat]
+provider = "deepseek"            # DEEPSEEK_API_KEY
+model = "deepseek-chat"
+temperature = 0.0
+max_tokens = 512
+
+[profiles.claude-haiku]
+provider = "anthropic"           # ANTHROPIC_API_KEY
+model = "claude-haiku-5-5"
+temperature = 0.0
+max_tokens = 512
+
+[profiles.claude-sonnet]
+provider = "anthropic"
+model = "claude-sonnet-5-5"
+temperature = 0.0
+max_tokens = 512
+
+# 以下三家的模型 id 更新频繁：取消注释并按服务商当前文档填写 model。
+#
+# [profiles.openai]
+# provider = "openai"            # OPENAI_API_KEY
+# model = "<模型 id>"
+# max_tokens_param = "max_completion_tokens"   # 新模型用这个参数名；写错时客户端会自动改用一次
+# temperature = "none"           # 推理类模型不接受 temperature 时这样写
+# max_tokens = 1024
+#
+# [profiles.gemini]
+# provider = "gemini"            # GEMINI_API_KEY 或 GOOGLE_API_KEY；走官方 OpenAI 兼容端点
+# model = "<模型 id>"            # 原生 generateContent 协议用 provider = "gemini-native"
+# max_tokens = 1024
+#
+# [profiles.glm]
+# provider = "glm"               # ZAI_API_KEY 或 ZHIPUAI_API_KEY；temperature 会被钳到 >= 0.01
+# model = "<模型 id>"
+# max_tokens = 512
+#
+# [profiles.local]
+# provider = "openai-compatible" # vLLM / Ollama / LM Studio / 自建网关
+# base_url = "http://127.0.0.1:8000/v1"
+# model = "<模型名>"
+# api_key_env = ""               # 不需要密钥；需要时写变量名
+# json_mode = false              # 服务不支持 response_format 时关闭
+#
+# 带预算与成本统计的例子：
+# [profiles.deepseek-budget]
+# provider = "deepseek"
+# model = "deepseek-chat"
+# price_in = 0.0                 # 每百万输入 token 的价格（自行填写）
+# price_out = 0.0
+# currency = "CNY"
+# [profiles.deepseek-budget.budget]
+# max_calls = 300
+# max_cost = 5.0

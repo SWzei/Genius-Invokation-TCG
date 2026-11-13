@@ -5,6 +5,13 @@
 ResolvingAgent（纯策略模式，G1 验收口径）、llm_assist（LLM 辅助模式：候选校验/重排/兜底，延迟预算内，干预全量记录）、
 脚本对手适配层。客户端强制降级链：本地 LLM → API → 纯策略。
 
+## 2026-11 增补（D29）
+
+- `llm_policy.py`：LLM 完整对局策略，spec `llm:<模型档案>[#kb=<知识档案>,fallback=…,budget=…]`；
+  `llm-assist:<模型档案>#base=<spec>` 让旧的重排模式走新客户端。配置与保证见 `docs/howto/lab.md §2`。
+- `llm_assist.py` 的 `ContextDescriber.describe_candidate` 以前把选人 / 重掷 / 换牌 / 挑牌选项都写成
+  "declare end"，已修；完整的局面与选项文本在 `reps/describe.py`。
+
 ## 历史实现（2026-10-07；当前接口以代码为准）
 
 - `scripted/`：从 `refs/Rebel_base_RL/.../gitcg_expert_system` 逐模块移植的脚本对手

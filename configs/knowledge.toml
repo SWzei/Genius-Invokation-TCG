@@ -1,0 +1,34 @@
+# 知识配置档案（D29）。决定哪些知识可以进入模型的提示词；`none`（不注入）为内置档案。
+# 知识库位置：环境变量 GITCG_KB_DIR，或在档案里写 kb_root。
+# 个人改动写到 configs/knowledge.local.toml（不入库）或 $GITCG_KNOWLEDGE_CONFIG。
+# 用法：策略 spec `llm:<模型档案>#kb=<本文件的档案名>`。
+#
+# 四类来源在提示词里分块标注，互不混用：
+#   rules            规则知识库条目 —— 事实；默认只收证据含「官方」或「引擎」的条目
+#   strategy         策略知识库单元 —— 观点（未经验证），附知识库自带的置信度
+#   expert_examples  脚本专家的决策记录（supervision.jsonl）—— 行为，不保证最优
+#   custom           自定义 Markdown/TXT；文件头必须声明 kind: rule 或 kind: strategy，否则拒收
+
+[profiles.rules]
+rules = true
+
+[profiles.strategy]
+strategy = true
+
+[profiles.rules-strategy]
+rules = true
+strategy = true
+
+# 只用高置信度策略单元的例子：
+# [profiles.rules-strategy-high]
+# rules = true
+# strategy = true
+# strategy_confidence = ["高", "中–高"]
+#
+# 加专家对局示例与自定义资料的例子：
+# [profiles.full]
+# rules = true
+# strategy = true
+# expert_examples = ["data/evidence/<tag>/supervision.jsonl"]
+# custom = ["data/knowledge/custom"]
+# max_chars = 4000

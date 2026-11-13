@@ -42,6 +42,11 @@ class EvidenceKind(str, Enum):
     EXPERT_ACTION = "expert_action"
     LANGUAGE_STRATEGY = "language_strategy"
     SEARCH_ESTIMATE = "search_estimate"
+    # 2026-11 (D29): what a person did or said they prefer. A demonstration is an
+    # action label like ``expert_action``; a preference is an unverified opinion
+    # until counterfactual evidence backs it.
+    HUMAN_DEMONSTRATION = "human_demonstration"
+    HUMAN_PREFERENCE = "human_preference"
 
 
 @dataclass(frozen=True)
@@ -336,6 +341,54 @@ def verdict(
     return Verdict("inconclusive", base, closest, reliability(closest))
 
 
+HUMAN_KINDS = ("demonstration", "override", "correction", "rating")
+
+
+@dataclass(frozen=True)
+class HumanSignal:
+    """A person's input on one decision (``lab``).
+
+    * ``demonstration`` -- the person played this decision (``preferred_index`` is
+      what they played);
+    * ``override``      -- the person replaced a policy's proposal before it was
+      played (``rejected_index`` is the proposal);
+    * ``correction``    -- after the fact, the person marked another option as
+      better than the one played (``rejected_index`` is the played one);
+    * ``rating``        -- a verdict on the played action only (``rating`` -1/0/+1).
+    """
+
+    kind: str
+    preferred_index: int | None = None
+    rejected_index: int | None = None
+    rating: int = 0
+    comment: str = ""
+    annotator: str = ""
+    # False when the person could see hidden information while deciding.
+    information_clean: bool = True
+
+    def __post_init__(self) -> None:
+        if self.kind not in HUMAN_KINDS:
+            raise ValueError(f"unknown human signal kind {self.kind!r} (expected one of {HUMAN_KINDS})")
+
+    @property
+    def evidence_kind(self) -> str:
+        return (EvidenceKind.HUMAN_DEMONSTRATION if self.kind == "demonstration"
+                else EvidenceKind.HUMAN_PREFERENCE).value
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"kind": self.kind, "evidence_kind": self.evidence_kind,
+                "preferred_index": self.preferred_index, "rejected_index": self.rejected_index,
+                "rating": int(self.rating), "comment": self.comment, "annotator": self.annotator,
+                "information_clean": bool(self.information_clean)}
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "HumanSignal":
+        return cls(kind=str(payload["kind"]), preferred_index=payload.get("preferred_index"),
+                   rejected_index=payload.get("rejected_index"), rating=int(payload.get("rating", 0)),
+                   comment=str(payload.get("comment", "")), annotator=str(payload.get("annotator", "")),
+                   information_clean=bool(payload.get("information_clean", True)))
+
+
 @dataclass(frozen=True)
 class DecisionSupervision:
     """One decision with its options, the expert's action and optional evidence."""
@@ -357,6 +410,9 @@ class DecisionSupervision:
     evidence: CounterfactualEvidence | None = None
     provenance: Provenance = field(default_factory=lambda: Provenance(source=""))
     schema: str = SCHEMA
+    # Additive (D29): set only on records that carry a person's input. Records
+    # without it serialise exactly as before.
+    human: HumanSignal | None = None
 
     @property
     def game_key(self) -> tuple[Any, ...]:
@@ -370,7 +426,7 @@ class DecisionSupervision:
         return self.game_key + (int(self.step_index),)
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "schema": self.schema,
             "deck": self.deck, "opponent": self.opponent, "seed": int(self.seed),
             "side": int(self.side), "step_index": int(self.step_index),
@@ -386,6 +442,9 @@ class DecisionSupervision:
             "evidence": None if self.evidence is None else self.evidence.as_dict(),
             "provenance": self.provenance.as_dict(),
         }
+        if self.human is not None:
+            payload["human"] = self.human.as_dict()
+        return payload
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> "DecisionSupervision":
@@ -410,6 +469,7 @@ class DecisionSupervision:
             evidence=None if evidence is None else CounterfactualEvidence.from_dict(evidence),
             provenance=Provenance.from_dict(payload.get("provenance")),
             schema=schema,
+            human=None if payload.get("human") is None else HumanSignal.from_dict(payload["human"]),
         )
 
 
