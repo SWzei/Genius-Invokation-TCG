@@ -25,6 +25,7 @@
 | `web/` | 人机调试接口（standalone + HTTP 桥） | WS8 |
 | `npc/` | NPC PvE 调试系统 | WS7 |
 | `lab/` | 实验台：模型/人对局、反馈、回放、导出（D29） | WS8 |
+| `bench/` | Benchmark：对局套件、决策场景集、跨运行配对比较（D30） | WS8 |
 | `tests/` | 信息泄漏、adapter 往返、重放一致性等 | 全部 |
 | `configs/` | run 配置、`engine.lock`、卡池/关卡 | D4 |
 | `scripts/` | 采集/训练/评测/认证脚本 | §5.1 |

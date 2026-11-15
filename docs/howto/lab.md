@@ -50,8 +50,11 @@ lab/verify.py ─► 人工纠正的反事实校验（复用 envs.fork_search / 
   `blocked` `budget` `no_key`。
 - **预算与成本**：`[profiles.<名>.budget]` 的 `max_calls` / `max_tokens` / `max_cost` 是硬上限，超过后不再发请求。
   成本只在你填了 `price_in` / `price_out`（每百万 token）时统计，否则记为未知。
-- **模型 id 不预置**（更新太快）：OpenAI / Gemini / GLM 档案在文件里是注释模板，填上 `model` 即可；
-  临时换模型用 `llm:<档案>#model=<id>`。
+- **模型 id**：OpenAI / Gemini 档案是注释模板，填上 `model` 即可。**GLM 档案已用真实接口核对**（2026-11，D30）：
+  `glm-flash`（免费档，关思考）、`glm-53` / `glm-53-flash`（通用端点，需余额）、`glm-53-plan` / `glm-53-flash-plan`（Coding Plan 端点）。
+  GLM-5.3 系列不能关闭思考，用 `extra_body = { reasoning_effort = "low" }`；思考 token 占用 `max_tokens`，留 2,048 以上。
+- **错误分类**：鉴权失败、余额不足（含智谱的 HTTP 429 + 1113）、模型不存在属于致命错误——不重试，且该客户端之后的请求不再发出，
+  这样一局对局不会在无人察觉时由回退策略打完。限流与 5xx 才重试。
 
 ```bash
 python -m scripts.llm_smoke --list          # 看档案与密钥是否就绪（不发请求）
@@ -163,9 +166,9 @@ python -m lab.export verify <session id> --rollouts 12
 
 ## 6. 已知限制
 
-- 真实模型接口没有在本仓库的测试里调用（没有密钥）；协议实现对照各家文档、用本地仿真服务验证。
+- 真实模型接口只有智谱 GLM 实测过（`reports/review/2026-11_glm_validation.md`）；其余各家的协议实现对照文档、用本地仿真服务验证。
   接入新模型先跑 `scripts.llm_smoke`。
-- 知识注入对模型强度的影响**没有测量**；`scripts.llm_arena` 是测量工具，结果需要你用真实模型跑。
+- 知识注入对模型强度的影响：GLM-5.3 上小样本实测**未测出收益**（`reports/review/2026-11_benchmark.md §2.2`）；横向评测用 `bench/`（`docs/howto/benchmark.md`），`scripts.llm_arena` 仍可做单牌组的快速比较。
 - 牌组只支持 `envs.decks` 里的 20 个脚本池牌组；赛事牌组（`envs.tournament_decks`）尚未接入界面。
 - 界面是文字局面，没有卡图与动画；需要图形界面时用 `web-debug.md` 的 standalone。
 - 策略知识的自定义检索是字面重合度，没有向量检索；56/70 个策略单元没有条件检测器，不会被选中。

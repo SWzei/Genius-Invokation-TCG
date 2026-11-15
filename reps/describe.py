@@ -202,7 +202,9 @@ class DecisionDescriber:
             "round": int(view.round_number),
             "phase": PHASE_NAMES.get(str(view.phase), str(view.phase)),
             "my_turn": int(view.current_turn) == seat,
-            "winner": view.winner,
+            # ``view.winner`` is only meaningful once the game is over (the snapshot
+            # reports 0 for "no winner yet"; see reports/review/2026-11_benchmark.md).
+            "winner": view.winner if str(view.phase) in ("game_end", "PHASE_TYPE_GAME_END") else None,
             "me": self._side(view.players[seat], own=True),
             "opponent": self._side(view.players[1 - seat], own=False),
         }

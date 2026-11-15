@@ -21,6 +21,7 @@
 | 换机器/排产 | `docs/environments/README.md` + 对应机器文档 |
 | 改引擎/NPC/Web | `docs/howto/engine-overlay.md` / `npc-pve.md` / `web-debug.md` |
 | 接模型 API / 知识配置 / 人机实验 | `docs/howto/lab.md`（实验工具，不进强度验收） |
+| 模型 / 策略横向评测、对战平台约战 | `docs/howto/benchmark.md` / `platform.md`（评测工具，不进强度验收） |
 
 阅读顺序：`PLAN §4` → `STATUS` → `PLAYBOOK` → 环境文档。
 

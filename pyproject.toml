@@ -30,6 +30,7 @@ packages = [
     "scripts",
     "npc",
     "lab",
+    "bench",
 ]
 
 [tool.pytest.ini_options]

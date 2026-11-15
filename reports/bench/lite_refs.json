@@ -1,0 +1,442 @@
+{
+  "suite": {
+    "name": "lite",
+    "description": "pilot suite: ladder on 2 pool decks + 2 held-out human decks (native rules and latest rules)",
+    "fingerprint": "2b88ef20714c8993",
+    "cells": 56,
+    "cells_by_group": {
+      "ladder-pool": 32,
+      "heldout-native": 16,
+      "heldout-latest": 8
+    },
+    "source": "lite.toml",
+    "seed_base": 7100001,
+    "human_decks": {
+      "human:A6Ax9BkPIECw": {
+        "deck_code": "A6Ax9BkPIECw9pcYE6ExijMbG6JwA8YgDDJgBskgDGGgacoWDZEQzNEcFMGh1EodE0AA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1605"
+      },
+      "human:AAEh57IOAqCw": {
+        "deck_code": "AAEh57IOAqCw6j4PA0Di9AgQIGGABp0UCbHQirMYGKFB04QfDIFgTcYUDNGQackWDZAA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1204"
+      }
+    }
+  },
+  "subjects": {
+    "heuristic": {
+      "games": 56,
+      "valid_games": 56,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 56,
+        "rate": 0.4821,
+        "ci95": [
+          0.3567,
+          0.6099
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 10.09,
+      "game_seconds_mean": 17.13,
+      "by_group": {
+        "heldout-latest": {
+          "n": 8,
+          "rate": 0.5,
+          "ci95": [
+            0.2152,
+            0.7848
+          ]
+        },
+        "heldout-native": {
+          "n": 16,
+          "rate": 0.625,
+          "ci95": [
+            0.3864,
+            0.8152
+          ]
+        },
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.4062,
+          "ci95": [
+            0.2552,
+            0.5774
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 16,
+          "rate": 0.8125,
+          "ci95": [
+            0.5699,
+            0.9341
+          ]
+        },
+        "L1-heuristic": {
+          "n": 24,
+          "rate": 0.5,
+          "ci95": [
+            0.3143,
+            0.6857
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.125,
+          "ci95": [
+            0.035,
+            0.3602
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 24,
+          "rate": 0.5833,
+          "ci95": [
+            0.3883,
+            0.7553
+          ]
+        },
+        "pool": {
+          "n": 32,
+          "rate": 0.4062,
+          "ci95": [
+            0.2552,
+            0.5774
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 40,
+          "rate": 0.425,
+          "ci95": [
+            0.2851,
+            0.5781
+          ]
+        },
+        "v6.3.0": {
+          "n": 16,
+          "rate": 0.625,
+          "ci95": [
+            0.3864,
+            0.8152
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 28,
+          "rate": 0.4821,
+          "ci95": [
+            0.3107,
+            0.6579
+          ]
+        },
+        "1": {
+          "n": 28,
+          "rate": 0.4821,
+          "ci95": [
+            0.3107,
+            0.6579
+          ]
+        }
+      }
+    },
+    "legal_random": {
+      "games": 56,
+      "valid_games": 56,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 56,
+        "rate": 0.2679,
+        "ci95": [
+          0.1696,
+          0.3959
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 11.48,
+      "game_seconds_mean": 17.33,
+      "by_group": {
+        "heldout-latest": {
+          "n": 8,
+          "rate": 0.25,
+          "ci95": [
+            0.0715,
+            0.5907
+          ]
+        },
+        "heldout-native": {
+          "n": 16,
+          "rate": 0.4375,
+          "ci95": [
+            0.231,
+            0.6682
+          ]
+        },
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.1875,
+          "ci95": [
+            0.0889,
+            0.3531
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 16,
+          "rate": 0.5625,
+          "ci95": [
+            0.3318,
+            0.769
+          ]
+        },
+        "L1-heuristic": {
+          "n": 24,
+          "rate": 0.2083,
+          "ci95": [
+            0.0924,
+            0.4047
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.0625,
+          "ci95": [
+            0.0111,
+            0.2833
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 24,
+          "rate": 0.375,
+          "ci95": [
+            0.2116,
+            0.5729
+          ]
+        },
+        "pool": {
+          "n": 32,
+          "rate": 0.1875,
+          "ci95": [
+            0.0889,
+            0.3531
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 40,
+          "rate": 0.2,
+          "ci95": [
+            0.105,
+            0.3476
+          ]
+        },
+        "v6.3.0": {
+          "n": 16,
+          "rate": 0.4375,
+          "ci95": [
+            0.231,
+            0.6682
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 28,
+          "rate": 0.25,
+          "ci95": [
+            0.1268,
+            0.4336
+          ]
+        },
+        "1": {
+          "n": 28,
+          "rate": 0.2857,
+          "ci95": [
+            0.1525,
+            0.4706
+          ]
+        }
+      }
+    },
+    "expert:<deck>": {
+      "games": 32,
+      "valid_games": 32,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 32,
+        "rate": 0.625,
+        "ci95": [
+          0.4525,
+          0.7707
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 9.03,
+      "game_seconds_mean": 15.89,
+      "by_group": {
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.625,
+          "ci95": [
+            0.4525,
+            0.7707
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 8,
+          "rate": 0.9375,
+          "ci95": [
+            0.5977,
+            0.9934
+          ]
+        },
+        "L1-heuristic": {
+          "n": 8,
+          "rate": 0.8125,
+          "ci95": [
+            0.4668,
+            0.9555
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.375,
+          "ci95": [
+            0.1848,
+            0.6136
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "pool": {
+          "n": 32,
+          "rate": 0.625,
+          "ci95": [
+            0.4525,
+            0.7707
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 32,
+          "rate": 0.625,
+          "ci95": [
+            0.4525,
+            0.7707
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 16,
+          "rate": 0.625,
+          "ci95": [
+            0.3864,
+            0.8152
+          ]
+        },
+        "1": {
+          "n": 16,
+          "rate": 0.625,
+          "ci95": [
+            0.3864,
+            0.8152
+          ]
+        }
+      }
+    }
+  },
+  "reference": "heuristic",
+  "paired_vs_reference": {
+    "legal_random": {
+      "vs": "heuristic",
+      "n_pairs": 56,
+      "delta": -0.2143,
+      "ci95": [
+        -0.3256,
+        -0.103
+      ],
+      "matchup_cluster_boot_ci95": [
+        -0.3304,
+        -0.0982
+      ],
+      "better": 4,
+      "worse": 22,
+      "same": 30,
+      "sign_test_p": 0.0005
+    },
+    "expert:<deck>": {
+      "vs": "heuristic",
+      "n_pairs": 32,
+      "delta": 0.2188,
+      "ci95": [
+        0.0667,
+        0.3708
+      ],
+      "matchup_cluster_boot_ci95": [
+        0.0781,
+        0.3906
+      ],
+      "better": 10,
+      "worse": 2,
+      "same": 20,
+      "sign_test_p": 0.0386
+    }
+  },
+  "note": "win rates are simulator results on this suite's cells; intervals are Wilson 95% on valid games (errors, truncations and degraded games excluded and counted)",
+  "tag": "lite_refs",
+  "generated": "2026-11-14T14:06:08",
+  "stopped": null,
+  "total_calls": 0,
+  "total_cost": 0.0,
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v470-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  },
+  "raw": "data/bench/lite_refs/games.jsonl"
+}

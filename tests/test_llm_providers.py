@@ -67,6 +67,26 @@ class _Fake(BaseHTTPRequestHandler):
                 return self._reply(400, {"error": {"message": "Unsupported value: 'temperature' does not support 0 with this model. Only the default (1) value is supported."}})
             if model == "boom":
                 return self._reply(500, {"error": {"message": "internal"}})
+            # The next six are the shapes open.bigmodel.cn really answered with on 2026-11-14.
+            if model == "no-balance":
+                return self._reply(429, {"error": {"code": "1113", "message": "余额不足或无可用资源包,请充值。"}})
+            if model == "no-such-model":
+                return self._reply(400, {"error": {"code": "1211", "message": "模型不存在，请检查模型代码。"}})
+            if model == "plan-limit":
+                return self._reply(429, {"error": {"code": "1308", "message": "已达到 5 小时的使用上限。您的限额将在 2026-11-15 12:00:00 重置。"}})
+            if model == "always-thinks" and (body.get("thinking") or {}).get("type") == "disabled":
+                return self._reply(400, {"error": {"code": "1210", "message": "该模型始终思考，不支持关闭思考；请使用 low、high 或 max。"}})
+            if model in ("thinks", "always-thinks"):
+                return self._reply(200, {"choices": [{"finish_reason": "stop", "index": 0, "message": {
+                    "content": '{"choice": 0, "reason": "ok"}', "reasoning_content": "先想一想……", "role": "assistant"}}],
+                    "usage": {"completion_tokens": 120, "completion_tokens_details": {"reasoning_tokens": 90},
+                              "prompt_tokens": 1000, "prompt_tokens_details": {"cached_tokens": 800},
+                              "total_tokens": 1120}})
+            if model == "thinks-out":
+                return self._reply(200, {"choices": [{"finish_reason": "length", "index": 0, "message": {
+                    "content": "", "reasoning_content": "想了很久……", "role": "assistant"}}],
+                    "usage": {"completion_tokens": 64, "completion_tokens_details": {"reasoning_tokens": 64},
+                              "prompt_tokens": 42, "prompt_tokens_details": {"cached_tokens": 0}}})
             if model == "garbage":
                 return self._reply(200, b"<html>gateway</html>")
             if model == "empty":
@@ -254,6 +274,57 @@ def test_errors_are_classified_and_bounded(fake):
     assert wrong.error == "auth" and wrong.attempts == 1 and KEY not in wrong.detail and "sk-wrong" not in wrong.detail
     missing = ProviderClient(profile, api_key="").complete(MESSAGES)
     assert missing.error == "no_key" and missing.attempts == 0
+
+
+def test_fatal_errors_are_not_retried_and_stop_the_client(fake):
+    """Balance / plan limit / unknown model: retrying cannot help, and silently
+    falling back for the rest of a run would turn a model benchmark into a
+    benchmark of its fallback policy."""
+    from common.llm_providers import FATAL_KINDS, classify_http_error
+
+    for model, kind in (("no-balance", "quota"), ("plan-limit", "quota"), ("no-such-model", "model_not_found")):
+        client = _client(fake, "glm", model, retries=4)
+        first = client.complete(MESSAGES)
+        assert (first.error, first.attempts) == (kind, 1), model          # HTTP 429 here is not a rate limit
+        assert first.detail.startswith("[1") and kind in FATAL_KINDS
+        sent = len(_Fake.requests)
+        second = client.complete(MESSAGES)
+        assert second.error == kind and second.attempts == 0 and "not sent" in second.detail
+        assert len(_Fake.requests) == sent and client.disabled is first    # no further request left the process
+        assert client.usage.errors == 2 and client.usage.by_error == {kind: 2}
+    # a real rate limit stays retryable and does not disable the client
+    retry = _client(fake, "glm", "rate-then-ok", retries=2)
+    assert retry.complete(MESSAGES).ok and retry.disabled is None
+    assert classify_http_error(429, "1302", "您的账户已达到速率限制") == "rate_limit"
+    assert classify_http_error(429, "1305", "该模型当前访问量过大") == "rate_limit"
+    assert classify_http_error(429, "1313", "使用模式不符合公平使用策略") == "quota"
+    assert classify_http_error(402, "", "Insufficient Balance") == "quota"
+    assert classify_http_error(429, "insufficient_quota", "You exceeded your current quota") == "quota"
+    assert classify_http_error(400, "1301", "敏感内容") == "blocked"
+    assert classify_http_error(404, "", "The model `x` does not exist") == "model_not_found"
+    assert classify_http_error(400, "1210", "API 调用参数有误") == "http_400"
+
+
+def test_reasoning_and_cache_tokens_are_reported_and_priced(fake):
+    profile = {"price_in": 1.0, "price_cached_in": 0.2, "price_out": 4.0}
+    client = _client(fake, "glm", "thinks", **profile)
+    result = client.complete(MESSAGES)
+    assert result.ok and result.text == '{"choice": 0, "reason": "ok"}'      # the hidden reasoning is not the answer
+    assert (result.prompt_tokens, result.cached_tokens) == (1000, 800)
+    assert (result.completion_tokens, result.reasoning_tokens) == (120, 90)
+    assert result.cost == pytest.approx((200 * 1.0 + 800 * 0.2 + 120 * 4.0) / 1e6)
+    assert client.usage.as_dict()["cached_tokens"] == 800 and client.usage.as_dict()["reasoning_tokens"] == 90
+    # without a cache price the cached part is billed as ordinary input
+    plain = _client(fake, "glm", "thinks", price_in=1.0, price_out=4.0).complete(MESSAGES)
+    assert plain.cost == pytest.approx((1000 * 1.0 + 120 * 4.0) / 1e6)
+    # the whole output budget went into reasoning: say so instead of a bare "empty"
+    out = _client(fake, "glm", "thinks-out").complete(MESSAGES)
+    assert out.error == "empty_content" and "64 of 64 output tokens were hidden reasoning" in out.detail
+    # a model that cannot switch thinking off rejects the request; the profile must use reasoning_effort
+    refuse = _client(fake, "glm", "always-thinks", extra_body={"thinking": {"type": "disabled"}}).complete(MESSAGES)
+    assert refuse.error == "http_400" and refuse.attempts == 1 and "1210" in refuse.detail
+    accept = _client(fake, "glm", "always-thinks", extra_body={"reasoning_effort": "low"})
+    assert accept.complete(MESSAGES).ok and _Fake.requests[-1]["body"]["reasoning_effort"] == "low"
 
 
 def test_parameter_rejections_are_adapted_once(fake):

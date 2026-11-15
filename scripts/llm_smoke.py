@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("profiles", nargs="*")
     parser.add_argument("--list", action="store_true")
-    parser.add_argument("--max-tokens", type=int, default=64)
+    parser.add_argument("--max-tokens", type=int, default=None, help="default: the profile's own max_tokens")
     args = parser.parse_args(argv)
     profiles = load_profiles()
     names = args.profiles or [n for n, p in profiles.items() if p.protocol != "mock"]

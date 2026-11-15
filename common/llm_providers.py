@@ -79,6 +79,41 @@ PRESETS["zhipu"] = PRESETS["glm"]
 
 _RETRY_STATUS = frozenset({408, 409, 425, 429, 500, 502, 503, 504, 529})
 _MAX_RETRY_AFTER = 30.0
+# Error kinds that will not go away by retrying or by asking again later in the
+# same run: the client stops sending requests after the first one (see
+# ``ProviderClient.disabled``), so a run cannot silently degrade into its fallback.
+FATAL_KINDS = frozenset({"auth", "quota", "model_not_found", "no_key"})
+# Provider error codes / wording seen on real services. Zhipu answers "balance
+# exhausted" with HTTP 429 + code 1113 (not a rate limit: retrying cannot help)
+# and "no such model" with HTTP 400 + code 1211; DeepSeek uses HTTP 402; OpenAI
+# uses 429 + ``insufficient_quota``.
+# Zhipu codes per docs.bigmodel.cn/cn/faq/api-code (all HTTP 429): 1113 balance, 1308/1310
+# plan limit reached, 1309/1314 plan expired, 1313 fair-use restriction, 1316-1321 limit
+# reached and no balance to overflow into. 1302/1305 are real rate limits and stay retryable.
+_QUOTA_CODES = frozenset({"1113", "1308", "1309", "1310", "1313", "1314", "1315", "1316", "1317", "1318",
+                          "1319", "1320", "1321", "insufficient_quota", "insufficient_balance",
+                          "billing_not_active"})
+_QUOTA_WORDS = ("余额不足", "资源包", "欠费", "使用上限", "套餐已到期", "insufficient balance",
+                "insufficient_quota", "exceeded your current quota", "usage limit reached", "billing")
+_MODEL_CODES = frozenset({"1211", "1311", "model_not_found"})      # 1311: model not in the plan
+_MODEL_WORDS = ("模型不存在", "model not found", "does not exist", "no such model", "model_not_found")
+_BLOCK_CODES = frozenset({"1301", "content_filter"})
+
+
+def classify_http_error(status: int, code: str, message: str) -> str:
+    """Error kind for a non-2xx answer (``code`` is the provider's own code, may be empty)."""
+    lowered = message.lower()
+    if status in (401, 403):
+        return "auth"
+    if status == 402 or code in _QUOTA_CODES or any(word in lowered for word in _QUOTA_WORDS):
+        return "quota"
+    if code in _MODEL_CODES or (status in (400, 404) and any(word in lowered for word in _MODEL_WORDS)):
+        return "model_not_found"
+    if code in _BLOCK_CODES:
+        return "blocked"
+    if status == 429:
+        return "rate_limit"
+    return f"http_{status}"
 
 
 @dataclass(frozen=True)
@@ -116,6 +151,7 @@ class ModelProfile:
     # Prices per 1,000,000 tokens, as *you* entered them; None = cost unknown.
     price_in: float | None = None
     price_out: float | None = None
+    price_cached_in: float | None = None    # cache-hit input price; None = same as price_in
     currency: str = "USD"
     budget: Budget = field(default_factory=Budget)
     notes: str = ""
@@ -133,7 +169,8 @@ class ModelProfile:
             "max_tokens_param": self.max_tokens_param, "top_p": self.top_p, "timeout": self.timeout,
             "json_mode": self.json_mode, "retries": self.retries,
             "extra_body": dict(self.extra_body), "price_in": self.price_in,
-            "price_out": self.price_out, "currency": self.currency, "budget": self.budget.as_dict(),
+            "price_out": self.price_out, "price_cached_in": self.price_cached_in,
+            "currency": self.currency, "budget": self.budget.as_dict(),
         }
 
 
@@ -184,6 +221,7 @@ def profile_from_mapping(name: str, raw: Mapping[str, Any]) -> ModelProfile:
         extra_headers={str(k): str(v) for k, v in (raw.get("extra_headers", {}) or {}).items()},
         anthropic_version=str(raw.get("anthropic_version", "2023-06-01")),
         price_in=raw.get("price_in"), price_out=raw.get("price_out"),
+        price_cached_in=raw.get("price_cached_in"),
         currency=str(raw.get("currency", "USD")),
         budget=Budget(budget_raw.get("max_calls"), budget_raw.get("max_tokens"), budget_raw.get("max_cost")),
         notes=str(raw.get("notes", "")),
@@ -274,6 +312,8 @@ class ChatResult:
     attempts: int = 0
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    cached_tokens: int = 0              # part of prompt_tokens served from the provider's cache
+    reasoning_tokens: int = 0           # part of completion_tokens spent on hidden reasoning
     cost: float | None = None
     model: str = ""
     finish_reason: str | None = None
@@ -288,6 +328,7 @@ class ChatResult:
             "ok": self.ok, "error": self.error, "detail": self.detail[:300], "status": self.status,
             "latency_seconds": round(self.latency_seconds, 3), "attempts": self.attempts,
             "prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens,
+            "cached_tokens": self.cached_tokens, "reasoning_tokens": self.reasoning_tokens,
             "cost": None if self.cost is None else round(self.cost, 6), "model": self.model,
             "finish_reason": self.finish_reason, "adapted": list(self.adapted),
         }
@@ -299,11 +340,14 @@ class ProviderUsage(LLMUsage):
     cost_known: bool = True
     by_error: dict[str, int] = field(default_factory=dict)
     retries: int = 0
+    cached_tokens: int = 0
+    reasoning_tokens: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         out = super().as_dict()
         out.update({"cost": round(self.cost, 6) if self.cost_known else None,
-                    "by_error": dict(self.by_error), "retries": self.retries})
+                    "by_error": dict(self.by_error), "retries": self.retries,
+                    "cached_tokens": self.cached_tokens, "reasoning_tokens": self.reasoning_tokens})
         return out
 
 
@@ -377,6 +421,9 @@ class ProviderClient:
         self.call_log = Path(call_log) if call_log else None
         self.usage = ProviderUsage()
         self.last: ChatResult | None = None
+        #: set after a fatal error (``FATAL_KINDS``): later calls fail at once, no request.
+        self.disabled: ChatResult | None = None
+        self._last_details: tuple[int, int] = (0, 0)
         self._max_tokens_param = profile.max_tokens_param
         self._send_temperature = profile.temperature is not None
         # ``common.llm`` compatibility (callers read ``client.config.model``).
@@ -462,8 +509,12 @@ class ProviderClient:
         return url, headers, body
 
     def _parse(self, payload: Mapping[str, Any]) -> tuple[str | None, int, int, str | None, str | None]:
-        """-> (text, prompt_tokens, completion_tokens, finish_reason, error_kind)."""
+        """-> (text, prompt_tokens, completion_tokens, finish_reason, error_kind).
+
+        Cache-hit and reasoning token counts (when the provider reports them) are
+        left in ``self._last_details`` for the caller."""
         protocol = self.profile.protocol
+        self._last_details = (0, 0)
         try:
             if protocol == "openai":
                 choice = payload["choices"][0]
@@ -471,16 +522,22 @@ class ProviderClient:
                 usage = payload.get("usage") or {}
                 tokens = int(usage.get("prompt_tokens", 0) or 0), int(usage.get("completion_tokens", 0) or 0)
                 finish = choice.get("finish_reason")
+                self._last_details = (
+                    int((usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0) or 0),
+                    int((usage.get("completion_tokens_details") or {}).get("reasoning_tokens", 0) or 0))
             elif protocol == "anthropic":
                 text = "".join(str(block.get("text", "")) for block in payload["content"]
                                if block.get("type") == "text")
                 usage = payload.get("usage") or {}
                 tokens = int(usage.get("input_tokens", 0) or 0), int(usage.get("output_tokens", 0) or 0)
                 finish = payload.get("stop_reason")
+                self._last_details = (int(usage.get("cache_read_input_tokens", 0) or 0), 0)
             else:  # gemini
                 usage = payload.get("usageMetadata") or {}
                 tokens = (int(usage.get("promptTokenCount", 0) or 0),
                           int(usage.get("candidatesTokenCount", 0) or 0) + int(usage.get("thoughtsTokenCount", 0) or 0))
+                self._last_details = (int(usage.get("cachedContentTokenCount", 0) or 0),
+                                      int(usage.get("thoughtsTokenCount", 0) or 0))
                 candidates = payload.get("candidates") or []
                 if not candidates:
                     reason = (payload.get("promptFeedback") or {}).get("blockReason")
@@ -497,15 +554,21 @@ class ProviderClient:
         return str(text), tokens[0], tokens[1], finish, None
 
     @staticmethod
-    def _error_message(raw: bytes) -> str:
+    def _error_parts(raw: bytes) -> tuple[str, str]:
+        """-> (provider error code, message) of a non-2xx body; both may be empty."""
         try:
             payload = json.loads(raw.decode("utf-8", "replace"))
         except ValueError:
-            return raw.decode("utf-8", "replace")[:300]
+            return "", raw.decode("utf-8", "replace")[:300]
         error = payload.get("error") if isinstance(payload, dict) else None
         if isinstance(error, dict):
-            return str(error.get("message") or error.get("type") or error)[:300]
-        return str(error or payload)[:300]
+            code = str(error.get("code") or error.get("type") or "")
+            return code, str(error.get("message") or error.get("type") or error)[:300]
+        return "", str(error or payload)[:300]
+
+    @classmethod
+    def _error_message(cls, raw: bytes) -> str:
+        return cls._error_parts(raw)[1]
 
     def _adapt(self, status: int, message: str) -> str | None:
         """One-shot fixes for parameter rejections; returns what was changed."""
@@ -539,7 +602,10 @@ class ProviderClient:
         result.latency_seconds = time.perf_counter() - started
         result.model = profile.model
         if profile.price_in is not None and profile.price_out is not None:
-            result.cost = (result.prompt_tokens * float(profile.price_in)
+            cached = min(result.cached_tokens, result.prompt_tokens)
+            cached_price = profile.price_in if profile.price_cached_in is None else profile.price_cached_in
+            result.cost = ((result.prompt_tokens - cached) * float(profile.price_in)
+                           + cached * float(cached_price)
                            + result.completion_tokens * float(profile.price_out)) / 1_000_000.0
         usage = self.usage
         if result.ok:
@@ -552,6 +618,10 @@ class ProviderClient:
             usage.total_seconds += result.latency_seconds
             usage.by_error[result.error or "unknown"] = usage.by_error.get(result.error or "unknown", 0) + 1
         usage.retries += max(0, result.attempts - 1)
+        usage.cached_tokens += result.cached_tokens
+        usage.reasoning_tokens += result.reasoning_tokens
+        if result.error in FATAL_KINDS and result.error != "no_key" and self.disabled is None:
+            self.disabled = result
         if result.cost is None:
             if result.prompt_tokens or result.completion_tokens:
                 usage.cost_known = False
@@ -566,6 +636,9 @@ class ProviderClient:
         exhausted = self.budget_left()
         if exhausted is not None:
             return ChatResult(None, error="budget", detail=f"{exhausted} reached")
+        if self.disabled is not None:
+            return ChatResult(None, error=self.disabled.error, status=self.disabled.status,
+                              detail=f"not sent (earlier fatal error): {self.disabled.detail}"[:300])
         if profile.protocol == "mock":
             if profile.model == "error":
                 return ChatResult(None, error="network", detail="mock transport failure", attempts=1)
@@ -602,19 +675,27 @@ class ProviderClient:
                         last = ChatResult(None, error="bad_response", detail="response is not JSON", status=status)
                     else:
                         text, p_tok, c_tok, finish, kind = self._parse(payload)
+                        cached, reasoning = self._last_details
+                        detail = "" if kind is None else f"finish_reason={finish}"
+                        if kind == "empty_content" and reasoning:
+                            detail += (f"; {reasoning} of {c_tok} output tokens were hidden reasoning -- "
+                                       "raise max_tokens, or lower the reasoning effort / turn thinking off"
+                                       " if the model allows it")
                         last = ChatResult(text, error=kind, status=status, prompt_tokens=p_tok,
-                                          completion_tokens=c_tok, finish_reason=finish,
-                                          detail="" if kind is None else f"finish_reason={finish}")
+                                          completion_tokens=c_tok, finish_reason=finish, detail=detail,
+                                          cached_tokens=cached, reasoning_tokens=reasoning)
                     last.attempts, last.adapted = attempts, tuple(adapted)
                     return last
-                message = redact_secrets(self._error_message(raw), (self._key,))
+                code, message = self._error_parts(raw)
+                message = redact_secrets(message, (self._key,))
                 change = self._adapt(status, message)
                 if change is not None and change not in adapted:
                     adapted.append(change)
                     continue            # retry immediately with the adapted request
-                kind = {401: "auth", 403: "auth", 429: "rate_limit"}.get(status, f"http_{status}")
-                last = ChatResult(None, error=kind, detail=message, status=status)
-                if status not in _RETRY_STATUS:
+                kind = classify_http_error(status, code, message)
+                last = ChatResult(None, error=kind, detail=f"[{code}] {message}" if code else message,
+                                  status=status)
+                if status not in _RETRY_STATUS or kind in FATAL_KINDS or kind == "blocked":
                     break
             if retries_left <= 0:
                 break

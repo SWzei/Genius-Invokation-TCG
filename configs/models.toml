@@ -45,11 +45,6 @@ max_tokens = 512
 # model = "<模型 id>"            # 原生 generateContent 协议用 provider = "gemini-native"
 # max_tokens = 1024
 #
-# [profiles.glm]
-# provider = "glm"               # ZAI_API_KEY 或 ZHIPUAI_API_KEY；temperature 会被钳到 >= 0.01
-# model = "<模型 id>"
-# max_tokens = 512
-#
 # [profiles.local]
 # provider = "openai-compatible" # vLLM / Ollama / LM Studio / 自建网关
 # base_url = "http://127.0.0.1:8000/v1"
@@ -67,3 +62,106 @@ max_tokens = 512
 # [profiles.deepseek-budget.budget]
 # max_calls = 300
 # max_cost = 5.0
+
+# ---------------------------------------------------------------------------
+# 智谱 GLM（open.bigmodel.cn）。模型 id 于 2026-11-14 用真实接口核对过（见
+# reports/review/2026-11_glm_validation.md）。密钥：ZAI_API_KEY 或 ZHIPUAI_API_KEY。
+# - GLM-4.5 及以后的模型默认开启"思考"：思考 token 计入输出并占用 max_tokens，
+#   max_tokens 偏小时会得到空回复（finish_reason=length）。逐步决策用 thinking=disabled；
+#   要比较思考的效果，用 *-think 档案（max_tokens 留足）。
+# - 价格取自 docs.z.ai 的美元价目表（每百万 token），仅用于估算；bigmodel.cn 以人民币
+#   计费，实际账单以控制台为准。免费模型价格记 0。
+# - 余额不足时接口返回 HTTP 429 + 错误码 1113：客户端归为 quota，不重试，并停止后续请求。
+# ---------------------------------------------------------------------------
+[profiles.glm-flash]
+provider = "glm"
+model = "glm-4.7-flash"          # 免费档
+max_tokens = 512
+timeout = 90
+retries = 4
+price_in = 0.0
+price_out = 0.0
+extra_body = { thinking = { type = "disabled" } }
+
+[profiles.glm-flash-think]
+provider = "glm"
+model = "glm-4.7-flash"
+max_tokens = 4096
+timeout = 180
+retries = 4
+price_in = 0.0
+price_out = 0.0
+extra_body = { thinking = { type = "enabled" } }
+
+[profiles.glm-4-flash]
+provider = "glm"
+model = "glm-4-flash"            # 旧一代免费档，无思考
+max_tokens = 512
+timeout = 90
+retries = 4
+price_in = 0.0
+price_out = 0.0
+
+# GLM-5.3 系列"始终思考"：thinking.type=disabled 会被拒绝（HTTP 400，错误码 1210）。
+# 用顶层 reasoning_effort = "low" | "high" | "max" 控制思考强度；思考 token 计入输出，
+# 所以 max_tokens 要留足。
+[profiles.glm-53-flash]
+provider = "glm"
+model = "glm-5.3-flash"
+max_tokens = 4096
+timeout = 180
+retries = 4
+price_in = 0.15
+price_cached_in = 0.03
+price_out = 0.50
+extra_body = { reasoning_effort = "low" }
+
+[profiles.glm-53]
+provider = "glm"
+model = "glm-5.3"                # 旗舰；按量计费端点
+max_tokens = 4096
+timeout = 240
+retries = 4
+price_in = 1.40
+price_cached_in = 0.26
+price_out = 4.40
+extra_body = { reasoning_effort = "low" }
+
+# Coding Plan 套餐端点（包月额度，不按 token 计费）。官方文档说明该端点面向 Coding Agent；
+# 是否用于其他用途由账户所有者决定。价格字段填的是按量计费的公开价，只用于给出
+# "等价成本"，不是实际账单。
+[profiles.glm-53-plan]
+provider = "glm"
+base_url = "https://open.bigmodel.cn/api/coding/paas/v4"
+model = "glm-5.3"
+max_tokens = 2048
+timeout = 240
+retries = 4
+price_in = 1.40
+price_cached_in = 0.26
+price_out = 4.40
+extra_body = { reasoning_effort = "low" }
+
+[profiles.glm-53-plan-high]
+provider = "glm"
+base_url = "https://open.bigmodel.cn/api/coding/paas/v4"
+model = "glm-5.3"
+max_tokens = 8192
+timeout = 300
+retries = 4
+price_in = 1.40
+price_cached_in = 0.26
+price_out = 4.40
+extra_body = { reasoning_effort = "high" }
+
+[profiles.glm-53-flash-plan]
+provider = "glm"
+base_url = "https://open.bigmodel.cn/api/coding/paas/v4"
+model = "glm-5.3-flash"
+max_tokens = 4096
+timeout = 180
+retries = 4
+price_in = 0.15
+price_cached_in = 0.03
+price_out = 0.50
+extra_body = { reasoning_effort = "low" }

@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -59,15 +59,31 @@
 | 项 | 状态 | 证据 |
 |---|---|---|
 | 模型档案与三种协议（OpenAI 兼容 / Anthropic / Gemini）、重试、预算、调用日志 | ✅ 已实现；对本地仿真服务测试 | `common/llm_providers.py`、`tests/test_llm_providers.py` |
-| 真实模型接口 | ✗ 未调用（无密钥） | 用 `scripts.llm_smoke` 自检 |
+| 真实模型接口 | ◐ 仅智谱 GLM 已实测（D30，见 §3d）；OpenAI / Anthropic / Gemini / DeepSeek 未调用 | `reports/review/2026-11_glm_validation.md` |
 | LLM 完整对局策略（合法性 / 回退 / 留痕） | ✅ 已实现并测试（离线模型整局对战） | `agents/llm_policy.py`、`tests/test_llm_platform.py` |
 | 知识配置（规则 / 策略 / 专家示例 / 自定义，分块、溯源、版本告警） | ✅ 已实现并测试 | `reps/knowledge_pack.py` |
-| 知识注入对强度的影响 | ✗ 未测量 | 工具：`scripts.llm_arena` |
+| 知识注入对强度的影响 | ◐ 已小样本实测（D30）：未测出收益，方向偏负，不显著 | `reports/review/2026-11_benchmark.md §2.2` |
 | Web 实验台（人机 / AI 对 AI / 干预 / 建议 / 讨论 / 评价 / 回放 / 对比 / 导出） | ✅ 已实现；API 测试 + 浏览器端到端 | `lab/`、`tests/test_lab.py` |
 | 人工数据 → BC 语料 / 监督记录 / `--distill-target human` | ✅ 已实现并测试（导出 → 建 store → 训练 1 轮） | `lab/replay.py`、`lab/export.py` |
 | 人工纠正的反事实校验 | ◐ 已实现，1 项慢测；未做规模化实验 | `lab/verify.py` |
 
 用法与限制：`docs/howto/lab.md`。实验台与 LLM 玩家不进强度验收。
+
+## 3d. 对战平台接入、Benchmark、GLM 实测（D30，2026-11-15）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 平台调研（genius-invokation 对战平台、BetterGI、LPSim、dgisim、GITCGSim 等） | ✅ 完成 | `reports/review/2026-11_platform_review.md` |
+| 对战平台房间客户端（任何策略 spec 以游客身份上桌） | ✅ 已实现；本机上游服务端整局实测（脚本、GLM-5.3 各 1 局）；**线上只读，未与真人对局** | `envs/platform_room.py`、`scripts/platform_play.py`、`tests/test_platform_room.py` |
+| Benchmark 对局套件（`lite` 56 格 / `core` 480 格 / `home` 16 格） | ✅ 已实现并测试；`lite`、`home` 已跑，**`core` 未跑** | `bench/`、`configs/bench/`、`tests/test_bench.py` |
+| 决策场景集 `v1`（292 个：斩杀 52 / 专家一致 160 / 读局面 80） | ✅ 已生成并评测 | `configs/bench/scenarios/v1.json`、`reports/bench/scen_v1.md` |
+| 真实 GLM 接口（`glm-5.3`，Coding Plan 端点） | ✅ 85 局 + 平台 1 局 + 场景题；零回退；首答合法率 99.6% | `reports/review/2026-11_glm_validation.md` |
+| GLM-5.3 在 `lite` 上的表现 | 28 局 0.929 [0.77, 0.98]；对 `heuristic` 配对 +0.41（13 好 / 0 差） | `reports/bench/lite_all.md` |
+| 知识注入（规则、规则 + 策略） | 未测出收益：0 好 / 2 差、0 好 / 4 差，均不显著 | 同上 |
+| 正式神经 checkpoint 上 Benchmark | ✗ 未做（云端只有 D28 的小模型 `bc_dgn_b0`，仅在 `home` 上跑通流程） | `reports/bench/home_refs.md` |
+| 真人对局 | ✗ 未做（需约战；平台无天梯与匹配） | `docs/howto/platform.md` |
+
+全部是模拟器内、小样本结果，不进强度验收，不代表真人竞技水平。用法：`docs/howto/benchmark.md`、`docs/howto/platform.md`。汇总、局限与后续建议：`reports/review/2026-11_d30_technical_summary.md`。
 
 ## 4. 当前排产
 

@@ -1,0 +1,99 @@
+# Benchmark suite "core": the full grid for subjects that play at engine speed
+# (scripted, neural). 480 cells; ~1 CPU-hour per subject on 2 cores.
+# Certification of a pure policy still goes through scripts.eval_protocol.
+
+[suite]
+name = "core"
+description = "ladder on 4 pool decks x 4 expert opponents + 12 held-out human decks over 2 native versions and the latest rules"
+seeds = 5
+
+[[groups]]
+name = "ladder-pool"
+decks = ["natlan_battleship", "unyielding_geo", "superconduct_aggro", "double_geo_navia"]
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@mirror"
+  policy = "legal_random"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@mirror"
+  policy = "heuristic"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@superconduct_aggro"
+  policy = "expert:<deck>"
+  deck = "superconduct_aggro"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@double_geo_navia"
+  policy = "expert:<deck>"
+  deck = "double_geo_navia"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@natlan_battleship"
+  policy = "expert:<deck>"
+  deck = "natlan_battleship"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@unyielding_geo"
+  policy = "expert:<deck>"
+  deck = "unyielding_geo"
+
+[[groups]]
+name = "heldout-native-v6.3"
+version = "v6.3.0"
+human = { split = "test", version = "v6.3.0", count = 4 }
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@human"
+  policy = "legal_random"
+  deck = "human"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"
+
+[[groups]]
+name = "heldout-native-v6.2"
+version = "v6.2.0"
+human = { split = "test", version = "v6.2.0", count = 4 }
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@human"
+  policy = "legal_random"
+  deck = "human"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"
+
+[[groups]]
+name = "heldout-latest"
+version = ""
+human = { split = "test", version = "v6.3.0", count = 4 }
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@human"
+  policy = "legal_random"
+  deck = "human"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"

@@ -1,0 +1,68 @@
+# Benchmark suite "lite": the smallest suite that still covers every axis.
+# Sized for subjects that cost seconds per decision (model APIs): 28 cells per
+# replicate. Pure policies should run `core` (same structure, more of everything).
+# With --replicates 1 this is a pilot: Wilson half-widths are ~±0.18 overall.
+
+[suite]
+name = "lite"
+description = "pilot suite: ladder on 2 pool decks + 2 held-out human decks (native rules and latest rules)"
+seeds = 2
+
+# --- opponent ladder on decks the scripted experts / learned policies know --------
+[[groups]]
+name = "ladder-pool"
+decks = ["natlan_battleship", "unyielding_geo"]
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@mirror"
+  policy = "legal_random"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@mirror"
+  policy = "heuristic"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@superconduct_aggro"
+  policy = "expert:<deck>"
+  deck = "superconduct_aggro"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@double_geo_navia"
+  policy = "expert:<deck>"
+  deck = "double_geo_navia"
+
+# --- held-out decks: tournament deck lists (test split), rules of their own version -
+[[groups]]
+name = "heldout-native"
+version = "v6.3.0"
+human = { split = "test", version = "v6.3.0", count = 2 }
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@human"
+  policy = "legal_random"
+  deck = "human"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"
+
+# --- rules-version shift: the same deck lists under the engine's latest rules -------
+[[groups]]
+name = "heldout-latest"
+version = ""
+human = { split = "test", version = "v6.3.0", count = 2 }
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"

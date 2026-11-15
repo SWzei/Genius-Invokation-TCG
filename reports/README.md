@@ -11,6 +11,12 @@
 | [`review/2026-11_technical_review.md`](./review/2026-11_technical_review.md) | 2026-11 技术审查：H5 分组 bug、对手骰数、座位覆盖（D27）+ 座位探针结果 | valid |
 | [`review/2026-11_masd_adm_compat.md`](./review/2026-11_masd_adm_compat.md) | MASD-ADM / VCSD 兼容层（D28）：接口、最小闭环、未证明性能收益 | valid |
 | [`review/2026-11_lab_platform.md`](./review/2026-11_lab_platform.md) | 实验平台（D29）：模型接入、知识配置、人机实验闭环；真实 API 未调用 | valid |
+| [`review/2026-11_platform_review.md`](./review/2026-11_platform_review.md) | Platform Review（D30）：对战平台 / 模拟器 / 自动化工具调研与接入实测 | valid |
+| [`review/2026-11_benchmark.md`](./review/2026-11_benchmark.md) | Benchmark（D30）：评测设计、基线与 GLM-5.3 实测；模拟器内、小样本 | valid |
+| [`review/2026-11_glm_validation.md`](./review/2026-11_glm_validation.md) | GLM Validation（D30）：真实接口测试记录、性能与成本 | valid |
+| [`review/2026-11_d30_technical_summary.md`](./review/2026-11_d30_technical_summary.md) | Technical Summary（D30）：实际修改、验证结果、局限与后续建议 | valid |
+| [`review/2026-11_d30_summary.md`](./review/2026-11_d30_summary.md) | Technical Summary（D30）：改动、验证结果、局限与后续建议 | valid |
+| [`bench/`](./bench/) | `bench.run` / `bench.scenarios` / `bench.compare` 生成的汇总（`do_not_edit`） | generated |
 | [`EXPLOIT_LADDER.md`](./EXPLOIT_LADDER.md) | 逐 deck PG 剥削阶梯：dgeo 0.880 / ungeo 0.909 | valid |
 | [`SPECIALISTS.md`](./SPECIALISTS.md) | 19 个 deck 的认证最优臂（自动生成） | generated |
 | [`explore/p0_parity_20261027.md`](./explore/p0_parity_20261027.md) | P0 parity / exact id / 干净语料 / A2 复核 | valid |

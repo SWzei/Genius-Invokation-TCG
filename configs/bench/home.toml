@@ -1,0 +1,38 @@
+# Benchmark suite "home": one pool deck against the same opponent ladder as `lite`.
+# Purpose: a like-for-like table for policies that were fitted to a single deck
+# (a behaviour-cloned network trained as the pilot of `double_geo_navia`), next to
+# the scripted expert of that deck and deck-agnostic subjects. 16 cells.
+
+[suite]
+name = "home"
+description = "single pool deck (double_geo_navia) vs the ladder: random, heuristic, two scripted experts"
+seeds = 2
+seed_offset = 300000
+
+[[groups]]
+name = "ladder-home"
+decks = ["double_geo_navia"]
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@mirror"
+  policy = "legal_random"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@mirror"
+  policy = "heuristic"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@superconduct_aggro"
+  policy = "expert:<deck>"
+  deck = "superconduct_aggro"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@natlan_battleship"
+  policy = "expert:<deck>"
+  deck = "natlan_battleship"

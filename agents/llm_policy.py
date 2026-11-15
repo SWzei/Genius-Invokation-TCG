@@ -87,10 +87,14 @@ class DecisionTrace:
     latency_seconds: float = 0.0
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    cached_tokens: int = 0
+    reasoning_tokens: int = 0
     cost: float | None = None
     prompt_chars: int = 0
     prompt_sha: str = ""
     knowledge: dict[str, Any] = field(default_factory=dict)
+    first_reply_legal: bool | None = None   # the first reply mapped onto a legal option (None: not asked)
+    first_error: str | None = None          # why the first reply was not usable
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -102,9 +106,11 @@ class DecisionTrace:
             "model": self.model, "calls": self.calls,
             "latency_seconds": round(self.latency_seconds, 3),
             "prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens,
+            "cached_tokens": self.cached_tokens, "reasoning_tokens": self.reasoning_tokens,
             "cost": None if self.cost is None else round(self.cost, 6),
             "prompt_chars": self.prompt_chars, "prompt_sha": self.prompt_sha,
             "knowledge": self.knowledge,
+            "first_reply_legal": self.first_reply_legal, "first_error": self.first_error,
         }
 
 
@@ -292,15 +298,26 @@ class LLMPolicy:
             trace.latency_seconds += float(result.latency_seconds)
             trace.prompt_tokens += int(result.prompt_tokens)
             trace.completion_tokens += int(result.completion_tokens)
+            trace.cached_tokens += int(getattr(result, "cached_tokens", 0) or 0)
+            trace.reasoning_tokens += int(getattr(result, "reasoning_tokens", 0) or 0)
             trace.model = result.model or trace.model
             if result.cost is not None:
                 trace.cost = (trace.cost or 0.0) + float(result.cost)
             trace.raw = result.text
             if not result.ok:
                 trace.error = f"api:{result.error}"
-                break               # transport-level failure: do not burn another call
+                if trace.first_reply_legal is None:
+                    trace.first_reply_legal, trace.first_error = False, trace.error
+                # An empty answer (the model spent its whole output budget on hidden
+                # reasoning -- seen on real services) is worth one more try; a
+                # transport-level failure is not: do not burn another call.
+                if result.error == "empty_content" and attempts_left > 0 and self._budget_left():
+                    continue
+                break
             index, trace.reason, error = parse_reply(context, protocol, listed, result.text)
             trace.error = error
+            if trace.first_reply_legal is None:
+                trace.first_reply_legal, trace.first_error = index is not None, error
             if index is None and attempts_left > 0 and self._budget_left():
                 messages = messages + [
                     {"role": "assistant", "content": result.text or ""},
@@ -331,12 +348,39 @@ class LLMPolicy:
                 errors[trace.error] = errors.get(trace.error, 0) + 1
         decided = sum(v for k, v in by_source.items() if k != "forced")
         usage = getattr(self.client, "usage", None)
+        asked = [t for t in self.traces if t.first_reply_legal is not None]
+        by_request: dict[str, dict[str, int]] = {}
+        for trace in asked:
+            row = by_request.setdefault(trace.request_type, {"asked": 0, "first_legal": 0, "used": 0})
+            row["asked"] += 1
+            row["first_legal"] += int(bool(trace.first_reply_legal))
+            row["used"] += int(trace.source == "llm")
+        latencies = sorted(t.latency_seconds for t in asked)
+
+        def pct(q: float) -> float | None:
+            return round(latencies[min(len(latencies) - 1, int(q * len(latencies)))], 3) if latencies else None
+
         return {
             "profile": self.profile_name, "decisions": len(self.traces), "by_source": by_source,
             "llm_rate": round(by_source.get("llm", 0) / decided, 4) if decided else None,
             "errors": errors, "calls": self.calls,
             "usage": usage.as_dict() if usage is not None else {},
+            # Legality of the model's *own* answers (the executed action is always
+            # legal: unusable replies fall back). ``asked`` = decisions sent to the model.
+            "asked": len(asked),
+            "first_reply_legal": sum(1 for t in asked if t.first_reply_legal),
+            "first_errors": _count(t.first_error for t in asked if t.first_error),
+            "by_request": by_request,
+            "decision_seconds": {"p50": pct(0.5), "p90": pct(0.9), "max": pct(1.0),
+                                 "sum": round(sum(latencies), 2)},
         }
+
+
+def _count(values: Any) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for value in values:
+        out[str(value)] = out.get(str(value), 0) + 1
+    return out
 
 
 DISCUSS_SYSTEM = (

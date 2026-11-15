@@ -1,0 +1,74 @@
+{
+  "tag": "glm_first",
+  "generated": "2026-11-14T13:36:19",
+  "deck": "natlan_battleship",
+  "contestants": {
+    "llm:glm-53-plan": {
+      "games": 1,
+      "win_rate": {
+        "wins": 0.0,
+        "games": 1,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.7934567085261071
+      },
+      "invalid_games": 0,
+      "engine_fallbacks": 0,
+      "model_answer_rate": 0.9848,
+      "decision_sources": {
+        "llm": 65,
+        "forced": 6,
+        "fallback": 1
+      },
+      "errors": {
+        "api:empty_content": 1
+      },
+      "calls": 66,
+      "prompt_tokens": 85101,
+      "completion_tokens": 14882,
+      "seconds_per_call": 5.487,
+      "cost": 0.168571
+    }
+  },
+  "opponents": [
+    "superconduct_aggro"
+  ],
+  "seeds": [
+    101
+  ],
+  "sides": [
+    0
+  ],
+  "games_planned": 1,
+  "games_done": 1,
+  "stopped": null,
+  "total_calls": 66,
+  "total_cost": 0.168571,
+  "paired_vs_first": {},
+  "note": "screening run; paired differences on a handful of games are not strength results",
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v470-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  }
+}
