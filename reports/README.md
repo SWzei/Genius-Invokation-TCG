@@ -15,6 +15,7 @@
 | [`review/2026-11_benchmark.md`](./review/2026-11_benchmark.md) | Benchmark（D30）：评测设计、基线与 GLM-5.3 实测；模拟器内、小样本 | valid |
 | [`review/2026-11_glm_validation.md`](./review/2026-11_glm_validation.md) | GLM Validation（D30）：真实接口测试记录、性能与成本 | valid |
 | [`review/2026-11_d30_technical_summary.md`](./review/2026-11_d30_technical_summary.md) | Technical Summary（D30）：实际修改、验证结果、局限与后续建议 | valid |
+| [`review/2026-11_deepseek_kb.md`](./review/2026-11_deepseek_kb.md) | DeepSeek-V4.1-Flash 接入与本地知识库基础能力评测（D31）：知识库体检、规则问答、知识配置的场景与整局实验、运行间噪声基线 | valid |
 | [`review/2026-11_d30_summary.md`](./review/2026-11_d30_summary.md) | Technical Summary（D30）：改动、验证结果、局限与后续建议 | valid |
 | [`bench/`](./bench/) | `bench.run` / `bench.scenarios` / `bench.compare` 生成的汇总（`do_not_edit`） | generated |
 | [`EXPLOIT_LADDER.md`](./EXPLOIT_LADDER.md) | 逐 deck PG 剥削阶梯：dgeo 0.880 / ungeo 0.909 | valid |

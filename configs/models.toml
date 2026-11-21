@@ -15,7 +15,7 @@
 
 [profiles.deepseek-chat]
 provider = "deepseek"            # DEEPSEEK_API_KEY
-model = "deepseek-chat"
+model = "deepseek-chat"           # 2026-11 起服务端路由到 DeepSeek-V4.1-Flash（非思考）；新实验用下方 deepseek-flash*
 temperature = 0.0
 max_tokens = 512
 
@@ -165,3 +165,35 @@ price_in = 0.15
 price_cached_in = 0.03
 price_out = 0.50
 extra_body = { reasoning_effort = "low" }
+
+# ---------------------------------------------------------------------------
+# DeepSeek-V4.1-Flash（api.deepseek.com）。模型 id 于 2026-11-21 用 /models 接口核对：
+# `deepseek-flash`（name = DeepSeek-V4.1-Flash，上下文 1M，最大输出 384K）。密钥：DEEPSEEK_API_KEY。
+# - 默认开启思考（effort = high）。`thinking.type = disabled` 关闭；`reasoning_effort` 取 low / high / max。
+#   思考模式下 temperature 无效（不报错）。
+# - 价格（美元 / 百万 token）分时段：下表填的是**非高峰**价；高峰（北京时间工作日 09:00–12:00、14:00–18:00，
+#   即 UTC 01:00–04:00、06:00–10:00）为两倍。账单以控制台为准。
+# - 用量字段与 OpenAI 一致：prompt_tokens_details.cached_tokens、completion_tokens_details.reasoning_tokens。
+# ---------------------------------------------------------------------------
+[profiles.deepseek-flash]
+provider = "deepseek"
+model = "deepseek-flash"
+temperature = 0.0
+max_tokens = 512
+timeout = 120
+retries = 4
+price_in = 0.15
+price_cached_in = 0.003
+price_out = 0.60
+extra_body = { thinking = { type = "disabled" } }
+
+[profiles.deepseek-flash-think]
+provider = "deepseek"
+model = "deepseek-flash"
+max_tokens = 4096
+timeout = 240
+retries = 4
+price_in = 0.15
+price_cached_in = 0.003
+price_out = 0.60
+extra_body = { thinking = { type = "enabled" }, reasoning_effort = "low" }

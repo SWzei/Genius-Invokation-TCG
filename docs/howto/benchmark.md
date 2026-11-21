@@ -113,3 +113,25 @@ python -m bench.scenarios eval --name v1 --subjects heuristic legal_random "llm:
   真人评测的做法见 `docs/howto/platform.md`。
 - **不是强度认证**。`lite` 一轮 28 格，整体胜率的 Wilson 半宽约 ±0.15–0.18；两个受试者差 0.1 在这个样本量下分不出来。
 - 场景集的 `lethal` 只覆盖"这一步就能赢"的局面，不覆盖需要多步规划的决策。
+
+## 6. 知识库评测（2026-11-21 起）
+
+对局与场景测的是"加了知识以后打得怎样"。知识库本身另有两件工具，分开回答"知识库里有什么、能不能被找到、被用到了什么"。
+
+| 工具 | 测什么 | 调用模型 | 入口 |
+|---|---|---|---|
+| 注入体检 | 真实对局的每个决策点上，各知识配置实际选中哪些规则节 / 策略单元、多长、有无版本告警 | 否 | `python -m bench.kb_probe` |
+| 规则问答 | 56 道单选题（答案逐字出自规则章节）；闭卷 / 现有检索 / BM25 检索 / 给定标准章节 四种条件 | 是 | `python -m bench.kb_qa` |
+
+```bash
+python -m bench.kb_probe --suite lite --profiles rules rules-strategy rules-strategy-full --tag kb_probe_lite
+python -m bench.kb_qa check                       # 题库校验：逐字证据、选项、编号
+python -m bench.kb_qa retrieval                   # 检索命中率（不调用模型）
+python -m bench.kb_qa eval --profiles deepseek-flash --tag kbqa_ds
+```
+
+- 题库 `configs/bench/kb_qa/rules_v1.json`：每题记录标准章节与逐字证据，`check` 逐题核对证据出现在该章节原文里。
+  **标准答案 = 知识库原文**，所以它测的是知识库对模型是否可用，不是知识库与官方客户端是否一致（那由知识库自己的交叉核验负责）。
+- 问答按 `(模型档案, 条件, 题号)` 续跑；与闭卷的配对比较用精确 McNemar 检验。
+- 知识配置 `rules-strategy-full`（`configs/knowledge.toml`）把策略单元按"结论 + 关键变量 + 局限"呈现，
+  其余同 `rules-strategy`；用来区分"知识库内容有没有用"与"当前简短呈现有没有用"。`strategy_detail` 默认仍是 `brief`。

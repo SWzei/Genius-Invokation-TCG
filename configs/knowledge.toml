@@ -32,3 +32,12 @@ strategy = true
 # expert_examples = ["data/evidence/<tag>/supervision.jsonl"]
 # custom = ["data/knowledge/custom"]
 # max_chars = 4000
+
+# 2026-11-21：策略单元以"结论 + 关键变量 + 局限"呈现（单元的实质内容），其余同 rules-strategy。
+# 用于区分"知识库内容有没有用"与"当前的简短呈现有没有用"，见 reports/review/2026-11_deepseek_kb.md。
+[profiles.rules-strategy-full]
+rules = true
+strategy = true
+strategy_detail = "full"
+strategy_chars = 600
+max_chars = 4800

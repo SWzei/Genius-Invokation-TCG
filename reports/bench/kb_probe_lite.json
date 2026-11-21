@@ -1,0 +1,370 @@
+{
+  "games": 56,
+  "decisions": 4350,
+  "by_request": {
+    "switch_hands": 56,
+    "choose_active": 134,
+    "reroll_dice": 559,
+    "action": 3473,
+    "select_card": 128
+  },
+  "errors": [],
+  "profiles": {
+    "rules": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 0,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1021.0,
+      "chars_p50": 1268,
+      "chars_max": 1340,
+      "distinct_rule_sections": 11,
+      "rule_sections": {
+        "R03 §1": 2428,
+        "R04 §3": 1636,
+        "R08 §1": 1432,
+        "R04 §2": 1124,
+        "R03 §3": 857,
+        "R02 §4": 816,
+        "R02 §5": 695,
+        "R02 §1": 559,
+        "R03 §2": 512,
+        "R01 §3": 190,
+        "R05 §4": 134
+      },
+      "distinct_units": 0,
+      "units": {},
+      "distinct_rule_sets": 11,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R04 §2",
+            "R04 §3"
+          ],
+          "n": 1124
+        },
+        {
+          "rules": [
+            "R03 §1",
+            "R08 §1",
+            "R02 §4"
+          ],
+          "n": 816
+        },
+        {
+          "rules": [
+            "R02 §1"
+          ],
+          "n": 559
+        },
+        {
+          "rules": [
+            "R03 §3"
+          ],
+          "n": 514
+        },
+        {
+          "rules": [
+            "R02 §5",
+            "R03 §1",
+            "R08 §1"
+          ],
+          "n": 488
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 0,
+          "chars": 25984,
+          "chars_mean": 464.0
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 0,
+          "chars": 115374,
+          "chars_mean": 861.0
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 0,
+          "chars": 262171,
+          "chars_mean": 469.0
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 0,
+          "chars": 3974684,
+          "chars_mean": 1144.5
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 0,
+          "chars": 63104,
+          "chars_mean": 493.0
+        }
+      }
+    },
+    "rules-strategy": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 4202,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1611.4,
+      "chars_p50": 1990,
+      "chars_max": 2148,
+      "distinct_rule_sections": 11,
+      "rule_sections": {
+        "R03 §1": 2428,
+        "R04 §3": 1636,
+        "R08 §1": 1432,
+        "R04 §2": 1124,
+        "R03 §3": 857,
+        "R02 §4": 816,
+        "R02 §5": 695,
+        "R02 §1": 559,
+        "R03 §2": 512,
+        "R01 §3": 190,
+        "R05 §4": 134
+      },
+      "distinct_units": 14,
+      "units": {
+        "S01-P7": 2737,
+        "S04-P1": 2531,
+        "S02-P1": 2145,
+        "S02-P5": 2116,
+        "S06-P4": 1185,
+        "S09-P4": 786,
+        "S01-P2": 777,
+        "S06-P1": 559,
+        "S12-P4": 393,
+        "S10-P3": 177,
+        "S07-P4": 82,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 11,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R04 §2",
+            "R04 §3"
+          ],
+          "n": 1124
+        },
+        {
+          "rules": [
+            "R03 §1",
+            "R08 §1",
+            "R02 §4"
+          ],
+          "n": 816
+        },
+        {
+          "rules": [
+            "R02 §1"
+          ],
+          "n": 559
+        },
+        {
+          "rules": [
+            "R03 §3"
+          ],
+          "n": 514
+        },
+        {
+          "rules": [
+            "R02 §5",
+            "R03 §1",
+            "R08 §1"
+          ],
+          "n": 488
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 37464,
+          "chars_mean": 669.0
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 139738,
+          "chars_mean": 1042.8
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 413331,
+          "chars_mean": 739.4
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 3452,
+          "chars": 6355782,
+          "chars_mean": 1830.1
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 63287,
+          "chars_mean": 494.4
+        }
+      }
+    },
+    "rules-strategy-full": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 4202,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1880.9,
+      "chars_p50": 2321,
+      "chars_max": 2525,
+      "distinct_rule_sections": 11,
+      "rule_sections": {
+        "R03 §1": 2428,
+        "R04 §3": 1636,
+        "R08 §1": 1432,
+        "R04 §2": 1124,
+        "R03 §3": 857,
+        "R02 §4": 816,
+        "R02 §5": 695,
+        "R02 §1": 559,
+        "R03 §2": 512,
+        "R01 §3": 190,
+        "R05 §4": 134
+      },
+      "distinct_units": 14,
+      "units": {
+        "S01-P7": 2737,
+        "S04-P1": 2531,
+        "S02-P1": 2145,
+        "S02-P5": 2116,
+        "S06-P4": 1185,
+        "S09-P4": 786,
+        "S01-P2": 777,
+        "S06-P1": 559,
+        "S12-P4": 393,
+        "S10-P3": 177,
+        "S07-P4": 82,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 11,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R04 §2",
+            "R04 §3"
+          ],
+          "n": 1124
+        },
+        {
+          "rules": [
+            "R03 §1",
+            "R08 §1",
+            "R02 §4"
+          ],
+          "n": 816
+        },
+        {
+          "rules": [
+            "R02 §1"
+          ],
+          "n": 559
+        },
+        {
+          "rules": [
+            "R03 §3"
+          ],
+          "n": 514
+        },
+        {
+          "rules": [
+            "R02 §5",
+            "R03 §1",
+            "R08 §1"
+          ],
+          "n": 488
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 41328,
+          "chars_mean": 738.0
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 151240,
+          "chars_mean": 1128.7
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 469597,
+          "chars_mean": 840.1
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 3452,
+          "chars": 7456193,
+          "chars_mean": 2146.9
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 63340,
+          "chars_mean": 494.8
+        }
+      }
+    }
+  },
+  "kb": {
+    "version": "1.0",
+    "rule_sections": 90,
+    "units": 70,
+    "units_with_detector": 14,
+    "units_by_doc": {
+      "S01": 8,
+      "S02": 6,
+      "S03": 7,
+      "S04": 5,
+      "S05": 4,
+      "S06": 6,
+      "S07": 7,
+      "S08": 6,
+      "S09": 6,
+      "S10": 5,
+      "S11": 5,
+      "S12": 5
+    }
+  },
+  "warning_samples": {},
+  "tag": "kb_probe_lite",
+  "subject": "heuristic",
+  "suite": "lite",
+  "generated": "2026-11-20T22:58:19",
+  "raw": "data/bench/kb_probe_lite/kb_probe.jsonl"
+}

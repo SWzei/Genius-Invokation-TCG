@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -84,6 +84,20 @@
 | 真人对局 | ✗ 未做（需约战；平台无天梯与匹配） | `docs/howto/platform.md` |
 
 全部是模拟器内、小样本结果，不进强度验收，不代表真人竞技水平。用法：`docs/howto/benchmark.md`、`docs/howto/platform.md`。汇总、局限与后续建议：`reports/review/2026-11_d30_technical_summary.md`。
+
+## 3e. DeepSeek-V4.1-Flash 与本地知识库评测（D31，2026-11-21）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| DeepSeek-V4.1-Flash 接入（`deepseek-flash`） | ✅ 非思考模式可用：1.5 万次决策调用全部成功，首答合法率 99.5%–100%，延迟中位 1.1 s；**思考模式不用于逐步对局**（约 1/3 回复为空） | `configs/models.toml`、`reports/review/2026-11_deepseek_kb.md` §1 |
+| DeepSeek 非思考在 `lite` 上（无知识，两轮 112 局） | 0.737 [0.65, 0.81]；强于启发式、与脚本专家持平、弱于 GLM-5.3（低强度思考） | 同上 §4 |
+| 知识库内容可用性（规则问答 56 题） | 闭卷 48；给原文或 BM25 检索 56（+8 / −0，p = 0.008） | `reports/bench/kbqa_ds.md` |
+| 知识库检索 | ✗ 自带 `KnowledgeBase.search` 对中文问句 53/56 返回空；二元字 BM25 前 3 命中 91%（仅评测用，未接入决策） | 同上 |
+| 决策时的注入可达性 | 规则 11/90 节、策略 14/70 单元；4 个策略单元几乎每个行动决策都被选中 | `reports/bench/kb_probe_lite.md` |
+| 知识注入对表现的影响 | 未测出（整局合并 +0.025 [−0.03, +0.08]；单步翻转在重测噪声内） | `reports/bench/ds_lite*.md`、`ds_scen*.md` |
+| 运行间噪声 | 同配置重跑整局 7 / 0（p = 0.016）、单步 13% 选择变化：**配置比较至少两轮** | 同上 |
+
+全部是模拟器内结果，不进强度验收。用法：`docs/howto/benchmark.md` §6。
 
 ## 4. 当前排产
 

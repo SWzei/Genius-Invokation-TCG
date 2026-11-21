@@ -86,6 +86,11 @@ class KnowledgeProfile:
     strategy_confidence: tuple[str, ...] = ()            # () = any KB confidence label
     strategy_docs: tuple[str, ...] = ()                  # () = all; e.g. ("S01", "S06")
     max_strategy: int = 4
+    # How a strategy unit is rendered: "brief" = condition + recommendation (+ limits),
+    # the short labels used since D29; "full" = the unit's conclusion + key variables +
+    # limits from the KB (the substance of the unit; several times longer).
+    strategy_detail: str = "brief"
+    strategy_chars: int = 360
     expert_examples: tuple[str, ...] = ()                # supervision JSONL files
     max_examples: int = 2
     custom: tuple[str, ...] = ()                         # files or directories
@@ -106,6 +111,9 @@ class KnowledgeProfile:
             "strategy_docs": list(self.strategy_docs), "max_strategy": self.max_strategy,
             "expert_examples": list(self.expert_examples), "max_examples": self.max_examples,
             "custom": list(self.custom), "max_custom": self.max_custom, "max_chars": self.max_chars,
+            # only when changed, so manifests written before these options existed stay identical
+            **({"strategy_detail": self.strategy_detail} if self.strategy_detail != "brief" else {}),
+            **({"strategy_chars": self.strategy_chars} if self.strategy_chars != 360 else {}),
         }
 
 
@@ -122,6 +130,8 @@ def profile_from_mapping(name: str, raw: Mapping[str, Any]) -> KnowledgeProfile:
     unknown = set(raw) - known
     if unknown:
         raise ValueError(f"knowledge profile {name!r}: unknown keys {sorted(unknown)}")
+    if str(raw.get("strategy_detail", "brief")) not in ("brief", "full"):
+        raise ValueError(f"knowledge profile {name!r}: strategy_detail must be 'brief' or 'full'")
     values: dict[str, Any] = {}
     for key, value in raw.items():
         default = KnowledgeProfile.__dataclass_fields__[key].default
@@ -318,6 +328,21 @@ class KnowledgeSelector:
             self._custom, warnings = load_custom(profile.custom)
             self.load_warnings.extend(warnings)
         self._game_version = installed_game_version()
+        self._unit_detail: dict[str, Mapping[str, Any]] | None = None
+
+    def _detail(self, unit_id: str) -> Mapping[str, Any]:
+        """Fields of a strategy unit that ``StrategyUnit`` does not carry (conclusion,
+        key variables), read once from the KB's ``strategy_units.jsonl``."""
+        if self._unit_detail is None:
+            self._unit_detail = {}
+            if self.kb is not None and self.kb.root:
+                path = Path(self.kb.root) / "data" / "derived" / "strategy_units.jsonl"
+                if path.exists():
+                    for line in path.read_text(encoding="utf-8").splitlines():
+                        if line.strip():
+                            row = json.loads(line)
+                            self._unit_detail[str(row["id"])] = row
+        return self._unit_detail.get(unit_id, {})
 
     def summary(self) -> dict[str, Any]:
         """What was loaded (for run manifests and the UI)."""
@@ -380,11 +405,19 @@ class KnowledgeSelector:
                 continue
             if profile.strategy_confidence and unit.confidence not in profile.strategy_confidence:
                 continue
-            text = f"适用条件：{unit.condition}。建议：{unit.recommendation}"
-            if unit.limits:
-                text += f"。局限：{_squash(unit.limits, 120)}"
+            detail = self._detail(unit.id) if profile.strategy_detail == "full" else {}
+            if detail.get("conclusion"):
+                text = f"结论：{detail['conclusion']}"
+                if detail.get("key_variables"):
+                    text += f"。关键变量：{detail['key_variables']}"
+                if unit.limits:
+                    text += f"。局限：{_squash(unit.limits, 200)}"
+            else:
+                text = f"适用条件：{unit.condition}。建议：{unit.recommendation}"
+                if unit.limits:
+                    text += f"。局限：{_squash(unit.limits, 120)}"
             items.append(KnowledgeItem(
-                id=unit.id, kind=STRATEGY, title=unit.concept, text=_squash(text, 360),
+                id=unit.id, kind=STRATEGY, title=unit.concept, text=_squash(text, profile.strategy_chars),
                 source=unit.provenance.source, version=unit.provenance.version,
                 baseline=unit.version_baseline,
                 trust=f"KB 置信度 {unit.confidence}；证据 {'/'.join(unit.evidence_types)}",
