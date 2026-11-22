@@ -1,0 +1,25 @@
+# Benchmark suite "anchor" (D34): the scripted-expert rung of "lite" on a fresh seed block.
+# External anchor for model-vs-model knowledge evolution: every KB version plays these
+# cells once, so a version that only learns to beat its own model is noticed.
+
+[suite]
+name = "anchor"
+description = "D34 external anchor: two pool decks against two scripted experts, fresh seeds"
+seeds = 4
+seed_offset = 400000
+
+[[groups]]
+name = "anchor-expert"
+decks = ["natlan_battleship", "unyielding_geo"]
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@superconduct_aggro"
+  policy = "expert:<deck>"
+  deck = "superconduct_aggro"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@double_geo_navia"
+  policy = "expert:<deck>"
+  deck = "double_geo_navia"

@@ -232,23 +232,60 @@ _DETECTORS: dict[str, Detector] = {
 }
 
 
+def _active(player):
+    return next((c for c in player.characters if c.is_active and not c.defeated), None)
+
+
+def _full_energy(player) -> bool:
+    ch = _active(player)
+    return ch is not None and ch.max_energy > 0 and ch.energy >= ch.max_energy
+
+
+# Strategy-layer KB versions (D34, ``reps.kb_versions``) may add or re-condition units.
+# Their detectors live here, keyed by the KB version string (the ``version:`` line of the
+# built KB's README), so v1.0 -- and every other caller of ``matching_units`` (students,
+# replay annotations, frequency tables) -- keeps exactly the original table.
+_VERSION_DETECTORS: dict[str, dict[str, Detector]] = {
+    "1.0-s1": {
+        # 出战角色充能已满且还要打牌：先为爆发留骰
+        "S01-P9": lambda c: _is(c, DecisionType.ACTION) and _full_energy(_me(c))
+        and OptionKind.ACTION_PLAY_CARD.value in _kinds(c) and len(_me(c).dice) >= 3,
+        # 对方未结束、回合中后段我方还剩 3–5 骰且有技能可用：别带骰空过
+        "S02-P7": lambda c: _is(c, DecisionType.ACTION) and not _opp(c).declared_end
+        and 3 <= len(_me(c).dice) <= 5 and OptionKind.ACTION_USE_SKILL.value in _kinds(c)
+        and OptionKind.ACTION_DECLARE_END.value in _kinds(c),
+        # 区域已满（4 个）且可以打牌（原条件 ">= 3" 在 v1.0 的训练对局里几乎总是触发）
+        "S09-P4": lambda c: _is(c, DecisionType.ACTION) and OptionKind.ACTION_PLAY_CARD.value in _kinds(c)
+        and (len(_me(c).supports) >= 4 or len(_me(c).summons) >= 4),
+    },
+}
+
+
+def detector_table(version: str = "") -> dict[str, Detector]:
+    """The detectors in force for a KB version ("" / "1.0" = the original table)."""
+    return {**_DETECTORS, **_VERSION_DETECTORS.get(str(version), {})}
+
+
 def detector_ids() -> tuple[str, ...]:
     return tuple(sorted(_DETECTORS))
 
 
-def matching_units(context: DecisionContext, *, allowed: Sequence[str] | None = None) -> tuple[str, ...]:
+def matching_units(context: DecisionContext, *, allowed: Sequence[str] | None = None,
+                   version: str = "") -> tuple[str, ...]:
     """Ids of strategy units whose formalised condition holds at this decision.
 
     Reads the acting player's ``player_view`` and the legal options only. A
-    context without a player view yields no annotation.
+    context without a player view yields no annotation. ``version``: the KB version
+    whose detector table applies (D34); default = the original v1.0 table.
     """
     if context.player_view is None:
         return ()
-    ids = sorted(_DETECTORS) if allowed is None else [i for i in sorted(allowed) if i in _DETECTORS]
+    table = detector_table(version)
+    ids = sorted(table) if allowed is None else [i for i in sorted(allowed) if i in table]
     out = []
     for unit_id in ids:
         try:
-            if _DETECTORS[unit_id](context):
+            if table[unit_id](context):
                 out.append(unit_id)
         except (AttributeError, IndexError, TypeError):
             continue

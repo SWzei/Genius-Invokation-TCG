@@ -19,6 +19,8 @@
 | [`review/2026-11_kb_training.md`](./review/2026-11_kb_training.md) | 知识接入的分阶段优化（D32）：train/dev/test 划分、S0–S5 各阶段记录、情境规则题与斩杀转化、test 与整局终评、失败与修复 | valid |
 | [`review/2026-11_kb_d33_prereg.md`](./review/2026-11_kb_d33_prereg.md) | D33 预先登记：候选、留出题型、dev 选择规则、最终评估；之后只追加 | valid |
 | [`review/2026-11_kb_d33.md`](./review/2026-11_kb_d33.md) | 针对性优化与防过拟合检验（D33）：dev 选择、v3 / `lite_fresh` 新数据终评、留出题型、充能上限缺失导致的害处、GLM 对照 | valid |
+| [`review/2026-11_kb_d34_prereg.md`](./review/2026-11_kb_d34_prereg.md) | D34 预先登记：模型对战设计、分区、门禁、停止规则；之后只追加 | valid |
+| [`review/2026-11_kb_d34.md`](./review/2026-11_kb_d34.md) | 模型对战驱动的知识库分层进化（D34）：A/A 校准、A/B 主指标、规则卡与引擎核对、教师分析、策略层门禁 | valid |
 | [`review/2026-11_d30_summary.md`](./review/2026-11_d30_summary.md) | Technical Summary（D30）：改动、验证结果、局限与后续建议 | valid |
 | [`bench/`](./bench/) | `bench.run` / `bench.scenarios` / `bench.compare` 生成的汇总（`do_not_edit`） | generated |
 | [`EXPLOIT_LADDER.md`](./EXPLOIT_LADDER.md) | 逐 deck PG 剥削阶梯：dgeo 0.880 / ungeo 0.909 | valid |

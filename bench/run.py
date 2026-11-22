@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import hashlib
 import json
 import os
 import subprocess
@@ -48,6 +49,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-cost", type=float, default=None)
     p.add_argument("--game-timeout", type=float, default=3600.0, help="seconds before a game process is killed")
     p.add_argument("--reference", default=None, help="subject the paired differences are taken against")
+    p.add_argument("--rival", default=None,
+                   help="model-vs-model suites (bench.mirror): the policy spec that replaces '<rival>' in cells")
+    p.add_argument("--trace", action="store_true",
+                   help="keep every decision (prompt, reply, knowledge) of both sides under <run>/traces/ (D34 train games)")
     p.add_argument("--report-only", action="store_true")
     return p
 
@@ -72,9 +77,10 @@ def _spawn(task: dict[str, Any], timeout: float, call_log: Path) -> dict[str, An
 def _totals(rows: list[dict[str, Any]]) -> tuple[int, float]:
     calls = cost = 0
     for row in rows:
-        usage = (row.get("llm") or {}).get("usage") or {}
-        calls += int(usage.get("calls", 0)) + int(usage.get("errors", 0))
-        cost += float(usage.get("cost") or 0.0)
+        for side in ("llm", "rival_llm"):         # a model-vs-model game spends on both sides
+            usage = (row.get(side) or {}).get("usage") or {}
+            calls += int(usage.get("calls", 0)) + int(usage.get("errors", 0))
+            cost += float(usage.get("cost") or 0.0)
     return calls, float(cost)
 
 
@@ -101,8 +107,15 @@ def main(argv: list[str] | None = None) -> int:
                 except ValueError:
                     break
     subjects = list(dict.fromkeys(list((meta or {}).get("subjects", [])) + list(args.subjects)))
+    needs_rival = any("<rival>" in cell.opponent_policy for cell in suite.cells)
+    rival = args.rival or (meta or {}).get("rival")
+    if needs_rival and not rival:
+        raise SystemExit("[bench] this suite plays model against model: pass --rival SPEC")
+    if meta is not None and meta.get("rival") and args.rival and args.rival != meta["rival"]:
+        raise SystemExit(f"[bench] {meta_path} was played against rival {meta['rival']!r}: use a new --tag")
     meta_path.write_text(json.dumps({"suite": suite.as_dict(), "fingerprint": suite.fingerprint,
-                                     "subjects": subjects, "engine_lock": load_engine_lock(),
+                                     "subjects": subjects, **({"rival": rival} if needs_rival else {}),
+                                     "engine_lock": load_engine_lock(),
                                      "runtime": runtime_metadata()}, ensure_ascii=False, indent=2),
                          encoding="utf-8")
 
@@ -134,7 +147,13 @@ def main(argv: list[str] | None = None) -> int:
                 if args.max_cost is not None and cost >= args.max_cost:
                     stopped = f"max_cost reached ({cost:.4f})"
                     return
-                task = {"subject": subject, "cell": cell.as_dict(), "key": cell.key, "decks": suite.decks}
+                cell_dict = cell.as_dict()
+                if needs_rival:
+                    cell_dict["opponent_policy"] = cell.opponent_policy.replace("<rival>", rival)
+                task = {"subject": subject, "cell": cell_dict, "key": cell.key, "decks": suite.decks}
+                if args.trace:
+                    slug = hashlib.sha256(subject.encode("utf-8")).hexdigest()[:10]
+                    task["trace_path"] = str(run_dir / "traces" / slug / f"{cell.key.translate(str.maketrans('/|: ', '____'))}.json")
                 running[pool.submit(_spawn, task, args.game_timeout, run_dir / "calls.jsonl")] = (subject, cell)
 
         queue, running = list(todo), {}
@@ -150,8 +169,8 @@ def main(argv: list[str] | None = None) -> int:
                         rows.append(row)
                         with games_path.open("a", encoding="utf-8") as handle:
                             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
-                    if row.get("fatal"):
-                        dead[subject] = str(row["fatal"])
+                    if row.get("fatal") or row.get("rival_fatal"):
+                        dead[subject] = str(row.get("fatal") or f"rival: {row['rival_fatal']}")
                     flag = " DEGRADED" if row.get("degraded") else ""
                     print(f"[bench] {len(rows)} {subject} | {cell.group} {cell.deck} vs {cell.opponent} "
                           f"seed={cell.seed} side={cell.side} -> score={row.get('score')} "

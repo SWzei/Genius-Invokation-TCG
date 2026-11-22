@@ -1,0 +1,23 @@
+{
+ "generated": "2026-11-22T14:55:45",
+ "tags": [
+  "d34_ab_think_dev"
+ ],
+ "arms": [
+  {
+   "tag": "d34_ab_think_dev",
+   "subject": "llm:deepseek-flash-think#kb=kbt3-trig",
+   "rival": "llm:deepseek-flash-think",
+   "pairs": 0,
+   "dropped_pairs": 3,
+   "games": 6,
+   "errors": 0,
+   "degraded": 6,
+   "seat0_win_rate": null,
+   "same_seat_won_both": 0,
+   "mean_rounds": null,
+   "cost_per_game_subject": null,
+   "cost_per_game_rival": null
+  }
+ ]
+}

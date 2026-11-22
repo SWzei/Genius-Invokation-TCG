@@ -114,3 +114,51 @@ max_unit_frequency = 0.5
 max_strategy = 2
 custom = ["configs/knowledge/custom/lethal_window.md"]
 custom_chars = 800
+
+# D34 KB versions (`reps.kb_versions`; reports/review/2026-11_kb_d34_prereg.md): the D33 access
+# (`kbt3-trig`) on a versioned KB. v1.1 = rule cards at the head of five truncated, frequently
+# injected rule sections + energy cap in R03 §2 (rules layer only).
+[profiles.kbt4-v11]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.1"
+
+# D34: v1.2 = v1.1 + the R03 §2 card names the special-resource exceptions (found by the engine check).
+[profiles.kbt4-v12]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.2"
+
+# D34 strategy round 1: v1.0-s1 (strategy layer on v1.0). Same access as kbt3-trig; the unit
+# frequency table is refitted on `v1` with the s1 detector table (new units S01-P9, S02-P7).
+[profiles.kbt4-s1]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train_s1.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.0-s1"

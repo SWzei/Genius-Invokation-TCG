@@ -1,0 +1,82 @@
+{
+  "bank": "situ_d32",
+  "split": "train",
+  "runs": [
+    "kbt4_situ_train_reason_r1"
+  ],
+  "items": 495,
+  "item_types": {
+    "charged": 99,
+    "reaction": 99,
+    "turn": 99,
+    "end": 99,
+    "summon": 99
+  },
+  "table": [
+    {
+      "kb": "kbt3-trig",
+      "items": 495,
+      "observations": 495,
+      "accuracy": 0.923232,
+      "ci95": [
+        0.896,
+        0.944
+      ],
+      "by_type": {
+        "charged": "73/99",
+        "end": "99/99",
+        "reaction": "95/99",
+        "summon": "92/99",
+        "turn": "98/99"
+      },
+      "ref_in_knowledge": {
+        "charged": "50/99",
+        "end": "27/99",
+        "reaction": "50/99",
+        "summon": "0/99",
+        "turn": "27/99"
+      }
+    },
+    {
+      "kb": "kbt4-v11",
+      "items": 495,
+      "observations": 495,
+      "accuracy": 0.925253,
+      "ci95": [
+        0.899,
+        0.945
+      ],
+      "by_type": {
+        "charged": "73/99",
+        "end": "99/99",
+        "reaction": "96/99",
+        "summon": "91/99",
+        "turn": "99/99"
+      },
+      "ref_in_knowledge": {
+        "charged": "50/99",
+        "end": "25/99",
+        "reaction": "50/99",
+        "summon": "0/99",
+        "turn": "25/99"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt4-v11",
+      "b": "kbt3-trig",
+      "n": 495,
+      "delta": 0.002,
+      "ci95": [
+        -0.0099,
+        0.0139
+      ],
+      "better": 5,
+      "worse": 4,
+      "p": 1.0
+    }
+  ],
+  "generated": "2026-11-22T13:16:46",
+  "tag": "kbt4_situ_train_reason"
+}

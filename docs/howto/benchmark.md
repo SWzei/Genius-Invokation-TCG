@@ -223,3 +223,32 @@ python -m bench.kb_situ build --sets v3 --name situ_v3 --version d33
 python -m bench.run --suite lite_fresh --tag kbt3_fresh_r1 --subjects "llm:deepseek-flash" \
     "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first"
 ```
+
+### 7.7 D34：模型对战与知识库版本
+
+**成对模型对战**（`bench.mirror`）：一对 = 同一种子、同样两副牌、同样座位，受试者与对手各坐一次座位 0；
+对分 0–2，胜率 = 对分均值 / 2。套件锁文件 `configs/bench/mirror_{aa,train,dev,test}.lock.json`
+（赛事阵容 v6.2 / v6.3，按牌组代码哈希分到 train / dev / test，种子 7400001 起）。单元格的对手写作 `<rival>`，
+由 `bench.run --rival SPEC` 填入；对手的花费计入 `--max-calls` / `--max-cost`。`--trace` 保存双方每个决策的提示、回复与知识（只用于 train）。
+
+```bash
+python -m bench.run --suite configs/bench/mirror_dev.lock.json --replicates 80 \
+    --subjects "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first" --rival "llm:deepseek-flash#reply=reason_first" --tag T
+python -m bench.mirror report --tag T --out T                     # 成对汇总
+python -m bench.mirror_digest --tag TRAIN_TAG --out digest.md     # 只对 train：首次分歧 + 逐决策摘要
+python -m bench.run --suite anchor --subjects SPEC --tag T        # 外部锚点：2 副池牌组 vs 2 个脚本专家
+```
+
+**知识库版本**（`reps.kb_versions`，说明见 `configs/knowledge/kb_versions/README.md`）：v1.0 只读；
+`python -m reps.kb_versions build <版本>` 在 v1.0 副本上应用补丁链、用知识库自带工具重建并校验，结果在 `$GITCG_DATA_DIR/kb_versions/`。
+知识配置用 `kb_version = "<版本>"` 选择；未构建的版本直接报错，不会回退到 v1.0。
+策略层版本的检测器写在 `reps/knowledge.py` 的 `_VERSION_DETECTORS`，只对该版本生效。
+`bench.kb_train unit-frequency --kb-version 1.0-s1` 按版本的检测器表重算频次。
+
+**引擎核对**：`python -m bench.kb_engine_check --set v2 --split train --out NAME` 在真实局面上分叉执行，
+核对充能、先手、调和、重击、信息划分与上限。
+
+| 新增配置项 | 位置 | 默认 | 作用 |
+|---|---|---|---|
+| `kb_version` | 知识配置 | `""`（v1.0） | 选择知识库版本 |
+| `--rival` / `--trace` | `bench.run` | — | 模型对战的对手；保存决策记录 |

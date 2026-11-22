@@ -1,0 +1,25 @@
+{
+ "what": "share of action decisions (both seats) at which each strategy unit's detector fires",
+ "fitted_on": [
+  "v1"
+ ],
+ "kb_version": "1.0-s1",
+ "sources": 40,
+ "source_errors": 0,
+ "action_decisions": 2985,
+ "frequency": {
+  "S04-P1": 0.8003,
+  "S02-P1": 0.7253,
+  "S06-P4": 0.7022,
+  "S02-P5": 0.6834,
+  "S01-P7": 0.5591,
+  "S12-P4": 0.3709,
+  "S10-P3": 0.3387,
+  "S01-P2": 0.1779,
+  "S02-P7": 0.1749,
+  "S01-P9": 0.1719,
+  "S07-P4": 0.1518,
+  "S09-P4": 0.0566
+ },
+ "created": "2026-11-22T13:45:26"
+}

@@ -115,6 +115,8 @@ class KnowledgeProfile:
     custom_chars: int = 500
     max_chars: int = 3200                                # whole pack
     kb_root: str = ""                                    # "" = $GITCG_KB_DIR
+    # KB version (D34, reps.kb_versions): "" = v1.0 at kb_root / $GITCG_KB_DIR
+    kb_version: str = ""
 
     @property
     def enabled(self) -> bool:
@@ -134,6 +136,7 @@ class KnowledgeProfile:
             **({"rule_selection": self.rule_selection} if self.rule_selection != "kind_map" else {}),
             **({"rule_triggers": True} if self.rule_triggers else {}),
             **({"rule_trigger_set": self.rule_trigger_set} if self.rule_triggers and self.rule_trigger_set != "d32" else {}),
+            **({"kb_version": self.kb_version} if self.kb_version else {}),
             **({"unit_frequency_file": self.unit_frequency_file,
                 "max_unit_frequency": self.max_unit_frequency} if self.unit_frequency_file else {}),
         }
@@ -351,7 +354,16 @@ class KnowledgeSelector:
         self._custom: list[CustomChunk] = []
         if (profile.rules or profile.strategy) and self.kb is None:
             try:
-                self.kb = KnowledgeBase.load(profile.kb_root or None)
+                if profile.kb_version:
+                    from .kb_versions import resolve
+
+                    try:
+                        root = resolve(profile.kb_version)
+                    except FileNotFoundError as exc:   # a named version must exist: never play without it
+                        raise RuntimeError(str(exc)) from exc
+                    self.kb = KnowledgeBase.load(root)
+                else:
+                    self.kb = KnowledgeBase.load(profile.kb_root or None)
             except FileNotFoundError as exc:
                 self.load_warnings.append(
                     f"knowledge base unavailable ({exc}); rules/strategy are not injected. "
@@ -473,7 +485,9 @@ class KnowledgeSelector:
             return []
         items = []
         frequency = self._frequency()
-        for unit_id in matching_units(context):
+        # a versioned KB (D34) brings its own detector table; v1.0 keeps the original call
+        units = matching_units(context, version=kb.version) if profile.kb_version else matching_units(context)
+        for unit_id in units:
             unit = kb.units.get(unit_id)
             if unit is None:
                 continue

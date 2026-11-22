@@ -1,0 +1,4 @@
+parent = "v1.0"
+layer = "strategy"
+date = "2026-11-22"
+summary = "Strategy round 1: two new units (S01-P9 burst dice, S02-P7 no early end with usable dice), S01-P2 / S07-P4 / S09-P4 rewritten; S09-P4 fires only on a full zone"

@@ -46,7 +46,7 @@ def _frequency_task(task: Mapping[str, Any]) -> dict[str, Any]:
             context = built.context
             if getattr(context.request_type, "value", "") == "action":
                 self.sink["decisions"] += 1
-                for unit in matching_units(context):
+                for unit in matching_units(context, version=task.get("kb_version", "")):
                     self.sink["fired"][unit] += 1
             return super().choose(built)
 
@@ -61,7 +61,7 @@ def _frequency_task(task: Mapping[str, Any]) -> dict[str, Any]:
     return {"decisions": sink["decisions"], "fired": dict(sink["fired"])}
 
 
-def unit_frequency(set_specs: Sequence[str], workers: int = 2) -> dict[str, Any]:
+def unit_frequency(set_specs: Sequence[str], workers: int = 2, kb_version: str = "") -> dict[str, Any]:
     """``set_specs``: ``name`` (all sources) or ``name:split``."""
     from bench.scenarios import load_set
 
@@ -72,7 +72,7 @@ def unit_frequency(set_specs: Sequence[str], workers: int = 2) -> dict[str, Any]
         for i, source in enumerate(scenario_set["sources"]):
             if split and source.get("split") != split:
                 continue
-            tasks.append({"source": source})
+            tasks.append({"source": source, "kb_version": kb_version})
             used.append(f"{name}#{i}")
     results = list(recycled_map(_frequency_task, tasks, workers=workers, tasks_per_child=4))
     decisions = sum(r["decisions"] for r in results)
@@ -81,7 +81,7 @@ def unit_frequency(set_specs: Sequence[str], workers: int = 2) -> dict[str, Any]
         fired.update(r["fired"])
     return {
         "what": "share of action decisions (both seats) at which each strategy unit's detector fires",
-        "fitted_on": list(set_specs), "sources": len(used), "source_errors": sum(1 for r in results if r.get("error")),
+        "fitted_on": list(set_specs), **({"kb_version": kb_version} if kb_version else {}), "sources": len(used), "source_errors": sum(1 for r in results if r.get("error")),
         "action_decisions": decisions,
         "frequency": {k: round(v / max(1, decisions), 4) for k, v in sorted(fired.items(), key=lambda kv: -kv[1])},
         "created": _dt.datetime.now().isoformat(timespec="seconds"),
@@ -319,6 +319,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     f.add_argument("--sets", nargs="+", required=True, help="scenario sets as name or name:split")
     f.add_argument("--out", required=True)
     f.add_argument("--workers", type=int, default=2)
+    f.add_argument("--kb-version", default="", help="detector table of this KB version string (D34), e.g. 1.0-s1")
     s = sub.add_parser("stages")
     s.add_argument("--set", required=True)
     s.add_argument("--split", required=True, choices=["train", "dev", "test", "all"])
@@ -341,7 +342,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"[kb_train] report: reports/bench/{args.tag}.md")
         return 0
     if args.cmd == "unit-frequency":
-        payload = unit_frequency(args.sets, args.workers)
+        payload = unit_frequency(args.sets, args.workers, args.kb_version)
         out = Path(args.out)
         if not out.is_absolute():
             out = REPO_ROOT / out

@@ -111,6 +111,7 @@ class DecisionTrace:
     knowledge: dict[str, Any] = field(default_factory=dict)
     first_reply_legal: bool | None = None   # the first reply mapped onto a legal option (None: not asked)
     first_error: str | None = None          # why the first reply was not usable
+    prompt: str | None = None               # user prompt, kept only when the policy is asked to (D34 traces)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -127,6 +128,7 @@ class DecisionTrace:
             "prompt_chars": self.prompt_chars, "prompt_sha": self.prompt_sha,
             "knowledge": self.knowledge,
             "first_reply_legal": self.first_reply_legal, "first_error": self.first_error,
+            **({"prompt": self.prompt} if self.prompt is not None else {}),
         }
 
 
@@ -307,6 +309,8 @@ class LLMPolicy:
             prompt_sha=hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()[:16],
             knowledge=pack.as_dict() if pack is not None else {},
         )
+        if getattr(self, "keep_prompts", False):
+            trace.prompt = messages[-1]["content"]
         index: int | None = None
         attempts_left = 1 + max(0, int(self.config.retries_on_invalid))
         while attempts_left > 0 and index is None:

@@ -11,6 +11,8 @@ data/**
 !data/.gitkeep
 !data/**/
 !data/**/README.md
+# built KB versions (reps.kb_versions): copies of the external KB, never committed (D34)
+data/kb_versions/**
 *.pt
 *.pth
 *.ckpt
