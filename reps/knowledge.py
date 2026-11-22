@@ -129,6 +129,16 @@ class KnowledgeBase:
             hits = sum(blob.count(term) for term in terms)
             if hits:
                 scored.append((-hits, order, item))
+        if not scored and query.strip():
+            # Chinese has no spaces: a natural question is one "term" and matches nothing.
+            # Fall back to character-bigram BM25 over the same texts.
+            from reps.kb_retrieval import BM25
+
+            items = [*self.units.values(), *self.rules.values()]
+            index = BM25((i, " ".join((item.id, item.concept, item.condition, item.recommendation))
+                          if isinstance(item, StrategyUnit) else " ".join((item.ref, item.heading, item.heading, item.text)))
+                         for i, item in enumerate(items))
+            return [items[i] for i in index.rank(query, int(limit))]
         return [item for _hits, _order, item in sorted(scored, key=lambda row: row[:2])[: int(limit)]]
 
     def rules_for_option_kind(self, kind: str | OptionKind) -> list[RuleSection]:

@@ -22,7 +22,7 @@ experiment subject, not a certified agent.
 Spec strings (``envs.policy.build_policy``)::
 
     llm:<model-profile>[#kb=<knowledge-profile>,fallback=<policy spec>,budget=<calls/game>,
-                         model=<id override>,detail=0|1]
+                         model=<id override>,detail=0|1,reply=choice_first|reason_first]
     llm-assist:<model-profile>#base=<policy spec>[,budget=<calls/game>]
 """
 
@@ -49,6 +49,14 @@ _PROTOCOL = {
     "reroll_dice": '回复格式：{"reroll": [<要重掷的骰子位置编号，可为空>], "reason": "<不超过 40 字的理由>"}',
     "switch_hands": '回复格式：{"swap": [<要替换的手牌位置编号，可为空>], "reason": "<不超过 40 字的理由>"}',
 }
+# reply=reason_first (D32): the justification is written before the choice, so the model
+# states the relevant numbers and rules before committing (a question-level probe showed
+# injected rules were used only when the model had to write such a justification first).
+_PROTOCOL_REASON_FIRST = {
+    "index": '回复格式：{"reason": "<不超过 60 字：先写出与决策相关的局面数字和规则，再说理由>", "choice": <选项编号>}',
+    "reroll_dice": '回复格式：{"reason": "<不超过 60 字的理由>", "reroll": [<要重掷的骰子位置编号，可为空>]}',
+    "switch_hands": '回复格式：{"reason": "<不超过 60 字的理由>", "swap": [<要替换的手牌位置编号，可为空>]}',
+}
 ALL_REQUESTS = ("action", "choose_active", "reroll_dice", "switch_hands", "select_card")
 
 
@@ -61,11 +69,13 @@ class LLMPolicyConfig:
     max_tokens: int | None = None             # None = the profile's
     temperature: float | None = None
     retries_on_invalid: int = 1               # re-ask once when the reply is unusable
+    reply: str = "choice_first"               # or "reason_first"
 
     def as_dict(self) -> dict[str, Any]:
         return {"request_types": list(self.request_types), "budget_per_game": self.budget_per_game,
                 "max_options": self.max_options, "detail": self.detail,
-                "retries_on_invalid": self.retries_on_invalid}
+                "retries_on_invalid": self.retries_on_invalid,
+                **({"reply": self.reply} if self.reply != "choice_first" else {})}
 
 
 @dataclass
@@ -121,8 +131,10 @@ def build_messages(
     knowledge_text: str = "",
     detail: bool = True,
     max_options: int = 40,
+    reply: str = "choice_first",
 ) -> tuple[list[dict[str, str]], str, int]:
     """Prompt for one decision -> (messages, protocol key, options listed)."""
+    protocol = _PROTOCOL_REASON_FIRST if reply == "reason_first" else _PROTOCOL
     request = context.request_type
     parts = [describer.state_text(context, detail=detail)]
     if detail:
@@ -136,19 +148,19 @@ def build_messages(
     if request == DecisionType.REROLL_DICE:
         state = describer.state(context)
         dice = " ".join(f"[{i}]{name}" for i, name in enumerate(state["me"]["dice"]))
-        parts.append(f"现在可以重掷任意数量的骰子（一次）。我方骰子与位置编号：{dice}\n" + _PROTOCOL["reroll_dice"])
+        parts.append(f"现在可以重掷任意数量的骰子（一次）。我方骰子与位置编号：{dice}\n" + protocol["reroll_dice"])
         return _wrap(parts), "reroll_dice", len(me.dice)
     if request == DecisionType.SWITCH_HANDS:
         state = describer.state(context)
         hand = "\n".join(f"[{i}] {card['name']}（{card['kind'] or '牌'}，费用 {card['cost']}）"
                          for i, card in enumerate(state["me"]["hand"]))
         parts.append("现在可以把任意数量的起始手牌换回牌库并重抽等量的牌。手牌与位置编号：\n" + hand
-                     + "\n" + _PROTOCOL["switch_hands"])
+                     + "\n" + protocol["switch_hands"])
         return _wrap(parts), "switch_hands", len(me.hand_cards)
     total = len(context.legal_low_level_specs)
     listed = min(total, max(1, int(max_options)))
     note = "" if listed == total else f"\n（共 {total} 个合法选项，仅列出前 {listed} 个）"
-    parts.append("合法选项：\n" + describer.options_text(context, range(listed)) + note + "\n" + _PROTOCOL["index"])
+    parts.append("合法选项：\n" + describer.options_text(context, range(listed)) + note + "\n" + protocol["index"])
     return _wrap(parts), "index", listed
 
 
@@ -280,7 +292,7 @@ class LLMPolicy:
         pack = self._knowledge(context)
         messages, protocol, listed = build_messages(
             context, self.describer, knowledge_text=pack.text if pack is not None else "",
-            detail=self.config.detail, max_options=self.config.max_options)
+            detail=self.config.detail, max_options=self.config.max_options, reply=self.config.reply)
         prompt_text = json.dumps(messages, ensure_ascii=False, sort_keys=True)
         trace = DecisionTrace(
             step_index=int(context.step_index), request_type=request, n_options=len(codes),
@@ -451,8 +463,12 @@ def build_llm_policy(spec: str, *, seed: int, role: str, call_log: str | None = 
     config = LLMPolicyConfig(
         budget_per_game=int(options["budget"]) if "budget" in options else None,
         detail=options.get("detail", "1") not in ("0", "false", "no"),
+        reply=options.get("reply", "choice_first"),
     )
-    name = f"llm:{profile_name}" + (f"+kb:{knowledge.name}" if selector is not None else "")
+    if config.reply not in ("choice_first", "reason_first"):
+        raise KeyError(f"llm spec option reply must be choice_first or reason_first, got {config.reply!r}")
+    name = (f"llm:{profile_name}" + (f"+kb:{knowledge.name}" if selector is not None else "")
+            + ("+reason_first" if config.reply == "reason_first" else ""))
     return LLMPolicy(client, fallback, selector=selector, config=config, name=name)
 
 

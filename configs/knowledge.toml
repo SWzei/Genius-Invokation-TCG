@@ -41,3 +41,52 @@ strategy = true
 strategy_detail = "full"
 strategy_chars = 600
 max_chars = 4800
+
+# ---------------------------------------------------------------------------
+# 2026-11-21 知识接入优化的阶段配置（D32，见 reports/review/2026-11_kb_training.md）。
+# 每个阶段只在前一阶段上加一项改动；kbt-s0 与 rules-strategy 设置相同。
+# ---------------------------------------------------------------------------
+[profiles.kbt-s0]
+rules = true
+strategy = true
+
+# S1：规则按局面检索（BM25，查询 = 合法选项 + 公开局面），替代按行动类型的固定映射
+[profiles.kbt-s1]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+
+# S2：S1 + 在训练集行动决策中触发过于频繁（> 50%）的策略单元不注入；每次最多 2 个
+[profiles.kbt-s2]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+
+# S3：S2 + 训练集错误分析得出的针对性资料（只在"斩杀窗口"出现时注入）
+[profiles.kbt-s3]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+
+# S4：S3 + 情境触发规则（训练集错误分析：所需规则节几乎从未被选中；R03 §1 在对方已宣布结束时误导）。
+# 对方已宣布结束 → R03 §3、R01 §4.3；对方出战角色有附着 → R06 §2、R06 §3.1；
+# 我方召唤物 ≥ 3 → R07 §1；可使用技能 → R04 §3。触发的规则节优先，其余按检索补足，每次最多 4 节。
+[profiles.kbt-s4]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800

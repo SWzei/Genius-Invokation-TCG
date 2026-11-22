@@ -1,0 +1,133 @@
+{
+  "bank": "situ_d32",
+  "split": "dev",
+  "runs": [
+    "kbt_situ_dev_reason_r1",
+    "kbt_situ_dev_reason_r2"
+  ],
+  "items": 245,
+  "item_types": {
+    "charged": 49,
+    "reaction": 49,
+    "turn": 49,
+    "end": 49,
+    "summon": 49
+  },
+  "table": [
+    {
+      "kb": "none",
+      "items": 245,
+      "observations": 490,
+      "accuracy": 0.828571,
+      "ci95": [
+        0.793,
+        0.859
+      ],
+      "by_type": {
+        "charged": "47/98",
+        "end": "98/98",
+        "reaction": "92/98",
+        "summon": "80/98",
+        "turn": "89/98"
+      },
+      "ref_in_knowledge": {
+        "charged": "0/98",
+        "end": "0/98",
+        "reaction": "0/98",
+        "summon": "0/98",
+        "turn": "0/98"
+      }
+    },
+    {
+      "kb": "kbt-s0",
+      "items": 245,
+      "observations": 490,
+      "accuracy": 0.881633,
+      "ci95": [
+        0.85,
+        0.907
+      ],
+      "by_type": {
+        "charged": "80/98",
+        "end": "98/98",
+        "reaction": "91/98",
+        "summon": "90/98",
+        "turn": "73/98"
+      },
+      "ref_in_knowledge": {
+        "charged": "54/98",
+        "end": "2/98",
+        "reaction": "0/98",
+        "summon": "0/98",
+        "turn": "2/98"
+      }
+    },
+    {
+      "kb": "kbt-s4",
+      "items": 245,
+      "observations": 490,
+      "accuracy": 0.92449,
+      "ci95": [
+        0.898,
+        0.945
+      ],
+      "by_type": {
+        "charged": "74/98",
+        "end": "98/98",
+        "reaction": "93/98",
+        "summon": "92/98",
+        "turn": "96/98"
+      },
+      "ref_in_knowledge": {
+        "charged": "46/98",
+        "end": "28/98",
+        "reaction": "48/98",
+        "summon": "2/98",
+        "turn": "28/98"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt-s0",
+      "b": "none",
+      "n": 245,
+      "delta": 0.0531,
+      "ci95": [
+        0.0097,
+        0.0965
+      ],
+      "better": 27,
+      "worse": 15,
+      "p": 0.0884
+    },
+    {
+      "a": "kbt-s4",
+      "b": "none",
+      "n": 245,
+      "delta": 0.0959,
+      "ci95": [
+        0.0566,
+        0.1352
+      ],
+      "better": 32,
+      "worse": 4,
+      "p": 0.0
+    },
+    {
+      "a": "kbt-s4",
+      "b": "kbt-s0",
+      "n": 245,
+      "delta": 0.0429,
+      "ci95": [
+        0.0081,
+        0.0776
+      ],
+      "better": 17,
+      "worse": 6,
+      "p": 0.0347
+    }
+  ],
+  "generated": "2026-11-21T21:35:35",
+  "tag": "kbt_situ_dev_reason"
+}

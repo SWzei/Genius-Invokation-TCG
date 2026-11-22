@@ -320,6 +320,12 @@ def test_prompt_is_built_from_the_view_only(by_request, describer):
     assert listed == 3 and "仅列出前 3 个" in messages[1]["content"]
     with_knowledge, _, _ = build_messages(action.context, describer, knowledge_text="【规则事实】x")
     assert "规则事实与策略观点已分开标注" in with_knowledge[1]["content"]
+    # reply=reason_first (D32): the justification comes before the choice; replies parse the same
+    first, _, _ = build_messages(action.context, describer, reply="reason_first")
+    tail = first[1]["content"].rsplit("回复格式", 1)[1]
+    assert tail.index('"reason"') < tail.index('"choice"')
+    plain_tail = messages[1]["content"].rsplit("回复格式", 1)[1]
+    assert plain_tail.index('"choice"') < plain_tail.index('"reason"')
 
 
 def test_replies_are_validated_against_the_legal_options(by_request):
@@ -427,6 +433,11 @@ def test_spec_strings():
     policy = build_policy("llm:mock:last#fallback=legal_random,budget=3,model=first", seed=1, role="p0")
     assert policy.config.budget_per_game == 3 and policy.client.profile.model == "first" and policy.selector is None
     assert policy.name == "llm:mock:last"
+    reasoned = build_policy("llm:mock:last#reply=reason_first", seed=1, role="p0")
+    assert reasoned.config.reply == "reason_first" and reasoned.name == "llm:mock:last+reason_first"
+    assert reasoned.config.as_dict()["reply"] == "reason_first" and "reply" not in policy.config.as_dict()
+    with pytest.raises(KeyError):
+        build_policy("llm:mock#reply=sideways", seed=1, role="p0")
     with pytest.raises(Exception):
         build_policy("llm:no-such-profile", seed=1, role="p0")
     with pytest.raises(KeyError):

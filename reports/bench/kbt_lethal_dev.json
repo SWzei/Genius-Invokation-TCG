@@ -1,0 +1,298 @@
+{
+  "set": "v2",
+  "split": "dev",
+  "metric": "converted",
+  "runs": [
+    "kbt_dev_r1",
+    "kbt_dev_r2"
+  ],
+  "items_in_split": 64,
+  "table": [
+    {
+      "subject": "llm:deepseek-flash",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.921875,
+      "ci95_obs": [
+        0.862,
+        0.957
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 59,
+          "rate": 0.9219
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 59,
+          "rate": 0.9219
+        }
+      },
+      "tokens_in_per_call": 1399.9,
+      "calls_per_item": 1.47,
+      "cost": 0.02606,
+      "first_reply_illegal_items": 8
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s0",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.90625,
+      "ci95_obs": [
+        0.843,
+        0.946
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 58,
+          "rate": 0.9062
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 58,
+          "rate": 0.9062
+        }
+      },
+      "tokens_in_per_call": 2643.8,
+      "calls_per_item": 1.36,
+      "cost": 0.02971,
+      "first_reply_illegal_items": 7
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s4",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.898438,
+      "ci95_obs": [
+        0.834,
+        0.94
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 57,
+          "rate": 0.8906
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 58,
+          "rate": 0.9062
+        }
+      },
+      "tokens_in_per_call": 3055.0,
+      "calls_per_item": 1.09,
+      "cost": 0.02752,
+      "first_reply_illegal_items": 0
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.976562,
+      "ci95_obs": [
+        0.933,
+        0.992
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 63,
+          "rate": 0.9844
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 62,
+          "rate": 0.9688
+        }
+      },
+      "tokens_in_per_call": 3073.3,
+      "calls_per_item": 1.14,
+      "cost": 0.01487,
+      "first_reply_illegal_items": 0
+    },
+    {
+      "subject": "llm:deepseek-flash#reply=reason_first",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.898438,
+      "ci95_obs": [
+        0.834,
+        0.94
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 57,
+          "rate": 0.8906
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 58,
+          "rate": 0.9062
+        }
+      },
+      "tokens_in_per_call": 1475.9,
+      "calls_per_item": 1.32,
+      "cost": 0.01318,
+      "first_reply_illegal_items": 4
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s0",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": -0.0156,
+      "ci95": [
+        -0.0462,
+        0.015
+      ],
+      "better_items": 0,
+      "worse_items": 1,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": -0.0234,
+      "ci95": [
+        -0.0788,
+        0.0319
+      ],
+      "better_items": 1,
+      "worse_items": 3,
+      "sign_test_p": 0.625
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4",
+      "b": "llm:deepseek-flash#kb=kbt-s0",
+      "n": 64,
+      "delta": -0.0078,
+      "ci95": [
+        -0.0714,
+        0.0558
+      ],
+      "better_items": 2,
+      "worse_items": 3,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": 0.0547,
+      "ci95": [
+        0.0007,
+        0.1087
+      ],
+      "better_items": 4,
+      "worse_items": 0,
+      "sign_test_p": 0.125
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s0",
+      "n": 64,
+      "delta": 0.0703,
+      "ci95": [
+        0.0091,
+        0.1315
+      ],
+      "better_items": 5,
+      "worse_items": 0,
+      "sign_test_p": 0.0625
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4",
+      "n": 64,
+      "delta": 0.0781,
+      "ci95": [
+        0.0156,
+        0.1407
+      ],
+      "better_items": 6,
+      "worse_items": 0,
+      "sign_test_p": 0.0312
+    },
+    {
+      "a": "llm:deepseek-flash#reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": -0.0234,
+      "ci95": [
+        -0.0788,
+        0.0319
+      ],
+      "better_items": 1,
+      "worse_items": 3,
+      "sign_test_p": 0.625
+    },
+    {
+      "a": "llm:deepseek-flash#reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s0",
+      "n": 64,
+      "delta": -0.0078,
+      "ci95": [
+        -0.0714,
+        0.0558
+      ],
+      "better_items": 2,
+      "worse_items": 3,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4",
+      "n": 64,
+      "delta": 0.0,
+      "ci95": [
+        -0.0655,
+        0.0655
+      ],
+      "better_items": 3,
+      "worse_items": 3,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "n": 64,
+      "delta": -0.0781,
+      "ci95": [
+        -0.1407,
+        -0.0156
+      ],
+      "better_items": 0,
+      "worse_items": 6,
+      "sign_test_p": 0.0312
+    }
+  ],
+  "stability": {
+    "llm:deepseek-flash": {
+      "items_with_2_runs": 64,
+      "disagree": 0
+    },
+    "llm:deepseek-flash#kb=kbt-s0": {
+      "items_with_2_runs": 64,
+      "disagree": 0
+    },
+    "llm:deepseek-flash#kb=kbt-s4": {
+      "items_with_2_runs": 64,
+      "disagree": 1
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "items_with_2_runs": 64,
+      "disagree": 1
+    },
+    "llm:deepseek-flash#reply=reason_first": {
+      "items_with_2_runs": 64,
+      "disagree": 1
+    }
+  },
+  "generated": "2026-11-21T21:35:37",
+  "tag": "kbt_lethal_dev"
+}

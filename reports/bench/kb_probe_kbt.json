@@ -1,0 +1,537 @@
+{
+  "games": 56,
+  "decisions": 4350,
+  "by_request": {
+    "switch_hands": 56,
+    "choose_active": 134,
+    "reroll_dice": 559,
+    "action": 3473,
+    "select_card": 128
+  },
+  "errors": [],
+  "profiles": {
+    "kbt-s0": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 4202,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1611.4,
+      "chars_p50": 1990,
+      "chars_max": 2148,
+      "distinct_rule_sections": 11,
+      "rule_sections": {
+        "R03 §1": 2428,
+        "R04 §3": 1636,
+        "R08 §1": 1432,
+        "R04 §2": 1124,
+        "R03 §3": 857,
+        "R02 §4": 816,
+        "R02 §5": 695,
+        "R02 §1": 559,
+        "R03 §2": 512,
+        "R01 §3": 190,
+        "R05 §4": 134
+      },
+      "distinct_units": 14,
+      "units": {
+        "S01-P7": 2737,
+        "S04-P1": 2531,
+        "S02-P1": 2145,
+        "S02-P5": 2116,
+        "S06-P4": 1185,
+        "S09-P4": 786,
+        "S01-P2": 777,
+        "S06-P1": 559,
+        "S12-P4": 393,
+        "S10-P3": 177,
+        "S07-P4": 82,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 11,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R04 §2",
+            "R04 §3"
+          ],
+          "n": 1124
+        },
+        {
+          "rules": [
+            "R03 §1",
+            "R08 §1",
+            "R02 §4"
+          ],
+          "n": 816
+        },
+        {
+          "rules": [
+            "R02 §1"
+          ],
+          "n": 559
+        },
+        {
+          "rules": [
+            "R03 §3"
+          ],
+          "n": 514
+        },
+        {
+          "rules": [
+            "R02 §5",
+            "R03 §1",
+            "R08 §1"
+          ],
+          "n": 488
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 37464,
+          "chars_mean": 669.0
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 139738,
+          "chars_mean": 1042.8
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 413331,
+          "chars_mean": 739.4
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 3452,
+          "chars": 6355782,
+          "chars_mean": 1830.1
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 63287,
+          "chars_mean": 494.4
+        }
+      }
+    },
+    "kbt-s1": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 4202,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1811.4,
+      "chars_p50": 1896,
+      "chars_max": 2159,
+      "distinct_rule_sections": 19,
+      "rule_sections": {
+        "R03 §2": 2839,
+        "R03 §1": 2289,
+        "R01 §4.2": 2143,
+        "R10 §2": 2106,
+        "R03 §3": 1271,
+        "R04 §1": 1252,
+        "R02 §2": 377,
+        "R08 §1": 205,
+        "R08 §2": 169,
+        "R06 §3.1": 166,
+        "R06 §2": 139,
+        "R07 §1": 23,
+        "R02 §5": 20,
+        "R05 §3": 12,
+        "R02 §1": 9,
+        "R01 §3": 8,
+        "R08 §6": 8,
+        "R03 §7": 8,
+        "R05 §4": 6
+      },
+      "distinct_units": 14,
+      "units": {
+        "S01-P7": 2737,
+        "S04-P1": 2531,
+        "S02-P1": 2145,
+        "S02-P5": 2116,
+        "S06-P4": 1185,
+        "S09-P4": 786,
+        "S01-P2": 777,
+        "S06-P1": 559,
+        "S12-P4": 393,
+        "S10-P3": 177,
+        "S07-P4": 82,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 181,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R03 §2",
+            "R01 §4.2"
+          ],
+          "n": 884
+        },
+        {
+          "rules": [
+            "R03 §2",
+            "R03 §1",
+            "R01 §4.2"
+          ],
+          "n": 736
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R04 §1"
+          ],
+          "n": 370
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R03 §2"
+          ],
+          "n": 297
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R01 §4.2"
+          ],
+          "n": 156
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 82872,
+          "chars_mean": 1479.9
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 199862,
+          "chars_mean": 1491.5
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 925403,
+          "chars_mean": 1655.5
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 3452,
+          "chars": 6522203,
+          "chars_mean": 1878.0
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 149337,
+          "chars_mean": 1166.7
+        }
+      }
+    },
+    "kbt-s2": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 3671,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1444.4,
+      "chars_p50": 1476,
+      "chars_max": 1798,
+      "distinct_rule_sections": 19,
+      "rule_sections": {
+        "R03 §2": 2839,
+        "R03 §1": 2289,
+        "R01 §4.2": 2143,
+        "R10 §2": 2106,
+        "R03 §3": 1271,
+        "R04 §1": 1252,
+        "R02 §2": 377,
+        "R08 §1": 205,
+        "R08 §2": 169,
+        "R06 §3.1": 166,
+        "R06 §2": 139,
+        "R07 §1": 23,
+        "R02 §5": 20,
+        "R05 §3": 12,
+        "R02 §1": 9,
+        "R01 §3": 8,
+        "R08 §6": 8,
+        "R03 §7": 8,
+        "R05 §4": 6
+      },
+      "distinct_units": 9,
+      "units": {
+        "S09-P4": 2052,
+        "S12-P4": 1140,
+        "S01-P2": 777,
+        "S10-P3": 596,
+        "S06-P1": 559,
+        "S07-P4": 178,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 181,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §1",
+            "R03 §2",
+            "R01 §4.2"
+          ],
+          "n": 884
+        },
+        {
+          "rules": [
+            "R03 §2",
+            "R03 §1",
+            "R01 §4.2"
+          ],
+          "n": 736
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R04 §1"
+          ],
+          "n": 370
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R03 §2"
+          ],
+          "n": 297
+        },
+        {
+          "rules": [
+            "R10 §2",
+            "R03 §3",
+            "R01 §4.2"
+          ],
+          "n": 156
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 82872,
+          "chars_mean": 1479.9
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 199862,
+          "chars_mean": 1491.5
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 925403,
+          "chars_mean": 1655.5
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 2921,
+          "chars": 4925511,
+          "chars_mean": 1418.2
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 149337,
+          "chars_mean": 1166.7
+        }
+      }
+    },
+    "kbt-s4": {
+      "decisions_with_rules": 4350,
+      "decisions_with_strategy": 3671,
+      "decisions_with_version_warning": 0,
+      "chars_mean": 1857.8,
+      "chars_p50": 1811,
+      "chars_max": 2716,
+      "distinct_rule_sections": 25,
+      "rule_sections": {
+        "R03 §2": 2479,
+        "R10 §2": 2199,
+        "R03 §3": 1875,
+        "R03 §1": 1851,
+        "R01 §4.2": 1571,
+        "R06 §3.1": 1492,
+        "R06 §2": 1482,
+        "R04 §1": 1215,
+        "R01 §4.3": 1128,
+        "R04 §3": 1069,
+        "R02 §2": 449,
+        "R08 §1": 293,
+        "R08 §2": 117,
+        "R07 §1": 37,
+        "R01 §3": 31,
+        "R02 §1": 30,
+        "R02 §5": 25,
+        "R03 §7": 21,
+        "R05 §3": 15,
+        "R08 §6": 9,
+        "R07 §5": 4,
+        "R05 §4": 3,
+        "R01 §4.1": 3,
+        "R09 §2": 1,
+        "R09 §1": 1
+      },
+      "distinct_units": 9,
+      "units": {
+        "S09-P4": 2052,
+        "S12-P4": 1140,
+        "S01-P2": 777,
+        "S10-P3": 596,
+        "S06-P1": 559,
+        "S07-P4": 178,
+        "S04-P4": 78,
+        "S05-P1": 56,
+        "S05-P3": 56
+      },
+      "distinct_rule_sets": 377,
+      "top_rule_sets": [
+        {
+          "rules": [
+            "R03 §3",
+            "R01 §4.3",
+            "R06 §2",
+            "R06 §3.1"
+          ],
+          "n": 423
+        },
+        {
+          "rules": [
+            "R04 §3",
+            "R03 §2",
+            "R03 §1",
+            "R01 §4.2"
+          ],
+          "n": 327
+        },
+        {
+          "rules": [
+            "R04 §3",
+            "R03 §1",
+            "R03 §2",
+            "R01 §4.2"
+          ],
+          "n": 271
+        },
+        {
+          "rules": [
+            "R03 §1",
+            "R03 §2",
+            "R01 §4.2",
+            "R10 §2"
+          ],
+          "n": 221
+        },
+        {
+          "rules": [
+            "R06 §2",
+            "R06 §3.1",
+            "R04 §3",
+            "R03 §2"
+          ],
+          "n": 197
+        }
+      ],
+      "per_request": {
+        "switch_hands": {
+          "n": 56,
+          "with_rules": 56,
+          "with_strategy": 56,
+          "chars": 104348,
+          "chars_mean": 1863.4
+        },
+        "choose_active": {
+          "n": 134,
+          "with_rules": 134,
+          "with_strategy": 134,
+          "chars": 257412,
+          "chars_mean": 1921.0
+        },
+        "reroll_dice": {
+          "n": 559,
+          "with_rules": 559,
+          "with_strategy": 559,
+          "chars": 1191540,
+          "chars_mean": 2131.6
+        },
+        "action": {
+          "n": 3473,
+          "with_rules": 3473,
+          "with_strategy": 2921,
+          "chars": 6323644,
+          "chars_mean": 1820.8
+        },
+        "select_card": {
+          "n": 128,
+          "with_rules": 128,
+          "with_strategy": 1,
+          "chars": 204323,
+          "chars_mean": 1596.3
+        }
+      }
+    }
+  },
+  "kb": {
+    "version": "1.0",
+    "rule_sections": 90,
+    "units": 70,
+    "units_with_detector": 14,
+    "units_by_doc": {
+      "S01": 8,
+      "S02": 6,
+      "S03": 7,
+      "S04": 5,
+      "S05": 4,
+      "S06": 6,
+      "S07": 7,
+      "S08": 6,
+      "S09": 6,
+      "S10": 5,
+      "S11": 5,
+      "S12": 5
+    }
+  },
+  "warning_samples": {},
+  "tag": "kb_probe_kbt",
+  "subject": "heuristic",
+  "suite": "lite",
+  "generated": "2026-11-21T21:45:23",
+  "raw": "data/bench/kb_probe_kbt/kb_probe.jsonl"
+}

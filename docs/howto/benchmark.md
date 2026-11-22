@@ -135,3 +135,71 @@ python -m bench.kb_qa eval --profiles deepseek-flash --tag kbqa_ds
 - 问答按 `(模型档案, 条件, 题号)` 续跑；与闭卷的配对比较用精确 McNemar 检验。
 - 知识配置 `rules-strategy-full`（`configs/knowledge.toml`）把策略单元按"结论 + 关键变量 + 局限"呈现，
   其余同 `rules-strategy`；用来区分"知识库内容有没有用"与"当前简短呈现有没有用"。`strategy_detail` 默认仍是 `brief`。
+
+## 7. 知识接入的分阶段优化（D32，2026-11-21 起）
+
+D31 的结论是"知识库内容可用，但接入层没让它在决策时起作用"。D32 用一套固定的数据纪律逐阶段改接入层，每一阶段都留档。
+
+### 7.1 数据划分
+
+- 场景集 v2（`configs/bench/scenarios/v2.json`，160 局源对局、219 道斩杀题）的每个源对局按种子固定分到
+  `train` / `dev` / `test`（约 40 / 30 / 30，`bench.scenarios.split_of`），同一局的所有题同属一份。v1 没有划分，整体当 `train`。
+- **错误分析、频次统计等一切拟合只在 `train` 上做；阶段之间只在 `dev` 上比；`test` 与 `lite` 整局只在选定最终阶段后各跑一次。**
+- 生成可续跑：每局源对局完成即写入 `data/bench/scen_build_<name>.jsonl`，中断后重跑同一命令从断点继续。
+
+### 7.2 斩杀的三种计分
+
+| 字段 | 含义 | 用法 |
+|---|---|---|
+| `correct` | 这一步就选了立即获胜的选项（D30 原口径） | 会把"先打一张免费牌再斩杀"判错 |
+| `kept` | 这一步赢了，或者走完这一步、在对方行动之前的下一个己方决策上仍有立即获胜的选项 | `bench.scenarios keep` 可为旧运行补算 |
+| `converted` | 让受试者继续打完本轮（最多 `--max-steps` 个己方决策），在对方行动前赢下 | `--convert`，D32 的斩杀主指标；用单独的 `--tag` |
+
+### 7.3 情境规则题（`bench.kb_situ`）
+
+斩杀转化在 v1 上已有 0.92（无知识），接近天花板，对知识接入不敏感。情境规则题从真实对局的决策点取局面，
+问一道必须结合**当前局面**与**规则表**才能答的单选题，标准答案由程序从可见状态和知识库规则表算出：
+
+| 题型 | 依据 | 例 |
+|---|---|---|
+| `charged` | R04 §3：行动前骰子数为偶数则普通攻击视为重击 | "现在直接普攻，是否视为重击？" |
+| `reaction` | R06 §2 附着转移表 + R06 §3.1 反应效果 | "对方出战角色现在受到 1 次火伤，会发生什么？"（无附着时问"先 X 后 Y"） |
+| `turn` | R03 §3：对方已宣布结束时战斗行动后仍由我方行动 | "现在使用技能之后由谁行动？" |
+| `end` | R03 §3、R01 §4.3 | "现在宣布回合结束，接下来会发生什么？" |
+| `summon` | R07 §1：召唤物区最多 4 个 | "召唤物区还能再容纳几个新召唤物？" |
+
+**知识按决策时的局面选取，不看题目**（与对局里的选取代码相同），所以它测的是"决策时注入的知识是否包含、并被用于该局面需要的规则"。
+
+```bash
+python -m bench.kb_situ build  --sets v1 v2 --name situ_d32                                  # 题库（已入库）
+python -m bench.kb_situ render --name situ_d32 --profiles kbt-s0 kbt-s4 --tag kbt_situ_render  # 每个局面重放一次，缓存局面文本与各配置的知识
+python -m bench.kb_situ eval   --name situ_d32 --render kbt_situ_render --tag kbt_situ_dev_r1 \
+    --model deepseek-flash --kb none kbt-s0 kbt-s4 --split dev                                  # --mode reason：先写依据再作答（另用一个 --tag）
+python -m bench.kb_situ report --name situ_d32 --runs kbt_situ_dev_r1 kbt_situ_dev_r2 --kb none kbt-s0 kbt-s4 --split dev --tag kbt_situ_dev
+```
+
+报告除正确率外还列"注入的知识里有没有该题所需的规则节"，用来区分"没给到"与"给了没用上"。
+
+### 7.4 阶段报告与整局合并
+
+```bash
+python -m bench.kb_train unit-frequency --sets v1 --out configs/knowledge/unit_frequency_train.json   # 策略单元在 train 上的触发频次
+python -m bench.kb_train stages --set v2 --split dev --runs kbt_dev_r1 kbt_dev_r2 \
+    --subjects "llm:deepseek-flash" "llm:deepseek-flash#kb=kbt-s4,reply=reason_first" --tag kbt_lethal_dev
+python -m bench.kb_train games --arm "none=ds_lite:llm:deepseek-flash;kbt_lite_r1:llm:deepseek-flash" \
+    --arm "s5=kbt_lite_r1:llm:deepseek-flash#kb=kbt-s4,reply=reason_first" --tag kbt_lite
+```
+
+`stages` 按题合并多轮、配对比较并报告同配置两轮不一致的题数；`games` 把同一配置的多轮整局按格合并后逐格配对。
+
+### 7.5 新增配置项
+
+| 项 | 位置 | 默认 | 作用 |
+|---|---|---|---|
+| `rule_selection = "retrieve"` | 知识配置 | `kind_map` | 规则节按决策文本（合法选项 + 公开局面）做二元字 BM25 检索 |
+| `rule_triggers = true` | 知识配置 | `false` | 可见局面满足条件时先放入对应规则节（`reps.kb_retrieval.RULE_TRIGGERS`） |
+| `unit_frequency_file` / `max_unit_frequency` | 知识配置 | 不过滤 | 在 train 上触发过于频繁的策略单元不注入 |
+| 自定义资料 `when:` | 资料头 | 无 | 只在指定局面（`SITUATIONS`，如 `lethal_window`）出现时注入 |
+| `reply=reason_first` | LLM spec | `choice_first` | 回复格式先写依据（局面数字与规则）再给选项 |
+
+默认值下旧配置的清单输出与提示词不变。

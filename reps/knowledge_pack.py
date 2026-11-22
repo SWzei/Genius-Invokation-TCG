@@ -91,6 +91,21 @@ class KnowledgeProfile:
     # limits from the KB (the substance of the unit; several times longer).
     strategy_detail: str = "brief"
     strategy_chars: int = 360
+    # How rule sections are chosen: "kind_map" = the fixed option-kind -> section map
+    # (since D29); "retrieve" = BM25 over the sections against the visible decision
+    # (options + public state), skipping documents that do not describe play.
+    rule_selection: str = "kind_map"
+    rule_exclude_docs: tuple[str, ...] = ("R00", "R11", "R12", "R13")
+    # Situation-triggered rule sections (reps.kb_retrieval.RULE_TRIGGERS): when a visible
+    # situation holds (the opponent has declared end, the opponent's active character
+    # carries an element, ...) its governing sections come first; the rest is filled by
+    # ``rule_selection``.
+    rule_triggers: bool = False
+    # Strategy units whose detector fires on more than this share of decisions in the
+    # frequency table (measured on training data) carry no information about the
+    # decision and are dropped. 1.0 = keep everything.
+    unit_frequency_file: str = ""
+    max_unit_frequency: float = 1.0
     expert_examples: tuple[str, ...] = ()                # supervision JSONL files
     max_examples: int = 2
     custom: tuple[str, ...] = ()                         # files or directories
@@ -114,6 +129,10 @@ class KnowledgeProfile:
             # only when changed, so manifests written before these options existed stay identical
             **({"strategy_detail": self.strategy_detail} if self.strategy_detail != "brief" else {}),
             **({"strategy_chars": self.strategy_chars} if self.strategy_chars != 360 else {}),
+            **({"rule_selection": self.rule_selection} if self.rule_selection != "kind_map" else {}),
+            **({"rule_triggers": True} if self.rule_triggers else {}),
+            **({"unit_frequency_file": self.unit_frequency_file,
+                "max_unit_frequency": self.max_unit_frequency} if self.unit_frequency_file else {}),
         }
 
 
@@ -132,6 +151,8 @@ def profile_from_mapping(name: str, raw: Mapping[str, Any]) -> KnowledgeProfile:
         raise ValueError(f"knowledge profile {name!r}: unknown keys {sorted(unknown)}")
     if str(raw.get("strategy_detail", "brief")) not in ("brief", "full"):
         raise ValueError(f"knowledge profile {name!r}: strategy_detail must be 'brief' or 'full'")
+    if str(raw.get("rule_selection", "kind_map")) not in ("kind_map", "retrieve"):
+        raise ValueError(f"knowledge profile {name!r}: rule_selection must be 'kind_map' or 'retrieve'")
     values: dict[str, Any] = {}
     for key, value in raw.items():
         default = KnowledgeProfile.__dataclass_fields__[key].default
@@ -246,6 +267,7 @@ class CustomChunk:
     text: str
     source: str
     version: str
+    when: str = ""          # a situation name (reps.kb_retrieval.SITUATIONS): shown exactly when it holds
 
 
 def load_custom(paths: Iterable[str]) -> tuple[list[CustomChunk], list[str]]:
@@ -255,6 +277,10 @@ def load_custom(paths: Iterable[str]) -> tuple[list[CustomChunk], list[str]]:
     files: list[Path] = []
     for raw in paths:
         path = Path(raw)
+        if not path.is_absolute() and not path.exists():
+            from common.paths import REPO_ROOT
+
+            path = REPO_ROOT / path               # profiles name repo-relative paths
         if path.is_dir():
             files.extend(sorted(p for p in path.rglob("*") if p.suffix.lower() in (".md", ".txt")))
         elif path.exists():
@@ -278,6 +304,13 @@ def load_custom(paths: Iterable[str]) -> tuple[list[CustomChunk], list[str]]:
             continue
         if not meta.get("version"):
             warnings.append(f"{path}: no 'version' in front matter (loaded as unversioned)")
+        when = meta.get("when", "")
+        if when:
+            from reps.kb_retrieval import SITUATIONS
+
+            if when not in SITUATIONS:
+                warnings.append(f"{path}: refused -- unknown 'when: {when}' (known: {sorted(SITUATIONS)})")
+                continue
         sections = re.split(r"(?m)^(?=#{1,3} )", body)
         for n, section in enumerate(s for s in sections if s.strip()):
             first, _, remainder = section.strip().partition("\n")
@@ -287,7 +320,7 @@ def load_custom(paths: Iterable[str]) -> tuple[list[CustomChunk], list[str]]:
                 continue
             chunks.append(CustomChunk(
                 id=f"{path.stem}#{n + 1}", kind=CUSTOM_RULE if kind == "rule" else CUSTOM_STRATEGY,
-                title=title, text=content, source=str(path), version=meta.get("version", ""),
+                title=title, text=content, source=str(path), version=meta.get("version", ""), when=when,
             ))
     return chunks, warnings
 
@@ -329,6 +362,24 @@ class KnowledgeSelector:
             self.load_warnings.extend(warnings)
         self._game_version = installed_game_version()
         self._unit_detail: dict[str, Mapping[str, Any]] | None = None
+        self._rule_index: Any = None
+        self._describer: Any = None
+        self._unit_frequency: dict[str, float] | None = None
+
+    def _frequency(self) -> dict[str, float]:
+        """Unit id -> share of training decisions its detector fired on (empty = no pruning)."""
+        if self._unit_frequency is None:
+            self._unit_frequency = {}
+            name = self.profile.unit_frequency_file
+            if name:
+                path = Path(name)
+                if not path.is_absolute():
+                    from common.paths import REPO_ROOT
+
+                    path = REPO_ROOT / path
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                self._unit_frequency = {str(k): float(v) for k, v in payload["frequency"].items()}
+        return self._unit_frequency
 
     def _detail(self, unit_id: str) -> Mapping[str, Any]:
         """Fields of a strategy unit that ``StrategyUnit`` does not carry (conclusion,
@@ -363,10 +414,27 @@ class KnowledgeSelector:
         if kb is None or not profile.rules:
             return []
         seen: list[Any] = []
-        for kind in dict.fromkeys(spec.kind.value for spec in context.legal_low_level_specs):
-            for rule in kb.rules_for_option_kind(kind):
-                if rule not in seen:
-                    seen.append(rule)
+        if profile.rule_triggers:
+            from reps.kb_retrieval import triggered_rules
+
+            seen = [kb.rules[ref] for ref in triggered_rules(context) if ref in kb.rules]
+        if profile.rule_selection == "retrieve":
+            from reps.kb_retrieval import decision_query, section_index
+
+            if self._rule_index is None:
+                self._rule_index = section_index(list(kb.rules.values()), exclude_docs=profile.rule_exclude_docs)
+            if self._describer is None:
+                from reps.describe import DecisionDescriber
+
+                self._describer = DecisionDescriber()
+            query = decision_query(context, self._describer)
+            seen += [kb.rules[ref] for ref in self._rule_index.rank(query, max(profile.max_rules * 2, 6))
+                     if ref in kb.rules and kb.rules[ref] not in seen]
+        else:
+            for kind in dict.fromkeys(spec.kind.value for spec in context.legal_low_level_specs):
+                for rule in kb.rules_for_option_kind(kind):
+                    if rule not in seen:
+                        seen.append(rule)
         items = []
         for rule in seen:
             evidence = set(rule.evidence)
@@ -397,9 +465,12 @@ class KnowledgeSelector:
         if kb is None or not profile.strategy:
             return []
         items = []
+        frequency = self._frequency()
         for unit_id in matching_units(context):
             unit = kb.units.get(unit_id)
             if unit is None:
+                continue
+            if frequency and frequency.get(unit_id, 0.0) > profile.max_unit_frequency:
                 continue
             if profile.strategy_docs and not any(tag in unit.doc for tag in profile.strategy_docs):
                 continue
@@ -454,17 +525,27 @@ class KnowledgeSelector:
             ))
         return items
 
-    def _custom_items(self, query: str) -> list[KnowledgeItem]:
+    def _custom_items(self, query: str, context: DecisionContext | None = None) -> list[KnowledgeItem]:
         if not self._custom or self.profile.max_custom <= 0:
             return []
+        items: list[KnowledgeItem] = []
+        from reps.kb_retrieval import SITUATIONS
+
+        for chunk in self._custom:                 # situation-triggered notes: shown exactly when they apply
+            if chunk.when and context is not None and SITUATIONS[chunk.when](context):
+                items.append(KnowledgeItem(
+                    id=chunk.id, kind=chunk.kind, title=chunk.title,
+                    text=_squash(chunk.text, self.profile.custom_chars), source=chunk.source,
+                    version=chunk.version, trust="自定义" + ("" if chunk.version else "；未标版本"),
+                ))
         wanted = _terms(query)
         scored = []
-        for order, chunk in enumerate(self._custom):
+        for order, chunk in enumerate(c for c in self._custom if not c.when):
             hits = len(wanted & _terms(chunk.title + " " + chunk.text))
             scored.append((-hits, order, chunk))
-        items = []
+        plain = [c for c in self._custom if not c.when]
         for hits, _order, chunk in sorted(scored, key=lambda row: row[:2])[: self.profile.max_custom]:
-            if hits == 0 and len(self._custom) > self.profile.max_custom:
+            if hits == 0 and len(plain) > self.profile.max_custom:
                 continue        # nothing in common with this decision
             items.append(KnowledgeItem(
                 id=chunk.id, kind=chunk.kind, title=chunk.title,
@@ -480,7 +561,7 @@ class KnowledgeSelector:
                              warnings=list(self.load_warnings))
         if not self.profile.enabled or context.player_view is None:
             return pack
-        candidates = (self._rules(context, pack.warnings) + self._custom_items(query)
+        candidates = (self._rules(context, pack.warnings) + self._custom_items(query, context)
                       + self._strategy(context) + self._expert_examples(context))
         budget = int(self.profile.max_chars)
         for kind in _ORDER:               # facts first: they survive a tight budget

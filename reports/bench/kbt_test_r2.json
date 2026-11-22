@@ -1,0 +1,196 @@
+{
+  "set": {
+    "name": "v2",
+    "generator": "bench.scenarios/1",
+    "created": "2026-11-21T19:06:36",
+    "seed_base": 7600001,
+    "seed_offset": 1000,
+    "source_games": 160,
+    "source_errors": 0,
+    "counts": {
+      "lethal": 219
+    },
+    "splits": {
+      "train": {
+        "sources": 59,
+        "scenarios": 85
+      },
+      "dev": {
+        "sources": 49,
+        "scenarios": 64
+      },
+      "test": {
+        "sources": 52,
+        "scenarios": 70
+      }
+    },
+    "lethal_chance_level": 0.1623,
+    "lethal_generator_took_it": 137,
+    "build_seconds": 4336.0,
+    "engine_lock": {
+      "engine": {
+        "repo": "https://github.com/piovium/genius-invokation",
+        "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+        "pybinding_version": "0.21.0"
+      },
+      "cards": {
+        "data_version": "v4-latest-CHS@2026-10-07",
+        "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+      },
+      "reference": {
+        "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+      },
+      "runtime": {
+        "python": "3.12",
+        "platform": "linux",
+        "shuffle": "python_seeded_no_shuffle"
+      }
+    }
+  },
+  "subjects": {
+    "llm:deepseek-flash": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 70,
+        "rate": 0.9286,
+        "ci95": [
+          0.8434,
+          0.9691
+        ]
+      },
+      "convert_ended_by": {
+        "win": 65,
+        "opponent_turn": 5
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 70,
+        "first_reply_legal_rate": 0.8714,
+        "answer_used_rate": 0.8714,
+        "seconds_mean": 1.704,
+        "prompt_tokens": 126854,
+        "completion_tokens": 2931,
+        "cost": 0.004964
+      }
+    },
+    "llm:deepseek-flash#kb=kbt-s0": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 70,
+        "rate": 0.8571,
+        "ci95": [
+          0.7566,
+          0.9205
+        ]
+      },
+      "convert_ended_by": {
+        "win": 60,
+        "opponent_turn": 10
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 70,
+        "first_reply_legal_rate": 0.9571,
+        "answer_used_rate": 0.9571,
+        "seconds_mean": 1.608,
+        "prompt_tokens": 236623,
+        "completion_tokens": 3099,
+        "cost": 0.006457
+      }
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 70,
+        "rate": 0.9429,
+        "ci95": [
+          0.8621,
+          0.9776
+        ]
+      },
+      "convert_ended_by": {
+        "win": 66,
+        "opponent_turn": 4
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 70,
+        "first_reply_legal_rate": 0.9714,
+        "answer_used_rate": 0.9714,
+        "seconds_mean": 1.664,
+        "prompt_tokens": 237034,
+        "completion_tokens": 3997,
+        "cost": 0.006419
+      }
+    }
+  },
+  "generators": [
+    "expert:aywolfskirk",
+    "expert:beidou_skirk_ayaka",
+    "expert:double_geo_navia",
+    "expert:dual_mualani_stacks",
+    "expert:dvalin_bonk",
+    "expert:electro_manifestation_nuke",
+    "expert:electrocharged_moon",
+    "expert:ice_water_battleship",
+    "expert:klee_mavuika_mualani",
+    "expert:mualani_double_pyro",
+    "expert:nahida_kokomi_raiden",
+    "expert:natlan_battleship",
+    "expert:shenhe_double_swirl",
+    "expert:skirk_ayaka_navia",
+    "expert:skirk_chasca_freeze",
+    "expert:superconduct_aggro",
+    "expert:superconduct_mika_attack",
+    "expert:trial_skirk_ayaka_navia",
+    "expert:unyielding_geo",
+    "expert:yelan_clorinde_ororon"
+  ],
+  "paired_lethal": {},
+  "paired_converted": {
+    "llm:deepseek-flash#kb=kbt-s0": {
+      "vs": "llm:deepseek-flash",
+      "n": 70,
+      "better": 0,
+      "worse": 5,
+      "delta": -0.0714,
+      "sign_test_p": 0.0625
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "vs": "llm:deepseek-flash",
+      "n": 70,
+      "better": 4,
+      "worse": 3,
+      "delta": 0.0143,
+      "sign_test_p": 1.0
+    }
+  },
+  "note": "lethal = picks an option the engine verified as winning on the spot; chance = mean |winning|/|options|. Not taking it is not always a mistake (a free action first can keep the win), so read it as 'takes the win when it is on the table'. expert_agreement is similarity to the scripted pilot, not quality. A subject marked is_generator played the source games.",
+  "tag": "kbt_test_r2",
+  "generated": "2026-11-21T21:35:30",
+  "raw": "data/bench/kbt_test_r2/scenarios.jsonl"
+}

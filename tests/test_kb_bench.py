@@ -68,10 +68,12 @@ def test_bm25_finds_sections_for_chinese_questions_where_builtin_search_cannot(t
     assert bm25.rank("召唤物区已满时再生成召唤物会怎样？", 1) == ["R07 §1"]
     assert bm25.rank("元素调和把骰子变成什么？", 1) == ["R02 §5"]
     assert bm25.rank("", 3) == []
-    # the KB's own search splits on whitespace: a natural Chinese question is one term
-    assert kb.search("召唤物区已满时再生成召唤物会怎样？") == []
+    # the KB's own search splits on whitespace (a Chinese question is one term); since D32
+    # it falls back to the same BM25 when the whitespace terms match nothing
+    assert [getattr(x, "ref", None) for x in kb.search("召唤物区已满时再生成召唤物会怎样？", limit=1)] == ["R07 §1"]
+    assert kb.search("   ") == []
     table = kb_qa.retrieval_table(_bank(), kb, ks=(1, 3))
-    assert table["bm25"]["hit@1"] == 1.0 and table["search"]["empty"] == 2
+    assert table["bm25"]["hit@1"] == 1.0 and table["search"]["empty"] == 0 and table["search"]["hit@1"] == 1.0
 
 
 def test_retrieve_conditions_and_prompt_contents(tmp_path):

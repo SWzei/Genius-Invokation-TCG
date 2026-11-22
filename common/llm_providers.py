@@ -27,6 +27,7 @@ adds what the experiment platform needs on top of it:
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import os
 import random
@@ -662,7 +663,8 @@ class ProviderClient:
             except (TimeoutError, socket.timeout) as exc:
                 last = ChatResult(None, error="timeout", detail=str(exc))
                 status, response_headers, raw = None, {}, b""
-            except (urllib.error.URLError, OSError, ValueError) as exc:
+            except (urllib.error.URLError, OSError, ValueError, http.client.HTTPException) as exc:
+                # HTTPException: e.g. IncompleteRead when the connection drops mid-response (D32)
                 reason = getattr(exc, "reason", exc)
                 kind = "timeout" if isinstance(reason, (TimeoutError, socket.timeout)) else "network"
                 last = ChatResult(None, error=kind, detail=redact_secrets(str(exc), (self._key,)))

@@ -38,7 +38,7 @@ import json
 import random
 import sys
 import time
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -145,6 +145,43 @@ class _Scripted:
             return codes[self.then]
         self.overrun = True
         raise HumanQuit("scenario: game continues")
+
+
+class _Delegate(_Scripted):
+    """Replay the prefix, then let ``inner`` play up to ``max_steps`` decisions of this
+    seat; any further decision stops the game (``overrun``)."""
+
+    def __init__(self, indices: Sequence[int], counts: Sequence[int], inner: Any, max_steps: int) -> None:
+        super().__init__(indices, counts)
+        self.inner, self.max_steps, self.steps = inner, int(max_steps), 0
+
+    def choose(self, built: Any) -> int:
+        from agents.human import HumanQuit
+
+        if self.cursor < len(self.indices):
+            return super().choose(built)
+        if self.steps >= self.max_steps:
+            self.overrun = True
+            raise HumanQuit("scenario: step budget spent")
+        self.steps += 1
+        return int(self.inner.choose(built))
+
+
+def converts_lethal(source: Mapping[str, Any], scenario: Mapping[str, Any], policy: Any,
+                    max_steps: int = 6) -> dict[str, Any]:
+    """Let ``policy`` play the seat from the scenario on: does it win before the opponent
+    gets a decision (at most ``max_steps`` own decisions)?"""
+    seat, ordinal = int(scenario["seat"]), int(scenario["ordinal"])
+    mine, other = _prefixes(source, seat, ordinal)
+    me = _Delegate([d["index"] for d in mine], [d["n"] for d in mine], policy, max_steps)
+    opp = _Scripted([d["index"] for d in other], [d["n"] for d in other])
+    record = _run(source, (me, opp) if seat == 0 else (opp, me))
+    if me.mismatch or opp.mismatch:
+        raise RuntimeError(f"scenario replay failed: {me.mismatch or opp.mismatch}")
+    won = (not opp.overrun and not me.overrun and getattr(record, "winner", None) == seat)
+    return {"converted": bool(won), "steps": me.steps,
+            "ended_by": "win" if won else ("opponent_turn" if opp.overrun else
+                                           "step_budget" if me.overrun else "game_over")}
 
 
 def _decks(source: Mapping[str, Any]) -> tuple[Any, Any]:
@@ -309,6 +346,45 @@ def option_wins_now(source: Mapping[str, Any], points: Sequence[tuple[int, int, 
         return False
 
 
+def keeps_lethal(source: Mapping[str, Any], scenario: Mapping[str, Any], index: int,
+                 points: Sequence[tuple[int, int, str]] | None = None) -> bool:
+    """True when option ``index`` of a lethal scenario wins now, or leaves a win-now
+    option at the seat's *next* decision with no opponent decision in between.
+
+    The strict lethal label (``winning``) only accepts options that end the game at
+    once; a fast action that adds damage and is followed by the killing attack wins
+    just as surely (the opponent never acts) but is scored a miss there. This is the
+    lenient label: one extra own decision, action decisions only."""
+    if int(index) in scenario["winning"]:
+        return True
+    import base64
+
+    seat, ordinal = int(scenario["seat"]), int(scenario["ordinal"])
+    mine, other = _prefixes(source, seat, ordinal)
+    built = context_at(source, seat, ordinal)
+    me = _Scripted([d["index"] for d in mine] + [int(index)], [d["n"] for d in mine] + [int(scenario["n_options"])],
+                   capture=True)
+    opp = _Scripted([d["index"] for d in other], [d["n"] for d in other])
+    _run(source, (me, opp) if seat == 0 else (opp, me))
+    nxt = me.built
+    if me.mismatch or opp.mismatch or opp.overrun or nxt is None:
+        return False                                    # the opponent acted, or the game ended unwon
+    if getattr(nxt.context.request_type, "value", "") != "action":
+        return False
+    trace = source["trace"]
+    target_pos = trace.index([d for d in trace if d["seat"] == seat][ordinal])
+    first = base64.b64encode(option_response(built, int(index))).decode("ascii")
+    n_next = len(nxt.context.legal_low_level_codes)
+    follow = {**source, "trace": [*trace[:target_pos],
+                                  {"seat": seat, "index": int(index), "n": int(scenario["n_options"]), "resp": first},
+                                  {"seat": seat, "index": 0, "n": n_next, "resp": ""}]}
+    if points is None:
+        points = boundaries(source)
+    # only snapshots taken before the original decision are shared by both histories
+    before = [p for p in points if p[seat] <= ordinal and p[1 - seat] <= len(other)]
+    return any(option_wins_now(follow, before, seat, ordinal + 1, option_response(nxt, o)) for o in range(n_next))
+
+
 # --------------------------------------------------------------------------- #
 # build
 # --------------------------------------------------------------------------- #
@@ -364,8 +440,24 @@ def _source_game(task: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+SPLITS = (("train", 0.4), ("dev", 0.3), ("test", 0.3))
+
+
+def split_of(seed: int) -> str:
+    """Fixed train / dev / test assignment of a source game (all its scenarios share it)."""
+    from common.seeding import derive_seed
+
+    u = (derive_seed(int(seed), "scenario-split") % 10_000) / 10_000
+    edge = 0.0
+    for name, share in SPLITS:
+        edge += share
+        if u < edge:
+            return name
+    return SPLITS[-1][0]
+
+
 def build_set(name: str, *, games: int, workers: int = 2, decks: Sequence[str] | None = None,
-              agreement_per_seat: int = 2) -> dict[str, Any]:
+              agreement_per_seat: int = 2, seed_offset: int = 0, quiz: bool = True) -> dict[str, Any]:
     from envs.decks import expert_decks_by_name
 
     pool = list(decks or sorted(expert_decks_by_name()))
@@ -375,28 +467,50 @@ def build_set(name: str, *, games: int, workers: int = 2, decks: Sequence[str] |
         deck1 = pool[(i * 7 + 3) % len(pool)]              # a fixed, spread-out pairing
         if deck1 == deck0:
             deck1 = pool[(i * 7 + 4) % len(pool)]
-        tasks.append({"deck0": deck0, "deck1": deck1, "seed": SCENARIO_SEED_BASE + i,
-                      "agreement_per_seat": agreement_per_seat})
+        tasks.append({"deck0": deck0, "deck1": deck1, "seed": SCENARIO_SEED_BASE + int(seed_offset) + i,
+                      "agreement_per_seat": agreement_per_seat, "quiz": quiz})
     started = time.perf_counter()
-    with ProcessPoolExecutor(max_workers=max(1, int(workers))) as pool_exec:
-        results = list(pool_exec.map(_source_game, tasks))
+    # Per-game results are cached as they finish, so a stopped build resumes where it
+    # left off (a 240-game build outlived a 2-hour job limit, D32).
+    cache = Path(ensure_dir(data_dir("bench"))) / f"scen_build_{name}.jsonl"
+    done: dict[int, dict[str, Any]] = {}
+    if cache.exists():
+        for line in cache.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                row = json.loads(line)
+                done[int(row["source"]["seed"])] = row
+    todo = [t for t in tasks if int(t["seed"]) not in done]
+    if todo:
+        with ProcessPoolExecutor(max_workers=max(1, int(workers))) as pool_exec, cache.open("a", encoding="utf-8") as fh:
+            futures = [pool_exec.submit(_source_game, t) for t in todo]
+            for k, future in enumerate(as_completed(futures), 1):
+                row = future.result()
+                done[int(row["source"]["seed"])] = row
+                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                fh.flush()
+                print(f"[scenarios] build {name}: {len(done)}/{len(tasks)} games", flush=True)
+    results = [done[int(t["seed"])] for t in tasks]
     sources, scenarios, errors = [], [], 0
     for result in results:
         if result.get("error"):
             errors += 1
             continue
         source_id = len(sources)
+        result["source"]["split"] = split_of(result["source"]["seed"])
         sources.append(result["source"])
         for scenario in result["scenarios"]:
-            scenarios.append({"id": f"{scenario['kind']}-{len(scenarios):04d}", "source": source_id, **scenario})
+            scenarios.append({"id": f"{scenario['kind']}-{len(scenarios):04d}", "source": source_id,
+                              "split": result["source"]["split"], **scenario})
     counts: dict[str, int] = {}
     for scenario in scenarios:
         counts[scenario["kind"]] = counts.get(scenario["kind"], 0) + 1
     lethal = [s for s in scenarios if s["kind"] == "lethal"]
     payload = {
         "name": name, "generator": GENERATOR, "created": _dt.datetime.now().isoformat(timespec="seconds"),
-        "seed_base": SCENARIO_SEED_BASE, "source_games": len(sources), "source_errors": errors,
-        "counts": counts,
+        "seed_base": SCENARIO_SEED_BASE, "seed_offset": int(seed_offset), "source_games": len(sources),
+        "source_errors": errors, "counts": counts,
+        "splits": {name: {"sources": sum(1 for s in sources if s["split"] == name),
+                          "scenarios": sum(1 for s in scenarios if s["split"] == name)} for name, _ in SPLITS},
         "lethal_chance_level": round(sum(len(s["winning"]) / s["n_options"] for s in lethal) / len(lethal), 4)
         if lethal else None,
         "lethal_generator_took_it": sum(1 for s in lethal if s["generator_index"] in s["winning"]),
@@ -522,6 +636,24 @@ def _eval_one(task: Mapping[str, Any]) -> dict[str, Any]:
                         "prompt_tokens": result.prompt_tokens, "completion_tokens": result.completion_tokens,
                         "cost": result.cost})
             return row
+        if scenario["kind"] == "lethal" and task.get("convert"):
+            outcome = converts_lethal(source, scenario, policy, int(task.get("max_steps", 6)))
+            traces = list(getattr(policy, "traces", None) or [])
+            first = traces[0] if traces else None
+            row.update(outcome)
+            row["chance"] = len(scenario["winning"]) / len(codes)
+            if first is not None:
+                row["index"] = int(first.final_index)
+            if traces:
+                row.update({"first_reply_legal": all(t.first_reply_legal for t in traces),
+                            "source": "llm" if all(t.source == "llm" for t in traces) else "mixed",
+                            "latency_seconds": round(sum(t.latency_seconds for t in traces), 3),
+                            "prompt_tokens": sum(t.prompt_tokens for t in traces),
+                            "completion_tokens": sum(t.completion_tokens for t in traces),
+                            "cost": sum((t.cost or 0) for t in traces),
+                            "reasons": [t.reason[:120] for t in traces], "calls": len(traces)})
+            row["wall_seconds"] = round(time.perf_counter() - started, 2)
+            return row
         code = int(policy.choose(built))
         index = codes.index(code)
         trace = (getattr(policy, "traces", None) or [None])[-1]
@@ -534,6 +666,10 @@ def _eval_one(task: Mapping[str, Any]) -> dict[str, Any]:
         if scenario["kind"] == "lethal":
             row["correct"] = index in scenario["winning"]
             row["chance"] = len(scenario["winning"]) / len(codes)
+            try:
+                row["kept"] = row["correct"] or keeps_lethal(source, scenario, index)
+            except Exception as exc:                      # the strict label stands; leniency unknown
+                row["kept_error"] = f"{type(exc).__name__}: {exc}"[:200]
         else:
             row["agree"] = index == int(scenario["expert_index"])
     except Exception as exc:
@@ -589,10 +725,16 @@ def summarise(rows: Sequence[Mapping[str, Any]], subjects: Sequence[str], scenar
         if not mine:
             continue
         lethal = [r for r in mine if r["kind"] == "lethal" and "correct" in r]
+        kept = [r for r in lethal if r.get("kept") is not None]
+        converted = [r for r in mine if r["kind"] == "lethal" and "converted" in r]
         agreement = [r for r in mine if r["kind"] == "agreement" and "agree" in r]
         quiz = [r for r in mine if r["kind"] == "quiz" and "scores" in r]
         block: dict[str, Any] = {
             "lethal": rate(sum(1 for r in lethal if r["correct"]), len(lethal)),
+            "lethal_converted": rate(sum(1 for r in converted if r["converted"]), len(converted)),
+            "convert_ended_by": _count(r.get("ended_by") for r in converted) if converted else None,
+            # lenient label: a win now, or a win-now option at our next decision before the opponent acts
+            "lethal_kept": rate(sum(1 for r in kept if r["kept"]), len(kept)) if len(kept) == len(lethal) else None,
             "lethal_chance": round(sum(r["chance"] for r in lethal) / len(lethal), 4) if lethal else None,
             # "final": the last decision of the source game (its pilot took the win there);
             # "earlier": a win was already on the table one to three decisions before.
@@ -633,6 +775,25 @@ def summarise(rows: Sequence[Mapping[str, Any]], subjects: Sequence[str], scenar
         return {r["id"]: bool(r["correct"]) for (s, _), r in latest.items()
                 if s == subject and r["kind"] == "lethal" and "correct" in r}
 
+    def converted_of(subject: str) -> dict[str, bool]:
+        return {r["id"]: bool(r["converted"]) for (s, _), r in latest.items()
+                if s == subject and r["kind"] == "lethal" and "converted" in r}
+
+    paired_converted: dict[str, Any] = {}
+    ref_c = next((s for s in subjects if s in table and converted_of(s)), None)
+    if ref_c is not None:
+        base_c = converted_of(ref_c)
+        for subject in table:
+            mine_c = converted_of(subject)
+            common = sorted(set(mine_c) & set(base_c))
+            if subject == ref_c or not common:
+                continue
+            better = sum(1 for i in common if mine_c[i] and not base_c[i])
+            worse = sum(1 for i in common if base_c[i] and not mine_c[i])
+            paired_converted[subject] = {"vs": ref_c, "n": len(common), "better": better, "worse": worse,
+                                         "delta": round((better - worse) / len(common), 4),
+                                         "sign_test_p": round(sign_test_p(better, worse), 4)}
+
     paired: dict[str, Any] = {}
     reference = next((s for s in subjects if s in table and lethal_of(s)), None)
     if reference is not None:
@@ -649,6 +810,7 @@ def summarise(rows: Sequence[Mapping[str, Any]], subjects: Sequence[str], scenar
                                "sign_test_p": round(sign_test_p(better, worse), 4)}
     return {"set": {k: v for k, v in scenario_set.items() if k not in ("sources", "scenarios")},
             "subjects": table, "generators": sorted(generators), "paired_lethal": paired,
+            "paired_converted": paired_converted,
             "note": ("lethal = picks an option the engine verified as winning on the spot; chance = mean "
                      "|winning|/|options|. Not taking it is not always a mistake (a free action first can keep "
                      "the win), so read it as 'takes the win when it is on the table'. expert_agreement is "
@@ -679,6 +841,23 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         lines.append(f"| `{subject}`{mark} | {fmt(block['lethal'])} | {block['lethal_chance']} | "
                      f"{fmt(block['expert_agreement'])} | {fmt(quiz.get('state_reading'))} | "
                      f"{fmt(quiz.get('hidden_info_probe'))} |")
+    if any(b.get("lethal_converted") for b in report["subjects"].values()):
+        lines += ["", "| subject | lethal converted (plays on; wins before the opponent acts) | ended by |", "|---|---|---|"]
+        for subject, block in report["subjects"].items():
+            if block.get("lethal_converted"):
+                lines.append(f"| `{subject}` | {fmt(block['lethal_converted'])} | {block.get('convert_ended_by')} |")
+        if report.get("paired_converted"):
+            lines += ["", "| converted, paired on common items | vs | n | better / worse | delta | sign test p |",
+                      "|---|---|---|---|---|---|"]
+            for subject, row in report["paired_converted"].items():
+                lines.append(f"| `{subject}` | `{row['vs']}` | {row['n']} | {row['better']} / {row['worse']} | "
+                             f"{row['delta']:+.3f} | {row['sign_test_p']:.3f} |")
+    if any(b.get("lethal_kept") for b in report["subjects"].values()):
+        lines += ["", "| subject | lethal kept (wins now, or a win-now option at our next decision before the opponent acts) |",
+                  "|---|---|"]
+        for subject, block in report["subjects"].items():
+            if block.get("lethal_kept"):
+                lines.append(f"| `{subject}` | {fmt(block['lethal_kept'])} |")
     lines += ["", "| subject | lethal: final decision | lethal: one to three decisions earlier |", "|---|---|---|"]
     for subject, block in report["subjects"].items():
         by_pos = block.get("lethal_by_position") or {}
@@ -710,7 +889,8 @@ def render_markdown(report: Mapping[str, Any]) -> str:
 
 
 def evaluate(name: str, subjects: Sequence[str], *, tag: str | None = None, workers: int = 2,
-             kinds: Sequence[str] | None = None, limit: int | None = None) -> dict[str, Any]:
+             kinds: Sequence[str] | None = None, limit: int | None = None,
+             split: str | None = None, convert: bool = False, max_steps: int = 6) -> dict[str, Any]:
     scenario_set = load_set(name)
     tag = tag or f"scenarios_{scenario_set['name']}"
     run_dir = ensure_dir(data_dir() / "bench" / tag)
@@ -719,7 +899,11 @@ def evaluate(name: str, subjects: Sequence[str], *, tag: str | None = None, work
     if rows_path.exists():
         rows = [json.loads(line) for line in rows_path.read_text(encoding="utf-8").splitlines() if line.strip()]
     done = {(r["subject"], r["id"]) for r in rows if not r.get("failed")}
+    _merge_keep(rows, run_dir)
     scenarios = [s for s in scenario_set["scenarios"] if kinds is None or s["kind"] in kinds]
+    if split is not None:
+        # sets built before splits existed (v1) have no "split" field: they match no split
+        scenarios = [s for s in scenarios if s.get("split") == split]
     if limit is not None:
         per_kind: dict[str, int] = {}
         kept = []
@@ -737,7 +921,8 @@ def evaluate(name: str, subjects: Sequence[str], *, tag: str | None = None, work
                 continue
             tasks.append({"subject": subject, "scenario": scenario,
                           "source": scenario_set["sources"][scenario["source"]],
-                          "call_log": str(run_dir / "calls.jsonl")})
+                          "call_log": str(run_dir / "calls.jsonl"), "convert": bool(convert),
+                          "max_steps": int(max_steps)})
     print(f"[scenarios] set {scenario_set['name']}: {len(scenarios)} scenarios, {len(subjects)} subject(s), "
           f"{len(tasks)} evaluation(s) to run", flush=True)
     with ThreadPoolExecutor(max_workers=max(1, int(workers))) as pool:
@@ -756,6 +941,49 @@ def evaluate(name: str, subjects: Sequence[str], *, tag: str | None = None, work
     return report
 
 
+KEEP_FILE = "keep.jsonl"
+
+
+def _merge_keep(rows: list[dict[str, Any]], run_dir: Path) -> None:
+    """Fill ``kept`` on lethal rows from the run's sidecar (rows written before the
+    lenient label existed; the raw rows themselves are never rewritten)."""
+    path = Path(run_dir) / KEEP_FILE
+    if not path.exists():
+        return
+    table = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            item = json.loads(line)
+            table[(item["id"], int(item["index"]))] = bool(item["kept"])
+    for row in rows:
+        if row.get("kind") == "lethal" and "kept" not in row and "index" in row:
+            value = table.get((row["id"], int(row["index"])))
+            if value is not None:
+                row["kept"] = value
+
+
+def backfill_keep(name: str, tag: str, workers: int = 2) -> dict[str, int]:
+    """Compute the lenient lethal label for a run's rows that lack it -> ``keep.jsonl``."""
+    scenario_set = load_set(name)
+    by_id = {s["id"]: s for s in scenario_set["scenarios"]}
+    run_dir = data_dir() / "bench" / tag
+    rows = [json.loads(line) for line in (run_dir / "scenarios.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    _merge_keep(rows, run_dir)
+    pairs = sorted({(r["id"], int(r["index"])) for r in rows
+                    if r.get("kind") == "lethal" and "index" in r and "kept" not in r and r["id"] in by_id})
+    tasks = [{"scenario": by_id[i], "source": scenario_set["sources"][by_id[i]["source"]], "index": k} for i, k in pairs]
+    from common.pool import recycled_map
+
+    with (run_dir / KEEP_FILE).open("a", encoding="utf-8") as handle:
+        for (sid, index), kept in zip(pairs, recycled_map(_keep_task, tasks, workers=workers, tasks_per_child=1)):
+            handle.write(json.dumps({"id": sid, "index": index, "kept": kept}) + "\n")
+    return {"computed": len(pairs)}
+
+
+def _keep_task(task: Mapping[str, Any]) -> bool:
+    return keeps_lethal(task["source"], task["scenario"], int(task["index"]))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -764,6 +992,10 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--games", type=int, default=40)
     b.add_argument("--workers", type=int, default=2)
     b.add_argument("--decks", nargs="*", default=None)
+    b.add_argument("--seed-offset", type=int, default=0,
+                   help="added to the scenario seed base; a new set must not reuse another set's range")
+    b.add_argument("--agreement-per-seat", type=int, default=2)
+    b.add_argument("--no-quiz", action="store_true")
     e = sub.add_parser("eval")
     e.add_argument("--name", required=True)
     e.add_argument("--subjects", nargs="+", required=True)
@@ -771,18 +1003,32 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--workers", type=int, default=2)
     e.add_argument("--kinds", nargs="*", default=None, choices=["lethal", "agreement", "quiz"])
     e.add_argument("--limit", type=int, default=None, help="at most N scenarios per kind")
+    e.add_argument("--split", default=None, choices=[name for name, _ in SPLITS],
+                   help="only scenarios of this split (sets with splits only)")
+    e.add_argument("--convert", action="store_true",
+                   help="lethal: let the subject keep playing its turn (up to --max-steps own decisions); "
+                        "scored by whether it wins before the opponent acts. Use a separate --tag.")
+    e.add_argument("--max-steps", type=int, default=6)
+    k = sub.add_parser("keep", help="backfill the lenient lethal label for an existing run")
+    k.add_argument("--name", required=True)
+    k.add_argument("--tag", required=True)
+    k.add_argument("--workers", type=int, default=2)
     sub.add_parser("worker")
     args = parser.parse_args(argv)
     if args.command == "worker":
         row = _eval_one(json.loads(sys.stdin.read()))
         sys.stdout.write("\n@@ROW@@" + json.dumps(row, ensure_ascii=False) + "\n")
         return 0
+    if args.command == "keep":
+        print(json.dumps(backfill_keep(args.name, args.tag, args.workers)))
+        return 0
     if args.command == "build":
-        print(json.dumps(build_set(args.name, games=args.games, workers=args.workers, decks=args.decks),
-                         ensure_ascii=False, indent=1))
+        print(json.dumps(build_set(args.name, games=args.games, workers=args.workers, decks=args.decks,
+                                   agreement_per_seat=args.agreement_per_seat, seed_offset=args.seed_offset,
+                                   quiz=not args.no_quiz), ensure_ascii=False, indent=1))
         return 0
     report = evaluate(args.name, args.subjects, tag=args.tag, workers=args.workers, kinds=args.kinds,
-                      limit=args.limit)
+                      limit=args.limit, split=args.split, convert=args.convert, max_steps=args.max_steps)
     print(render_markdown(report))
     return 0
 

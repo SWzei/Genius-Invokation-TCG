@@ -274,6 +274,16 @@ def test_errors_are_classified_and_bounded(fake):
     assert wrong.error == "auth" and wrong.attempts == 1 and KEY not in wrong.detail and "sk-wrong" not in wrong.detail
     missing = ProviderClient(profile, api_key="").complete(MESSAGES)
     assert missing.error == "no_key" and missing.attempts == 0
+    # a connection dropped mid-response is a (retried) network error, not an exception (D32)
+    import http.client
+
+    def dropped(url, headers, body, timeout):
+        raise http.client.IncompleteRead(b"")
+
+    cut = ProviderClient(profile_from_mapping("t", {"provider": "openai-compatible", "model": "ok", "base_url": fake,
+                                                    "api_key_env": "T", "retries": 1, "retry_backoff": 0.0}),
+                         api_key=KEY, sleep=lambda s: None, transport=dropped).complete(MESSAGES)
+    assert cut.error == "network" and cut.attempts == 2
 
 
 def test_fatal_errors_are_not_retried_and_stop_the_client(fake):

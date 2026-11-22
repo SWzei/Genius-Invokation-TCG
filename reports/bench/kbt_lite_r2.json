@@ -1,0 +1,244 @@
+{
+  "suite": {
+    "name": "lite",
+    "description": "pilot suite: ladder on 2 pool decks + 2 held-out human decks (native rules and latest rules)",
+    "fingerprint": "2b88ef20714c8993",
+    "cells": 56,
+    "cells_by_group": {
+      "ladder-pool": 32,
+      "heldout-native": 16,
+      "heldout-latest": 8
+    },
+    "source": "lite.lock.json",
+    "seed_base": 7100001,
+    "human_decks": {
+      "human:A6Ax9BkPIECw": {
+        "deck_code": "A6Ax9BkPIECw9pcYE6ExijMbG6JwA8YgDDJgBskgDGGgacoWDZEQzNEcFMGh1EodE0AA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1605"
+      },
+      "human:AAEh57IOAqCw": {
+        "deck_code": "AAEh57IOAqCw6j4PA0Di9AgQIGGABp0UCbHQirMYGKFB04QfDIFgTcYUDNGQackWDZAA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1204"
+      }
+    }
+  },
+  "subjects": {
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "games": 56,
+      "valid_games": 56,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 56,
+        "rate": 0.8125,
+        "ci95": [
+          0.6915,
+          0.8933
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 8.02,
+      "game_seconds_mean": 90.62,
+      "by_group": {
+        "heldout-latest": {
+          "n": 8,
+          "rate": 0.875,
+          "ci95": [
+            0.5291,
+            0.9776
+          ]
+        },
+        "heldout-native": {
+          "n": 16,
+          "rate": 0.9375,
+          "ci95": [
+            0.7167,
+            0.9889
+          ]
+        },
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.7344,
+          "ci95": [
+            0.5625,
+            0.856
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 16,
+          "rate": 0.9688,
+          "ci95": [
+            0.7593,
+            0.9967
+          ]
+        },
+        "L1-heuristic": {
+          "n": 24,
+          "rate": 0.9167,
+          "ci95": [
+            0.7415,
+            0.9768
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.5,
+          "ci95": [
+            0.28,
+            0.72
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 24,
+          "rate": 0.9167,
+          "ci95": [
+            0.7415,
+            0.9768
+          ]
+        },
+        "pool": {
+          "n": 32,
+          "rate": 0.7344,
+          "ci95": [
+            0.5625,
+            0.856
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 40,
+          "rate": 0.7625,
+          "ci95": [
+            0.6114,
+            0.8676
+          ]
+        },
+        "v6.3.0": {
+          "n": 16,
+          "rate": 0.9375,
+          "ci95": [
+            0.7167,
+            0.9889
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 28,
+          "rate": 0.7857,
+          "ci95": [
+            0.6046,
+            0.8979
+          ]
+        },
+        "1": {
+          "n": 28,
+          "rate": 0.8393,
+          "ci95": [
+            0.6644,
+            0.9323
+          ]
+        }
+      },
+      "model": {
+        "games": 56,
+        "decisions_asked": 2908,
+        "first_reply_legal_rate": 0.9997,
+        "answer_used_rate": 1.0,
+        "fallback_decisions": 0,
+        "first_errors": {
+          "no_choice": 1
+        },
+        "errors": {},
+        "by_request": {
+          "switch_hands": {
+            "asked": 56,
+            "first_legal": 56,
+            "used": 56
+          },
+          "choose_active": {
+            "asked": 79,
+            "first_legal": 79,
+            "used": 79
+          },
+          "reroll_dice": {
+            "asked": 448,
+            "first_legal": 448,
+            "used": 448
+          },
+          "action": {
+            "asked": 2234,
+            "first_legal": 2233,
+            "used": 2234
+          },
+          "select_card": {
+            "asked": 91,
+            "first_legal": 91,
+            "used": 91
+          }
+        },
+        "calls": 2909,
+        "retries": 0,
+        "seconds_per_call": 1.546,
+        "decision_seconds_p50_median_game": 1.497,
+        "decision_seconds_p90_median_game": 1.894,
+        "decision_seconds_max": 5.699,
+        "prompt_tokens": 7556852,
+        "completion_tokens": 167560,
+        "reasoning_tokens": 0,
+        "cached_tokens": 793310,
+        "tokens_per_decision": 2656.3,
+        "tokens_per_game": 137936.0,
+        "calls_per_game": 51.9,
+        "cost": 1.117447,
+        "cost_per_game": 0.019954
+      }
+    }
+  },
+  "reference": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+  "paired_vs_reference": {},
+  "note": "win rates are simulator results on this suite's cells; intervals are Wilson 95% on valid games (errors, truncations and degraded games excluded and counted)",
+  "tag": "kbt_lite_r2",
+  "generated": "2026-11-21T21:24:50",
+  "stopped": null,
+  "total_calls": 2909,
+  "total_cost": 1.117447,
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  },
+  "raw": "data/bench/kbt_lite_r2/games.jsonl"
+}

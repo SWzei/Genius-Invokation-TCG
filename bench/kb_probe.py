@@ -17,11 +17,11 @@ import datetime as _dt
 import json
 import sys
 from collections import Counter, defaultdict
-from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from common.paths import data_dir, ensure_dir, reports_dir
+from common.pool import recycled_map
 
 
 class _ProbePolicy:
@@ -171,8 +171,7 @@ def run(suite: str, profiles: Sequence[str], *, tag: str, subject: str, workers:
     decks = getattr(loaded, "decks", None)
     out_dir = Path(ensure_dir(data_dir("bench", tag)))
     tasks = [(c.as_dict(), decks, list(profiles), subject) for c in cells]
-    with ProcessPoolExecutor(max_workers=max(1, workers), max_tasks_per_child=1) as pool:
-        games = list(pool.map(_probe_task, tasks))
+    games = list(recycled_map(_probe_task, tasks, workers=workers, tasks_per_child=1))
     raw = out_dir / "kb_probe.jsonl"
     raw.write_text("".join(json.dumps(g, ensure_ascii=False) + "\n" for g in games), encoding="utf-8")
     report = summarise(games, profiles, KnowledgeBase.load())

@@ -1,0 +1,4022 @@
+{
+"name": "situ_v1",
+"created": "2026-11-21T17:15:43",
+"from_sets": [
+"v1"
+],
+"contexts": [
+{
+"id": "v1#0",
+"set": "v1",
+"source": 0,
+"seat": 0,
+"ordinal": 20,
+"split": "train"
+},
+{
+"id": "v1#1",
+"set": "v1",
+"source": 1,
+"seat": 1,
+"ordinal": 45,
+"split": "train"
+},
+{
+"id": "v1#2",
+"set": "v1",
+"source": 2,
+"seat": 1,
+"ordinal": 26,
+"split": "train"
+},
+{
+"id": "v1#3",
+"set": "v1",
+"source": 3,
+"seat": 1,
+"ordinal": 40,
+"split": "train"
+},
+{
+"id": "v1#4",
+"set": "v1",
+"source": 4,
+"seat": 0,
+"ordinal": 40,
+"split": "train"
+},
+{
+"id": "v1#5",
+"set": "v1",
+"source": 5,
+"seat": 0,
+"ordinal": 54,
+"split": "train"
+},
+{
+"id": "v1#6",
+"set": "v1",
+"source": 6,
+"seat": 1,
+"ordinal": 29,
+"split": "train"
+},
+{
+"id": "v1#7",
+"set": "v1",
+"source": 7,
+"seat": 1,
+"ordinal": 36,
+"split": "train"
+},
+{
+"id": "v1#8",
+"set": "v1",
+"source": 8,
+"seat": 0,
+"ordinal": 13,
+"split": "train"
+},
+{
+"id": "v1#9",
+"set": "v1",
+"source": 9,
+"seat": 1,
+"ordinal": 36,
+"split": "train"
+},
+{
+"id": "v1#10",
+"set": "v1",
+"source": 10,
+"seat": 1,
+"ordinal": 10,
+"split": "train"
+},
+{
+"id": "v1#11",
+"set": "v1",
+"source": 11,
+"seat": 1,
+"ordinal": 39,
+"split": "train"
+},
+{
+"id": "v1#12",
+"set": "v1",
+"source": 12,
+"seat": 1,
+"ordinal": 10,
+"split": "train"
+},
+{
+"id": "v1#13",
+"set": "v1",
+"source": 13,
+"seat": 0,
+"ordinal": 8,
+"split": "train"
+},
+{
+"id": "v1#14",
+"set": "v1",
+"source": 14,
+"seat": 1,
+"ordinal": 25,
+"split": "train"
+},
+{
+"id": "v1#15",
+"set": "v1",
+"source": 15,
+"seat": 0,
+"ordinal": 34,
+"split": "train"
+},
+{
+"id": "v1#16",
+"set": "v1",
+"source": 16,
+"seat": 1,
+"ordinal": 4,
+"split": "train"
+},
+{
+"id": "v1#17",
+"set": "v1",
+"source": 17,
+"seat": 0,
+"ordinal": 5,
+"split": "train"
+},
+{
+"id": "v1#18",
+"set": "v1",
+"source": 18,
+"seat": 1,
+"ordinal": 35,
+"split": "train"
+},
+{
+"id": "v1#19",
+"set": "v1",
+"source": 19,
+"seat": 0,
+"ordinal": 4,
+"split": "train"
+},
+{
+"id": "v1#20",
+"set": "v1",
+"source": 20,
+"seat": 0,
+"ordinal": 31,
+"split": "train"
+},
+{
+"id": "v1#21",
+"set": "v1",
+"source": 21,
+"seat": 0,
+"ordinal": 10,
+"split": "train"
+},
+{
+"id": "v1#22",
+"set": "v1",
+"source": 22,
+"seat": 0,
+"ordinal": 8,
+"split": "train"
+},
+{
+"id": "v1#23",
+"set": "v1",
+"source": 23,
+"seat": 0,
+"ordinal": 45,
+"split": "train"
+},
+{
+"id": "v1#24",
+"set": "v1",
+"source": 24,
+"seat": 1,
+"ordinal": 4,
+"split": "train"
+},
+{
+"id": "v1#25",
+"set": "v1",
+"source": 25,
+"seat": 0,
+"ordinal": 29,
+"split": "train"
+},
+{
+"id": "v1#26",
+"set": "v1",
+"source": 26,
+"seat": 0,
+"ordinal": 6,
+"split": "train"
+},
+{
+"id": "v1#27",
+"set": "v1",
+"source": 27,
+"seat": 0,
+"ordinal": 22,
+"split": "train"
+},
+{
+"id": "v1#28",
+"set": "v1",
+"source": 28,
+"seat": 0,
+"ordinal": 17,
+"split": "train"
+},
+{
+"id": "v1#29",
+"set": "v1",
+"source": 29,
+"seat": 0,
+"ordinal": 42,
+"split": "train"
+},
+{
+"id": "v1#30",
+"set": "v1",
+"source": 30,
+"seat": 1,
+"ordinal": 23,
+"split": "train"
+},
+{
+"id": "v1#31",
+"set": "v1",
+"source": 31,
+"seat": 0,
+"ordinal": 15,
+"split": "train"
+},
+{
+"id": "v1#32",
+"set": "v1",
+"source": 32,
+"seat": 1,
+"ordinal": 17,
+"split": "train"
+},
+{
+"id": "v1#33",
+"set": "v1",
+"source": 33,
+"seat": 0,
+"ordinal": 8,
+"split": "train"
+},
+{
+"id": "v1#34",
+"set": "v1",
+"source": 34,
+"seat": 1,
+"ordinal": 24,
+"split": "train"
+},
+{
+"id": "v1#35",
+"set": "v1",
+"source": 35,
+"seat": 0,
+"ordinal": 42,
+"split": "train"
+},
+{
+"id": "v1#36",
+"set": "v1",
+"source": 36,
+"seat": 0,
+"ordinal": 17,
+"split": "train"
+},
+{
+"id": "v1#37",
+"set": "v1",
+"source": 37,
+"seat": 1,
+"ordinal": 17,
+"split": "train"
+},
+{
+"id": "v1#38",
+"set": "v1",
+"source": 38,
+"seat": 0,
+"ordinal": 17,
+"split": "train"
+},
+{
+"id": "v1#39",
+"set": "v1",
+"source": 39,
+"seat": 0,
+"ordinal": 10,
+"split": "train"
+}
+],
+"context_errors": 0,
+"counts": {
+"charged": 40,
+"reaction": 40,
+"turn": 40,
+"end": 40,
+"summon": 40
+},
+"splits": {
+"train": 200
+},
+"items": [
+{
+"id": "v1#0:charged",
+"context": "v1#0",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "是，视为重击",
+"C": "否，不视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#0:reaction",
+"context": "v1#0",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「玛拉妮」现在受到 1 次岩元素伤害，会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +2",
+"B": "触发结晶反应，本次伤害 +1",
+"C": "不发生反应，目标附着火元素",
+"D": "触发感电反应，本次伤害 +1"
+},
+"answer": "B"
+},
+{
+"id": "v1#0:turn",
+"context": "v1#0",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "仍由我方继续行动",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#0:end",
+"context": "v1#0",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "C"
+},
+{
+"id": "v1#0:summon",
+"context": "v1#0",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "4 个",
+"D": "3 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#1:charged",
+"context": "v1#1",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 4
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#1:reaction",
+"context": "v1#1",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "水",
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「丝柯克」现在先受到 1 次水元素伤害，紧接着再受到 1 次岩元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发融化反应，本次伤害 +2",
+"B": "触发结晶反应，本次伤害 +2",
+"C": "不发生反应，目标附着雷元素",
+"D": "触发结晶反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#1:turn",
+"context": "v1#1",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "仍由我方继续行动",
+"C": "直接进入结束阶段",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#1:end",
+"context": "v1#1",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#1:summon",
+"context": "v1#1",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "2 个",
+"B": "4 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#2:charged",
+"context": "v1#2",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "否，不视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#2:reaction",
+"context": "v1#2",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "水",
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「黄金王兽」现在先受到 1 次水元素伤害，紧接着再受到 1 次火元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "不发生反应，目标附着火元素",
+"B": "不发生反应，草元素保留",
+"C": "触发蒸发反应，本次伤害 +2",
+"D": "不发生反应，也不附着元素"
+},
+"answer": "C"
+},
+{
+"id": "v1#2:turn",
+"context": "v1#2",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "仍由我方继续行动"
+},
+"answer": "B"
+},
+{
+"id": "v1#2:end",
+"context": "v1#2",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "本回合直接结束，双方各抓 2 张牌",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "立即进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#2:summon",
+"context": "v1#2",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "3 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#3:charged",
+"context": "v1#3",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#3:reaction",
+"context": "v1#3",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "雷",
+"first": null,
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「玛薇卡」现在受到 1 次水元素伤害，会发生什么？",
+"options": {
+"A": "触发扩散反应，本次伤害 +0",
+"B": "触发结晶反应，本次伤害 +2",
+"C": "触发感电反应，本次伤害 +1",
+"D": "触发感电反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#3:turn",
+"context": "v1#3",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "双方同时行动",
+"C": "轮到对方行动",
+"D": "直接进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#3:end",
+"context": "v1#3",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "立即进入结束阶段",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "A"
+},
+{
+"id": "v1#3:summon",
+"context": "v1#3",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "4 个",
+"C": "5 个",
+"D": "6 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#4:charged",
+"context": "v1#4",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "是，视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#4:reaction",
+"context": "v1#4",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "草",
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「希诺宁」现在先受到 1 次草元素伤害，紧接着再受到 1 次雷元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发原激化反应，本次伤害 +2",
+"B": "触发原激化反应，本次伤害 +1",
+"C": "不发生反应，目标附着冰元素",
+"D": "不发生反应，目标附着草元素"
+},
+"answer": "B"
+},
+{
+"id": "v1#4:turn",
+"context": "v1#4",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "仍由我方继续行动"
+},
+"answer": "B"
+},
+{
+"id": "v1#4:end",
+"context": "v1#4",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "C"
+},
+{
+"id": "v1#4:summon",
+"context": "v1#4",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "6 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#5:charged",
+"context": "v1#5",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#5:reaction",
+"context": "v1#5",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「黄金王兽」现在受到 1 次水元素伤害，会发生什么？",
+"options": {
+"A": "触发冻结反应，本次伤害 +1",
+"B": "不发生反应，目标附着草元素",
+"C": "不发生反应，草元素保留",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "A"
+},
+{
+"id": "v1#5:turn",
+"context": "v1#5",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "仍由我方继续行动",
+"C": "直接进入结束阶段",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#5:end",
+"context": "v1#5",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#5:summon",
+"context": "v1#5",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "6 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#6:charged",
+"context": "v1#6",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "是，视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#6:reaction",
+"context": "v1#6",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "雷",
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「水形幻人」现在先受到 1 次雷元素伤害，紧接着再受到 1 次岩元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +2",
+"B": "触发超导反应，本次伤害 +2",
+"C": "触发结晶反应，本次伤害 +1",
+"D": "不发生反应，附着不变"
+},
+"answer": "C"
+},
+{
+"id": "v1#6:turn",
+"context": "v1#6",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "双方同时行动",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#6:end",
+"context": "v1#6",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#6:summon",
+"context": "v1#6",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "5 个",
+"C": "6 个",
+"D": "3 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#7:charged",
+"context": "v1#7",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "是，视为重击",
+"D": "否，不视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#7:reaction",
+"context": "v1#7",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「芙宁娜」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发燃烧反应，本次伤害 +2",
+"B": "触发超导反应，本次伤害 +2",
+"C": "不发生反应，附着不变",
+"D": "触发超导反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#7:turn",
+"context": "v1#7",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "仍由我方继续行动",
+"C": "直接进入结束阶段",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#7:end",
+"context": "v1#7",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "本回合直接结束，双方各抓 2 张牌",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "立即进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#7:summon",
+"context": "v1#7",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "4 个",
+"C": "6 个",
+"D": "3 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#8:charged",
+"context": "v1#8",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 6
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "是，视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#8:reaction",
+"context": "v1#8",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "冰",
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「克洛琳德」现在先受到 1 次冰元素伤害，紧接着再受到 1 次岩元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发绽放反应，本次伤害 +1",
+"B": "触发超导反应，本次伤害 +2",
+"C": "触发结晶反应，本次伤害 +2",
+"D": "触发结晶反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#8:turn",
+"context": "v1#8",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "直接进入结束阶段",
+"C": "轮到对方行动",
+"D": "仍由我方继续行动"
+},
+"answer": "C"
+},
+{
+"id": "v1#8:end",
+"context": "v1#8",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "立即进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#8:summon",
+"context": "v1#8",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "6 个",
+"C": "4 个",
+"D": "3 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#9:charged",
+"context": "v1#9",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 1
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "否，不视为重击",
+"C": "是，视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#9:reaction",
+"context": "v1#9",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「烟绯」现在先受到 1 次火元素伤害，紧接着再受到 1 次雷元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发感电反应，本次伤害 +1",
+"B": "触发结晶反应，本次伤害 +2",
+"C": "触发超载反应，本次伤害 +2",
+"D": "触发结晶反应，本次伤害 +1"
+},
+"answer": "C"
+},
+{
+"id": "v1#9:turn",
+"context": "v1#9",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "直接进入结束阶段",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#9:end",
+"context": "v1#9",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "立即进入结束阶段",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#9:summon",
+"context": "v1#9",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 2
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "2 个",
+"C": "3 个",
+"D": "1 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#10:charged",
+"context": "v1#10",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "否，不视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#10:reaction",
+"context": "v1#10",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「雷电将军」现在受到 1 次岩元素伤害，会发生什么？",
+"options": {
+"A": "不发生反应，附着不变",
+"B": "触发结晶反应，本次伤害 +1",
+"C": "触发燃烧反应，本次伤害 +1",
+"D": "触发结晶反应，本次伤害 +2"
+},
+"answer": "B"
+},
+{
+"id": "v1#10:turn",
+"context": "v1#10",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "双方同时行动",
+"C": "轮到对方行动",
+"D": "仍由我方继续行动"
+},
+"answer": "C"
+},
+{
+"id": "v1#10:end",
+"context": "v1#10",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#10:summon",
+"context": "v1#10",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "5 个",
+"C": "3 个",
+"D": "2 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#11:charged",
+"context": "v1#11",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "是，视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#11:reaction",
+"context": "v1#11",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「茜特菈莉」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "触发超导反应，本次伤害 +1",
+"C": "触发原激化反应，本次伤害 +1",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "B"
+},
+{
+"id": "v1#11:turn",
+"context": "v1#11",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "轮到对方行动",
+"B": "仍由我方继续行动",
+"C": "直接进入结束阶段",
+"D": "双方同时行动"
+},
+"answer": "A"
+},
+{
+"id": "v1#11:end",
+"context": "v1#11",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "立即进入结束阶段",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "B"
+},
+{
+"id": "v1#11:summon",
+"context": "v1#11",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "6 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#12:charged",
+"context": "v1#12",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 0
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "否，不视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#12:reaction",
+"context": "v1#12",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "冰",
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「早柚」现在先受到 1 次冰元素伤害，紧接着再受到 1 次水元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发冻结反应，本次伤害 +2",
+"B": "触发融化反应，本次伤害 +2",
+"C": "触发超导反应，本次伤害 +1",
+"D": "触发冻结反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#12:turn",
+"context": "v1#12",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "直接进入结束阶段",
+"D": "双方同时行动"
+},
+"answer": "B"
+},
+{
+"id": "v1#12:end",
+"context": "v1#12",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "立即进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#12:summon",
+"context": "v1#12",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "2 个",
+"B": "5 个",
+"C": "3 个",
+"D": "4 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#13:charged",
+"context": "v1#13",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "否，不视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#13:reaction",
+"context": "v1#13",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "冰"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「深渊使徒·激流」现在受到 1 次冰元素伤害，会发生什么？",
+"options": {
+"A": "不发生反应，附着不变",
+"B": "不发生反应，冰与草共存",
+"C": "触发超导反应，本次伤害 +1",
+"D": "触发扩散反应，本次伤害 +0"
+},
+"answer": "A"
+},
+{
+"id": "v1#13:turn",
+"context": "v1#13",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "双方同时行动",
+"C": "轮到对方行动",
+"D": "直接进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#13:end",
+"context": "v1#13",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#13:summon",
+"context": "v1#13",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "2 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#14:charged",
+"context": "v1#14",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "是，视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#14:reaction",
+"context": "v1#14",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「丝柯克」现在受到 1 次火元素伤害，会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "触发燃烧反应，本次伤害 +1",
+"C": "触发融化反应，本次伤害 +2",
+"D": "触发感电反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#14:turn",
+"context": "v1#14",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "直接进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#14:end",
+"context": "v1#14",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "B"
+},
+{
+"id": "v1#14:summon",
+"context": "v1#14",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "3 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#15:charged",
+"context": "v1#15",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 0
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "否，不视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#15:reaction",
+"context": "v1#15",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「可莉」现在受到 1 次水元素伤害，会发生什么？",
+"options": {
+"A": "不发生反应，冰与草共存",
+"B": "触发冻结反应，本次伤害 +1",
+"C": "触发融化反应，本次伤害 +2",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "B"
+},
+{
+"id": "v1#15:turn",
+"context": "v1#15",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "直接进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#15:end",
+"context": "v1#15",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "先双方各抓 2 张牌，再结算召唤物攻击等结束阶段效果",
+"B": "对方还能再行动一次，之后才进入结束阶段",
+"C": "直接开始下一回合，本回合的结束阶段效果不结算",
+"D": "进入结束阶段：先结算召唤物攻击等结束阶段效果，再双方各抓 2 张牌"
+},
+"answer": "D"
+},
+{
+"id": "v1#15:summon",
+"context": "v1#15",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "6 个",
+"C": "4 个",
+"D": "5 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#16:charged",
+"context": "v1#16",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "是，视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#16:reaction",
+"context": "v1#16",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "草",
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「米卡」现在先受到 1 次草元素伤害，紧接着再受到 1 次水元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +1",
+"B": "触发绽放反应，本次伤害 +2",
+"C": "触发绽放反应，本次伤害 +1",
+"D": "触发燃烧反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#16:turn",
+"context": "v1#16",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "直接进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#16:end",
+"context": "v1#16",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "本回合直接结束，双方各抓 2 张牌",
+"B": "立即进入结束阶段",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#16:summon",
+"context": "v1#16",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "2 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#17:charged",
+"context": "v1#17",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 4
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#17:reaction",
+"context": "v1#17",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "草",
+"element": "风"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「黄金王兽」现在先受到 1 次草元素伤害，紧接着再受到 1 次风元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发原激化反应，本次伤害 +1",
+"B": "不发生反应，草元素保留",
+"C": "触发冻结反应，本次伤害 +1",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "B"
+},
+{
+"id": "v1#17:turn",
+"context": "v1#17",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "直接进入结束阶段",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#17:end",
+"context": "v1#17",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "立即进入结束阶段",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "B"
+},
+{
+"id": "v1#17:summon",
+"context": "v1#17",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "3 个",
+"C": "5 个",
+"D": "2 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#18:charged",
+"context": "v1#18",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 1
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#18:reaction",
+"context": "v1#18",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "冰",
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「嘉明」现在先受到 1 次冰元素伤害，紧接着再受到 1 次水元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "触发冻结反应，本次伤害 +1",
+"C": "触发冻结反应，本次伤害 +2",
+"D": "触发感电反应，本次伤害 +1"
+},
+"answer": "B"
+},
+{
+"id": "v1#18:turn",
+"context": "v1#18",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "双方同时行动",
+"C": "直接进入结束阶段",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#18:end",
+"context": "v1#18",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "立即进入结束阶段",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#18:summon",
+"context": "v1#18",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "4 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#19:charged",
+"context": "v1#19",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 7
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#19:reaction",
+"context": "v1#19",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "草"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「雷音权现」现在先受到 1 次火元素伤害，紧接着再受到 1 次草元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +1",
+"B": "触发燃烧反应，本次伤害 +1",
+"C": "触发燃烧反应，本次伤害 +2",
+"D": "触发感电反应，本次伤害 +2"
+},
+"answer": "B"
+},
+{
+"id": "v1#19:turn",
+"context": "v1#19",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "直接进入结束阶段",
+"C": "轮到对方行动",
+"D": "仍由我方继续行动"
+},
+"answer": "C"
+},
+{
+"id": "v1#19:end",
+"context": "v1#19",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#19:summon",
+"context": "v1#19",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "4 个",
+"D": "3 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#20:charged",
+"context": "v1#20",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "是，视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#20:reaction",
+"context": "v1#20",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "雷",
+"element": "冰"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「玛薇卡」现在先受到 1 次雷元素伤害，紧接着再受到 1 次冰元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +1",
+"B": "触发超导反应，本次伤害 +2",
+"C": "触发冻结反应，本次伤害 +1",
+"D": "触发原激化反应，本次伤害 +2"
+},
+"answer": "A"
+},
+{
+"id": "v1#20:turn",
+"context": "v1#20",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "轮到对方行动",
+"C": "直接进入结束阶段",
+"D": "仍由我方继续行动"
+},
+"answer": "B"
+},
+{
+"id": "v1#20:end",
+"context": "v1#20",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "立即进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "C"
+},
+{
+"id": "v1#20:summon",
+"context": "v1#20",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "3 个",
+"C": "2 个",
+"D": "4 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#21:charged",
+"context": "v1#21",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#21:reaction",
+"context": "v1#21",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「雷电将军」现在受到 1 次水元素伤害，会发生什么？",
+"options": {
+"A": "触发扩散反应，本次伤害 +0",
+"B": "触发感电反应，本次伤害 +2",
+"C": "触发冻结反应，本次伤害 +1",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#21:turn",
+"context": "v1#21",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "双方同时行动",
+"C": "轮到对方行动",
+"D": "直接进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#21:end",
+"context": "v1#21",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#21:summon",
+"context": "v1#21",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "3 个",
+"C": "4 个",
+"D": "6 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#22:charged",
+"context": "v1#22",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 0
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "是，视为重击",
+"D": "否，不视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#22:reaction",
+"context": "v1#22",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "草"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「丝柯克」现在先受到 1 次火元素伤害，紧接着再受到 1 次草元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "不发生反应，草元素保留",
+"B": "触发绽放反应，本次伤害 +2",
+"C": "触发燃烧反应，本次伤害 +2",
+"D": "触发燃烧反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#22:turn",
+"context": "v1#22",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "直接进入结束阶段",
+"D": "双方同时行动"
+},
+"answer": "A"
+},
+{
+"id": "v1#22:end",
+"context": "v1#22",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "直接开始下一回合，本回合的结束阶段效果不结算",
+"B": "先双方各抓 2 张牌，再结算召唤物攻击等结束阶段效果",
+"C": "进入结束阶段：先结算召唤物攻击等结束阶段效果，再双方各抓 2 张牌",
+"D": "对方还能再行动一次，之后才进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#22:summon",
+"context": "v1#22",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "2 个",
+"C": "4 个",
+"D": "5 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#23:charged",
+"context": "v1#23",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 0
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#23:reaction",
+"context": "v1#23",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "风"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「伊安珊」现在先受到 1 次火元素伤害，紧接着再受到 1 次风元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +2",
+"B": "触发扩散反应，本次伤害 +1",
+"C": "触发燃烧反应，本次伤害 +1",
+"D": "触发扩散反应，本次伤害 +0"
+},
+"answer": "D"
+},
+{
+"id": "v1#23:turn",
+"context": "v1#23",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "直接进入结束阶段",
+"D": "双方同时行动"
+},
+"answer": "B"
+},
+{
+"id": "v1#23:end",
+"context": "v1#23",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "立即进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#23:summon",
+"context": "v1#23",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "3 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#24:charged",
+"context": "v1#24",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "是，视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#24:reaction",
+"context": "v1#24",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "冰"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「特瓦林」现在先受到 1 次火元素伤害，紧接着再受到 1 次冰元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发融化反应，本次伤害 +2",
+"B": "触发结晶反应，本次伤害 +2",
+"C": "不发生反应，目标附着冰元素",
+"D": "触发冻结反应，本次伤害 +2"
+},
+"answer": "A"
+},
+{
+"id": "v1#24:turn",
+"context": "v1#24",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "直接进入结束阶段",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#24:end",
+"context": "v1#24",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "立即进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#24:summon",
+"context": "v1#24",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "6 个",
+"C": "4 个",
+"D": "3 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#25:charged",
+"context": "v1#25",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "否，不视为重击",
+"C": "是，视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#25:reaction",
+"context": "v1#25",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「嘉明」现在受到 1 次岩元素伤害，会发生什么？",
+"options": {
+"A": "触发燃烧反应，本次伤害 +2",
+"B": "触发绽放反应，本次伤害 +1",
+"C": "触发结晶反应，本次伤害 +1",
+"D": "触发结晶反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#25:turn",
+"context": "v1#25",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "轮到对方行动",
+"B": "仍由我方继续行动",
+"C": "双方同时行动",
+"D": "直接进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#25:end",
+"context": "v1#25",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "立即进入结束阶段",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#25:summon",
+"context": "v1#25",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "3 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#26:charged",
+"context": "v1#26",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#26:reaction",
+"context": "v1#26",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "草",
+"element": "风"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「罗莎莉亚」现在先受到 1 次草元素伤害，紧接着再受到 1 次风元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "不发生反应，目标附着草元素",
+"B": "触发绽放反应，本次伤害 +1",
+"C": "不发生反应，草元素保留",
+"D": "触发超导反应，本次伤害 +2"
+},
+"answer": "C"
+},
+{
+"id": "v1#26:turn",
+"context": "v1#26",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "仍由我方继续行动",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#26:end",
+"context": "v1#26",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#26:summon",
+"context": "v1#26",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "3 个",
+"C": "6 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#27:charged",
+"context": "v1#27",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 4
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "否，不视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#27:reaction",
+"context": "v1#27",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "冰",
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「早柚」现在先受到 1 次冰元素伤害，紧接着再受到 1 次岩元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +2",
+"B": "触发结晶反应，本次伤害 +1",
+"C": "触发绽放反应，本次伤害 +2",
+"D": "不发生反应，目标附着水元素"
+},
+"answer": "B"
+},
+{
+"id": "v1#27:turn",
+"context": "v1#27",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "轮到对方行动",
+"B": "双方同时行动",
+"C": "直接进入结束阶段",
+"D": "仍由我方继续行动"
+},
+"answer": "A"
+},
+{
+"id": "v1#27:end",
+"context": "v1#27",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#27:summon",
+"context": "v1#27",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "5 个",
+"C": "3 个",
+"D": "6 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#28:charged",
+"context": "v1#28",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 0
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "否，不视为重击",
+"B": "是，视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#28:reaction",
+"context": "v1#28",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "火",
+"element": "冰"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「夜兰」现在先受到 1 次火元素伤害，紧接着再受到 1 次冰元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发原激化反应，本次伤害 +2",
+"B": "不发生反应，目标附着草元素",
+"C": "不发生反应，目标附着水元素",
+"D": "触发融化反应，本次伤害 +2"
+},
+"answer": "D"
+},
+{
+"id": "v1#28:turn",
+"context": "v1#28",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "双方同时行动",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "C"
+},
+{
+"id": "v1#28:end",
+"context": "v1#28",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "进入结束阶段：先结算召唤物攻击等结束阶段效果，再双方各抓 2 张牌",
+"B": "直接开始下一回合，本回合的结束阶段效果不结算",
+"C": "先双方各抓 2 张牌，再结算召唤物攻击等结束阶段效果",
+"D": "对方还能再行动一次，之后才进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#28:summon",
+"context": "v1#28",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "3 个",
+"C": "5 个",
+"D": "6 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#29:charged",
+"context": "v1#29",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 7
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "否，不视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#29:reaction",
+"context": "v1#29",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "草",
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「多莉」现在先受到 1 次草元素伤害，紧接着再受到 1 次火元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发燃烧反应，本次伤害 +2",
+"B": "不发生反应，草元素保留",
+"C": "触发燃烧反应，本次伤害 +1",
+"D": "不发生反应，也不附着元素"
+},
+"answer": "C"
+},
+{
+"id": "v1#29:turn",
+"context": "v1#29",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "轮到对方行动",
+"C": "仍由我方继续行动",
+"D": "直接进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#29:end",
+"context": "v1#29",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "本回合直接结束，双方各抓 2 张牌",
+"B": "对方只能再行动一次，然后进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "立即进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#29:summon",
+"context": "v1#29",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "3 个",
+"C": "5 个",
+"D": "6 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#30:charged",
+"context": "v1#30",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 7
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "是，视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#30:reaction",
+"context": "v1#30",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「雷电将军」现在受到 1 次火元素伤害，会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "不发生反应，附着不变",
+"C": "触发结晶反应，本次伤害 +1",
+"D": "触发融化反应，本次伤害 +2"
+},
+"answer": "D"
+},
+{
+"id": "v1#30:turn",
+"context": "v1#30",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "轮到对方行动",
+"C": "双方同时行动",
+"D": "直接进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#30:end",
+"context": "v1#30",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "立即进入结束阶段",
+"C": "对方继续行动，直到对方也宣布回合结束",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "C"
+},
+{
+"id": "v1#30:summon",
+"context": "v1#30",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "2 个",
+"B": "4 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "C"
+},
+{
+"id": "v1#31:charged",
+"context": "v1#31",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 7
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "D"
+},
+{
+"id": "v1#31:reaction",
+"context": "v1#31",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "冰",
+"element": "水"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「丝柯克」现在先受到 1 次冰元素伤害，紧接着再受到 1 次水元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发扩散反应，本次伤害 +1",
+"B": "不发生反应，附着不变",
+"C": "触发冻结反应，本次伤害 +2",
+"D": "触发冻结反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#31:turn",
+"context": "v1#31",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "双方同时行动",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#31:end",
+"context": "v1#31",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "本回合直接结束，双方各抓 2 张牌",
+"D": "立即进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#31:summon",
+"context": "v1#31",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "6 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#32:charged",
+"context": "v1#32",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有我方出战角色充能已满时才视为重击",
+"C": "只有对方出战角色处于冻结时才视为重击",
+"D": "否，不视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#32:reaction",
+"context": "v1#32",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "水",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「特瓦林」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发感电反应，本次伤害 +2",
+"B": "触发原激化反应，本次伤害 +2",
+"C": "触发感电反应，本次伤害 +1",
+"D": "触发超导反应，本次伤害 +1"
+},
+"answer": "C"
+},
+{
+"id": "v1#32:turn",
+"context": "v1#32",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "直接进入结束阶段",
+"B": "仍由我方继续行动",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#32:end",
+"context": "v1#32",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#32:summon",
+"context": "v1#32",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "5 个",
+"C": "6 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#33:charged",
+"context": "v1#33",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 4
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "是，视为重击",
+"D": "否，不视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#33:reaction",
+"context": "v1#33",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「恰斯卡」现在受到 1 次岩元素伤害，会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +1",
+"B": "触发扩散反应，本次伤害 +0",
+"C": "触发结晶反应，本次伤害 +2",
+"D": "触发感电反应，本次伤害 +1"
+},
+"answer": "A"
+},
+{
+"id": "v1#33:turn",
+"context": "v1#33",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "直接进入结束阶段",
+"C": "仍由我方继续行动",
+"D": "轮到对方行动"
+},
+"answer": "C"
+},
+{
+"id": "v1#33:end",
+"context": "v1#33",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "先双方各抓 2 张牌，再结算召唤物攻击等结束阶段效果",
+"B": "直接开始下一回合，本回合的结束阶段效果不结算",
+"C": "进入结束阶段：先结算召唤物攻击等结束阶段效果，再双方各抓 2 张牌",
+"D": "对方还能再行动一次，之后才进入结束阶段"
+},
+"answer": "C"
+},
+{
+"id": "v1#33:summon",
+"context": "v1#33",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "5 个",
+"B": "3 个",
+"C": "2 个",
+"D": "4 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#34:charged",
+"context": "v1#34",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 2
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "否，不视为重击",
+"C": "是，视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#34:reaction",
+"context": "v1#34",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "雷",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「恰斯卡」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发超载反应，本次伤害 +2",
+"B": "触发感电反应，本次伤害 +1",
+"C": "不发生反应，附着不变",
+"D": "不发生反应，也不附着元素"
+},
+"answer": "C"
+},
+{
+"id": "v1#34:turn",
+"context": "v1#34",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "轮到对方行动",
+"B": "双方同时行动",
+"C": "仍由我方继续行动",
+"D": "直接进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#34:end",
+"context": "v1#34",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "立即进入结束阶段",
+"D": "对方只能再行动一次，然后进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#34:summon",
+"context": "v1#34",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "5 个",
+"C": "3 个",
+"D": "4 个"
+},
+"answer": "D"
+},
+{
+"id": "v1#35:charged",
+"context": "v1#35",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 5
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "否，不视为重击",
+"C": "只有我方出战角色充能已满时才视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "B"
+},
+{
+"id": "v1#35:reaction",
+"context": "v1#35",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「玛薇卡」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "不发生反应，冰与草共存",
+"C": "触发超导反应，本次伤害 +1",
+"D": "不发生反应，草元素保留"
+},
+"answer": "C"
+},
+{
+"id": "v1#35:turn",
+"context": "v1#35",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "轮到对方行动",
+"C": "仍由我方继续行动",
+"D": "直接进入结束阶段"
+},
+"answer": "B"
+},
+{
+"id": "v1#35:end",
+"context": "v1#35",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方只能再行动一次，然后进入结束阶段",
+"B": "对方继续行动，直到对方也宣布回合结束",
+"C": "立即进入结束阶段",
+"D": "本回合直接结束，双方各抓 2 张牌"
+},
+"answer": "B"
+},
+{
+"id": "v1#35:summon",
+"context": "v1#35",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "6 个",
+"B": "4 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "B"
+},
+{
+"id": "v1#36:charged",
+"context": "v1#36",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 1
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#36:reaction",
+"context": "v1#36",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "水",
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「刻晴」现在先受到 1 次水元素伤害，紧接着再受到 1 次火元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "触发融化反应，本次伤害 +2",
+"B": "不发生反应，附着不变",
+"C": "触发蒸发反应，本次伤害 +2",
+"D": "不发生反应，目标附着火元素"
+},
+"answer": "C"
+},
+{
+"id": "v1#36:turn",
+"context": "v1#36",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "直接进入结束阶段",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "A"
+},
+{
+"id": "v1#36:end",
+"context": "v1#36",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": true
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方还能再行动一次，之后才进入结束阶段",
+"B": "先双方各抓 2 张牌，再结算召唤物攻击等结束阶段效果",
+"C": "进入结束阶段：先结算召唤物攻击等结束阶段效果，再双方各抓 2 张牌",
+"D": "直接开始下一回合，本回合的结束阶段效果不结算"
+},
+"answer": "C"
+},
+{
+"id": "v1#36:summon",
+"context": "v1#36",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "6 个",
+"C": "5 个",
+"D": "3 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#37:charged",
+"context": "v1#37",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 1
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有对方出战角色处于冻结时才视为重击",
+"B": "是，视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#37:reaction",
+"context": "v1#37",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "冰",
+"first": null,
+"element": "雷"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「爱可菲」现在受到 1 次雷元素伤害，会发生什么？",
+"options": {
+"A": "触发超导反应，本次伤害 +2",
+"B": "不发生反应，目标附着草元素",
+"C": "触发绽放反应，本次伤害 +2",
+"D": "触发超导反应，本次伤害 +1"
+},
+"answer": "D"
+},
+{
+"id": "v1#37:turn",
+"context": "v1#37",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "轮到对方行动",
+"B": "双方同时行动",
+"C": "仍由我方继续行动",
+"D": "直接进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#37:end",
+"context": "v1#37",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#37:summon",
+"context": "v1#37",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 1
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "5 个",
+"C": "2 个",
+"D": "4 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#38:charged",
+"context": "v1#38",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 8
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "只有我方出战角色充能已满时才视为重击",
+"B": "否，不视为重击",
+"C": "是，视为重击",
+"D": "只有对方出战角色处于冻结时才视为重击"
+},
+"answer": "C"
+},
+{
+"id": "v1#38:reaction",
+"context": "v1#38",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "无",
+"first": "水",
+"element": "火"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「玛拉妮」现在先受到 1 次水元素伤害，紧接着再受到 1 次火元素伤害，第二次伤害时会发生什么？",
+"options": {
+"A": "不发生反应，目标附着草元素",
+"B": "不发生反应，冰与草共存",
+"C": "触发蒸发反应，本次伤害 +2",
+"D": "不发生反应，目标附着雷元素"
+},
+"answer": "C"
+},
+{
+"id": "v1#38:turn",
+"context": "v1#38",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "仍由我方继续行动",
+"B": "直接进入结束阶段",
+"C": "双方同时行动",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#38:end",
+"context": "v1#38",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "对方继续行动，直到对方也宣布回合结束",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "立即进入结束阶段"
+},
+"answer": "A"
+},
+{
+"id": "v1#38:summon",
+"context": "v1#38",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "4 个",
+"B": "6 个",
+"C": "3 个",
+"D": "5 个"
+},
+"answer": "A"
+},
+{
+"id": "v1#39:charged",
+"context": "v1#39",
+"split": "train",
+"qtype": "charged",
+"ref": "R04 §3",
+"facts": {
+"dice": 2
+},
+"question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+"options": {
+"A": "是，视为重击",
+"B": "只有对方出战角色处于冻结时才视为重击",
+"C": "否，不视为重击",
+"D": "只有我方出战角色充能已满时才视为重击"
+},
+"answer": "A"
+},
+{
+"id": "v1#39:reaction",
+"context": "v1#39",
+"split": "train",
+"qtype": "reaction",
+"ref": "R06 §2 / §3.1",
+"facts": {
+"aura": "水",
+"first": null,
+"element": "岩"
+},
+"question": "按附着转移表与反应效果表（不考虑角色、卡牌、状态的额外效果），若对方出战角色「雷音权现」现在受到 1 次岩元素伤害，会发生什么？",
+"options": {
+"A": "触发结晶反应，本次伤害 +1",
+"B": "触发原激化反应，本次伤害 +2",
+"C": "触发绽放反应，本次伤害 +2",
+"D": "触发结晶反应，本次伤害 +2"
+},
+"answer": "A"
+},
+{
+"id": "v1#39:turn",
+"context": "v1#39",
+"split": "train",
+"qtype": "turn",
+"ref": "R03 §3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "我方现在执行一次战斗行动（例如使用技能）之后，下一次由谁行动？",
+"options": {
+"A": "双方同时行动",
+"B": "仍由我方继续行动",
+"C": "直接进入结束阶段",
+"D": "轮到对方行动"
+},
+"answer": "D"
+},
+{
+"id": "v1#39:end",
+"context": "v1#39",
+"split": "train",
+"qtype": "end",
+"ref": "R03 §3 / R01 §4.3",
+"facts": {
+"opponent_declared_end": false
+},
+"question": "若我方现在宣布回合结束，接下来会发生什么？",
+"options": {
+"A": "立即进入结束阶段",
+"B": "本回合直接结束，双方各抓 2 张牌",
+"C": "对方只能再行动一次，然后进入结束阶段",
+"D": "对方继续行动，直到对方也宣布回合结束"
+},
+"answer": "D"
+},
+{
+"id": "v1#39:summon",
+"context": "v1#39",
+"split": "train",
+"qtype": "summon",
+"ref": "R07 §1",
+"facts": {
+"summons": 0
+},
+"question": "按基础规则，我方召唤物区现在最多还能再容纳几个（与现有召唤物都不同名的）新召唤物？",
+"options": {
+"A": "3 个",
+"B": "6 个",
+"C": "5 个",
+"D": "4 个"
+},
+"answer": "D"
+}
+]
+}

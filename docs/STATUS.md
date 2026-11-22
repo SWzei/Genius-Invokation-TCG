@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -92,12 +92,26 @@
 | DeepSeek-V4.1-Flash 接入（`deepseek-flash`） | ✅ 非思考模式可用：1.5 万次决策调用全部成功，首答合法率 99.5%–100%，延迟中位 1.1 s；**思考模式不用于逐步对局**（约 1/3 回复为空） | `configs/models.toml`、`reports/review/2026-11_deepseek_kb.md` §1 |
 | DeepSeek 非思考在 `lite` 上（无知识，两轮 112 局） | 0.737 [0.65, 0.81]；强于启发式、与脚本专家持平、弱于 GLM-5.3（低强度思考） | 同上 §4 |
 | 知识库内容可用性（规则问答 56 题） | 闭卷 48；给原文或 BM25 检索 56（+8 / −0，p = 0.008） | `reports/bench/kbqa_ds.md` |
-| 知识库检索 | ✗ 自带 `KnowledgeBase.search` 对中文问句 53/56 返回空；二元字 BM25 前 3 命中 91%（仅评测用，未接入决策） | 同上 |
-| 决策时的注入可达性 | 规则 11/90 节、策略 14/70 单元；4 个策略单元几乎每个行动决策都被选中 | `reports/bench/kb_probe_lite.md` |
-| 知识注入对表现的影响 | 未测出（整局合并 +0.025 [−0.03, +0.08]；单步翻转在重测噪声内） | `reports/bench/ds_lite*.md`、`ds_scen*.md` |
+| 知识库检索 | ✅ `KnowledgeBase.search` 在空格切词无命中时回退到二元字 BM25（D32）：规则问答前 3 命中 0.893；决策时的规则选取见 §3f | 同上、`reports/review/2026-11_kb_training.md` §4 |
+| 决策时的注入可达性（`rules-strategy`） | 规则 11/90 节、策略 14/70 单元；4 个策略单元几乎每个行动决策都被选中 | `reports/bench/kb_probe_lite.md` |
+| 知识注入对表现的影响（`rules-strategy`） | 未测出（整局合并 +0.025 [−0.03, +0.08]；单步翻转在重测噪声内）；改进后的接入见 §3f | `reports/bench/ds_lite*.md`、`ds_scen*.md` |
 | 运行间噪声 | 同配置重跑整局 7 / 0（p = 0.016）、单步 13% 选择变化：**配置比较至少两轮** | 同上 |
 
 全部是模拟器内结果，不进强度验收。用法：`docs/howto/benchmark.md` §6。
+
+## 3f. 知识接入的分阶段优化（D32，2026-11-21）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 当前最好的知识接入 | `llm:deepseek-flash#kb=kbt-s4,reply=reason_first`（情境触发规则节 + 先写依据再作答） | `reports/review/2026-11_kb_training.md` |
+| 情境规则题（test，260 题 × 2 轮，先写依据） | 0.923，对无知识 0.812：+0.112，39 / 2，p < 0.001；对原接入 0.840：+0.083，23 / 1 | `reports/bench/kbt_situ_test_reason.md` |
+| 整局 `lite`（S5 两轮 112 局） | 0.821，对无知识（三轮）0.747：逐格 +0.074 [+0.007, +0.141]，11 / 4，p = 0.118——**正向但未显著** | `reports/bench/kbt_lite.md` |
+| 斩杀转化（test，70 题 × 2 轮） | S5 0.936，与无知识 0.943 持平；原接入 0.879，显著更差（0 / 7，p = 0.016） | `reports/bench/kbt_lethal_test.md` |
+| 无收益的改动 | 规则 BM25 检索（S1）、训练集频次剪枝（S2）、斩杀窗口定向资料（S3）：train / dev 上都在噪声内 | `reports/bench/kbt_situ_dev.md` |
+| 只改回复格式、不加知识 | 斩杀上无变化（0.898 对 0.922）；与触发规则合用才有效 | `reports/bench/kbt_lethal_dev.md` |
+| 数据划分 | 场景集 v2 按种子 train / dev / test；test 与整局只跑过一次 | `docs/howto/benchmark.md` §7.1 |
+
+全部是模拟器内结果，不进强度验收。用法：`docs/howto/benchmark.md` §7。
 
 ## 4. 当前排产
 

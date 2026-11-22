@@ -9,8 +9,9 @@ client (the KB's own cross-checks cover that).
 Each question is asked under several **conditions**, so the effects separate:
 
 ``closed``  question only: what the model already knows.
-``search``  top-k sections from ``KnowledgeBase.search`` (the KB's built-in retriever,
-            whitespace terms) for the question text -- what the current code path finds.
+``search``  top-k sections from ``KnowledgeBase.search`` for the question text -- what the
+            current code path finds (whitespace terms; since D32 it falls back to BM25 when
+            those match nothing, before that it returned nothing for a Chinese question).
 ``bm25``    top-k sections from a character-bigram BM25 index over heading + text: a
             plain retriever that works on Chinese without word segmentation.
 ``oracle``  the gold section itself: the upper bound of what the KB text can do.
@@ -81,48 +82,16 @@ def validate(bank: Mapping[str, Any], kb) -> list[str]:
 # --------------------------------------------------------------------------- #
 # retrievers
 # --------------------------------------------------------------------------- #
-_CJK_OR_WORD = re.compile(r"[一-鿿]|[A-Za-z0-9]+")
-
-
-def _bigrams(text: str) -> list[str]:
-    """Character bigrams over CJK runs plus ASCII words; punctuation and markup dropped."""
-    tokens = _CJK_OR_WORD.findall(text)
-    grams: list[str] = []
-    for a, b in zip(tokens, tokens[1:]):
-        if len(a) == 1 and len(b) == 1 and "一" <= a <= "鿿" and "一" <= b <= "鿿":
-            grams.append(a + b)
-    grams.extend(t.lower() for t in tokens if len(t) > 1)
-    return grams
-
-
 class BM25:
-    """Okapi BM25 over KB rule sections (heading + text), character bigrams."""
+    """Character-bigram BM25 over KB rule sections (heading + text); see ``reps.kb_retrieval``."""
 
-    def __init__(self, sections: Sequence[Any], k1: float = 1.5, b: float = 0.75) -> None:
-        self.refs = [s.ref for s in sections]
-        self.docs = [Counter(_bigrams(f"{s.heading} {s.heading} {s.text}")) for s in sections]
-        self.lengths = [sum(d.values()) for d in self.docs]
-        self.avg = sum(self.lengths) / max(1, len(self.lengths))
-        df: Counter = Counter()
-        for doc in self.docs:
-            df.update(doc.keys())
-        n = len(self.docs)
-        self.idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
-        self.k1, self.b = k1, b
+    def __init__(self, sections: Sequence[Any]) -> None:
+        from reps.kb_retrieval import section_index
+
+        self._index = section_index(sections)
 
     def rank(self, query: str, k: int = TOP_K) -> list[str]:
-        terms = Counter(_bigrams(query))
-        scores = []
-        for i, doc in enumerate(self.docs):
-            score = 0.0
-            for term in terms:
-                tf = doc.get(term, 0)
-                if tf:
-                    norm = tf + self.k1 * (1 - self.b + self.b * self.lengths[i] / self.avg)
-                    score += self.idf[term] * tf * (self.k1 + 1) / norm
-            if score > 0:
-                scores.append((-score, i))
-        return [self.refs[i] for _s, i in sorted(scores)[:k]]
+        return self._index.rank(query, k)
 
 
 def retrieve(condition: str, item: Mapping[str, Any], kb, bm25: BM25 | None, k: int = TOP_K) -> list[str]:
