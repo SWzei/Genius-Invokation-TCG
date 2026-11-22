@@ -1,0 +1,107 @@
+{
+  "bank": "situ_v3",
+  "split": "test",
+  "runs": [
+    "kbt3_v3_situ_glm_reason_r1"
+  ],
+  "items": 403,
+  "item_types": {
+    "reaction": 42,
+    "turn": 42,
+    "end": 42,
+    "summon": 42,
+    "first_next": 42,
+    "energy": 42,
+    "hand_limit": 42,
+    "dice_cap": 42,
+    "tuning": 42,
+    "charged": 25
+  },
+  "table": [
+    {
+      "kb": "none",
+      "items": 401,
+      "observations": 401,
+      "accuracy": 0.428928,
+      "ci95": [
+        0.381,
+        0.478
+      ],
+      "by_type": {
+        "charged": "8/25",
+        "dice_cap": "22/42",
+        "end": "14/42",
+        "energy": "12/41",
+        "first_next": "17/42",
+        "hand_limit": "24/41",
+        "reaction": "21/42",
+        "summon": "11/42",
+        "tuning": "26/42",
+        "turn": "17/42"
+      },
+      "ref_in_knowledge": {
+        "charged": "0/25",
+        "dice_cap": "0/42",
+        "end": "0/42",
+        "energy": "0/41",
+        "first_next": "0/42",
+        "hand_limit": "0/41",
+        "reaction": "0/42",
+        "summon": "0/42",
+        "tuning": "0/42",
+        "turn": "0/42"
+      }
+    },
+    {
+      "kb": "kbt3-trig",
+      "items": 391,
+      "observations": 391,
+      "accuracy": 0.641944,
+      "ci95": [
+        0.593,
+        0.688
+      ],
+      "by_type": {
+        "charged": "22/25",
+        "dice_cap": "20/41",
+        "end": "40/42",
+        "energy": "20/38",
+        "first_next": "12/40",
+        "hand_limit": "22/41",
+        "reaction": "28/41",
+        "summon": "14/41",
+        "tuning": "36/41",
+        "turn": "37/41"
+      },
+      "ref_in_knowledge": {
+        "charged": "20/25",
+        "dice_cap": "0/41",
+        "end": "6/42",
+        "energy": "25/38",
+        "first_next": "35/40",
+        "hand_limit": "0/41",
+        "reaction": "18/41",
+        "summon": "0/41",
+        "tuning": "0/41",
+        "turn": "6/41"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt3-trig",
+      "b": "none",
+      "n": 390,
+      "delta": 0.2179,
+      "ci95": [
+        0.1618,
+        0.2741
+      ],
+      "better": 114,
+      "worse": 29,
+      "p": 0.0
+    }
+  ],
+  "generated": "2026-11-22T11:19:23",
+  "tag": "kbt3_v3_situ_glm_test"
+}

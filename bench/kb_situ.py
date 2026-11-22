@@ -111,17 +111,41 @@ def _options(correct: str, distractors: Sequence[str], rng: random.Random) -> tu
     return {LETTERS[i]: o for i, o in enumerate(options)}, LETTERS[options.index(correct)]
 
 
-def questions_for(view: Mapping[str, Any], seat: int, rng: random.Random) -> list[dict[str, Any]]:
-    """All question items for one position (``view`` from ``DecisionDescriber.view``)."""
+QUESTION_VERSIONS = ("d32", "d33")
+
+
+def questions_for(view: Mapping[str, Any], seat: int, rng: random.Random,
+                  version: str = "d32") -> list[dict[str, Any]]:
+    """All question items for one position (``view`` from ``DecisionDescriber.view``).
+
+    ``d33`` (fresh banks only): no ``charged`` item below 3 dice (a normal attack cannot
+    be paid there, so the question is moot), plus the held-out types of
+    :func:`heldout_questions` -- types that no knowledge-access change was designed for."""
+    if version not in QUESTION_VERSIONS:
+        raise ValueError(f"question version must be one of {QUESTION_VERSIONS}")
     me, opp = view["me"], view["opponent"]
     out = []
     dice = len(me["dice"])
+    if version == "d32" or dice >= 3:
+        out.append(_charged(dice, rng))
+    out += _designed_rest(view, rng)
+    if version == "d33":
+        out += [dict(q, heldout=True) for q in heldout_questions(view, rng)]
+    return out
+
+
+def _charged(dice: int, rng: random.Random) -> dict[str, Any]:
     opts, ans = _options("是，视为重击" if dice % 2 == 0 else "否，不视为重击",
                          ["否，不视为重击" if dice % 2 == 0 else "是，视为重击",
                           "只有对方出战角色处于冻结时才视为重击", "只有我方出战角色充能已满时才视为重击"], rng)
-    out.append({"qtype": "charged", "ref": "R04 §3", "facts": {"dice": dice},
-                "question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
-                "options": opts, "answer": ans})
+    return {"qtype": "charged", "ref": "R04 §3", "facts": {"dice": dice},
+            "question": "按基础规则（不考虑卡牌、角色、状态的特殊效果），我方若在这次行动中直接使用普通攻击，它是否视为重击？",
+            "options": opts, "answer": ans}
+
+
+def _designed_rest(view: Mapping[str, Any], rng: random.Random) -> list[dict[str, Any]]:
+    me, opp = view["me"], view["opponent"]
+    out: list[dict[str, Any]] = []
     active = next((c for c in opp["characters"] if c["active"] and not c["defeated"]), None)
     if active is not None and active["aura"] in ("无", "冰", "水", "火", "雷", "草", "冰+草"):
         aura, first = active["aura"], None
@@ -166,6 +190,59 @@ def questions_for(view: Mapping[str, Any], seat: int, rng: random.Random) -> lis
     return out
 
 
+def _numeric_options(correct: int, candidates: Sequence[int], rng: random.Random, fmt: str = "{} 个",
+                     floor: int = 0) -> tuple[dict[str, str], str]:
+    wrong: list[int] = []
+    for v in [*candidates, correct + 1, correct - 1, correct + 2, correct - 2, correct + 3]:
+        if v >= floor and v != correct and v not in wrong:
+            wrong.append(v)
+    return _options(fmt.format(correct), [fmt.format(v) for v in wrong[:3]], rng)
+
+
+def heldout_questions(view: Mapping[str, Any], rng: random.Random) -> list[dict[str, Any]]:
+    """D33 held-out types: answered from the KB rules and the visible position like the
+    designed ones, but chosen *after* the D32 triggers and never used to design anything.
+    ``first_next`` R01 §4.2; ``energy`` R03 §2; ``hand_limit`` R01 §5; ``dice_cap`` R02 §1;
+    ``tuning`` R02 §5."""
+    me, opp = view["me"], view["opponent"]
+    out: list[dict[str, Any]] = []
+    ended = bool(opp["declared_end"])
+    opts, ans = _options("对方先手" if ended else "我方先手",
+                         ["我方先手" if ended else "对方先手", "由下回合投掷结果决定", "与本回合的先手方相同"], rng)
+    out.append({"qtype": "first_next", "ref": "R01 §4.2", "facts": {"opponent_declared_end": ended},
+                "question": "若我方现在宣布回合结束，下一回合由哪一方先行动？", "options": opts, "answer": ans})
+    active = next((c for c in me["characters"] if c["active"] and not c["defeated"]), None)
+    if active is not None and int(active["max_energy"]) > 0:
+        e, m = int(active["energy"]), int(active["max_energy"])
+        after = min(e + 1, m)
+        opts, ans = _numeric_options(after, [e, e + 2, 0, m + 1, max(0, e - 1)], rng, fmt=f"{{}}/{m}")
+        out.append({"qtype": "energy", "ref": "R03 §2", "facts": {"energy": e, "max_energy": m},
+                    "question": (f"按基础规则（不考虑卡牌、角色、状态的特殊效果），我方出战角色「{active['name']}」"
+                                 "现在使用一次元素战技后，它的充能是多少？"), "options": opts, "answer": ans})
+    hand = int(me.get("hand_count", len(me.get("hand") or [])))
+    k = max(1, 10 - hand + rng.choice((1, 2))) if rng.random() < 0.5 else rng.choice((1, 2, 3))
+    total = min(hand + k, 10)
+    opts, ans = _numeric_options(total, [hand + k, 10 if total != 10 else 9, hand, 11, hand + k - 1], rng, fmt="{} 张")
+    out.append({"qtype": "hand_limit", "ref": "R01 §5", "facts": {"hand": hand, "draw": k},
+                "question": f"若我方接下来连续抓 {k} 张牌（牌堆足够，不考虑其它效果），抓完后我方手牌是多少张？",
+                "options": opts, "answer": ans})
+    dice = len(me["dice"])
+    k = max(1, 16 - dice + rng.choice((1, 2, 3))) if rng.random() < 0.5 else rng.choice((1, 2, 3))
+    total = min(dice + k, 16)
+    opts, ans = _numeric_options(total, [dice + k, 16 if total != 16 else 15, 8, dice, 17], rng)
+    out.append({"qtype": "dice_cap", "ref": "R02 §1", "facts": {"dice": dice, "gain": k},
+                "question": f"若某效果现在让我方再获得 {k} 个元素骰（不考虑其它效果），之后我方共有多少个元素骰？",
+                "options": opts, "answer": ans})
+    if hand > 0:
+        opts, ans = _options("舍弃该牌，1 个元素骰变为出战角色的元素类型；之后仍由我方继续行动",
+                             ["舍弃该牌，1 个元素骰变为万能元素；之后仍由我方继续行动",
+                              "舍弃该牌，1 个元素骰变为出战角色的元素类型；之后轮到对方行动",
+                              "舍弃该牌，额外获得 1 个出战角色元素类型的骰子；之后仍由我方继续行动"], rng)
+        out.append({"qtype": "tuning", "ref": "R02 §5", "facts": {"hand": hand},
+                    "question": "若我方现在用 1 张可调和的手牌进行元素调和，结果是什么？", "options": opts, "answer": ans})
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # build
 # --------------------------------------------------------------------------- #
@@ -180,12 +257,15 @@ def _build_task(task: Mapping[str, Any]) -> dict[str, Any]:
     except Exception as exc:                      # pragma: no cover - reported, not raised
         return {"error": f"{type(exc).__name__}: {exc}"[:200]}
     rng = random.Random(int(task["rng_seed"]))
-    return {"items": questions_for(view, seat, rng), "round": int(view.get("round", 0) or 0)}
+    return {"items": questions_for(view, seat, rng, task.get("version", "d32")), "round": int(view.get("round", 0) or 0)}
 
 
-def build_bank(name: str, set_specs: Sequence[str], workers: int = 2) -> dict[str, Any]:
+def build_bank(name: str, set_specs: Sequence[str], workers: int = 2, version: str = "d32") -> dict[str, Any]:
     """One action decision per source game (random seat); ``set_specs``: ``name`` or ``name:all``.
-    Sources keep their scenario-set split; a set without splits (v1) is ``train``."""
+    Sources keep their scenario-set split; a set without splits (v1) is ``train``.
+    ``version`` selects the question set (:data:`QUESTION_VERSIONS`)."""
+    if version not in QUESTION_VERSIONS:
+        raise ValueError(f"question version must be one of {QUESTION_VERSIONS}")
     from bench.scenarios import load_set
     from common.seeding import derive_seed
 
@@ -202,7 +282,7 @@ def build_bank(name: str, set_specs: Sequence[str], workers: int = 2) -> dict[st
                 continue
             ordinal = rng.choice(pool)
             tasks.append({"source": source, "seat": seat, "ordinal": ordinal,
-                          "rng_seed": derive_seed(int(source["seed"]), "kb-situ-q")})
+                          "rng_seed": derive_seed(int(source["seed"]), "kb-situ-q"), "version": version})
             meta.append({"set": set_name, "source": i, "seat": seat, "ordinal": ordinal,
                          "split": source.get("split", "train")})
     results = list(recycled_map(_build_task, tasks, workers=workers, tasks_per_child=8))
@@ -216,7 +296,8 @@ def build_bank(name: str, set_specs: Sequence[str], workers: int = 2) -> dict[st
         for q in r["items"]:
             items.append({"id": f"{ctx_id}:{q['qtype']}", "context": ctx_id, "split": m["split"], **q})
     payload = {"name": name, "created": _dt.datetime.now().isoformat(timespec="seconds"),
-               "from_sets": list(set_specs), "contexts": contexts, "context_errors": errors,
+               "from_sets": list(set_specs), **({"question_version": version} if version != "d32" else {}),
+               "contexts": contexts, "context_errors": errors,
                "counts": dict(Counter(i["qtype"] for i in items)),
                "splits": dict(Counter(i["split"] for i in items)), "items": items}
     BANK_DIR.mkdir(parents=True, exist_ok=True)
@@ -369,11 +450,14 @@ def evaluate(name: str, render_tag: str, tag: str, model: str, kbs: Sequence[str
     return {"calls": len(tasks)}
 
 
-def summarise(name: str, tags: Sequence[str], kbs: Sequence[str], split: str | None) -> dict[str, Any]:
+def summarise(name: str, tags: Sequence[str], kbs: Sequence[str], split: str | None,
+              subset: str | None = None) -> dict[str, Any]:
+    """``subset``: ``designed`` (the D32 types) or ``heldout`` (D33 held-out types); None = all."""
     from bench.kb_train import _sign_p, _wilson
 
     bank = load_bank(name)
-    items = {i["id"]: i for i in bank["items"] if split in (None, "all") or i["split"] == split}
+    items = {i["id"]: i for i in bank["items"] if (split in (None, "all") or i["split"] == split)
+             and (subset is None or bool(i.get("heldout")) == (subset == "heldout"))}
     score: dict[str, dict[str, list[int]]] = {k: defaultdict(list) for k in kbs}
     has_ref: dict[str, Counter] = {k: Counter() for k in kbs}
     for tag in tags:
@@ -414,13 +498,14 @@ def summarise(name: str, tags: Sequence[str], kbs: Sequence[str], split: str | N
             comparisons.append({"a": a, "b": b, "n": len(common), "delta": round(m, 4),
                                 "ci95": [round(m - 1.96 * se, 4), round(m + 1.96 * se, 4)],
                                 "better": better, "worse": worse, "p": round(_sign_p(better, worse), 4)})
-    return {"bank": name, "split": split, "runs": list(tags), "items": len(items),
+    return {"bank": name, "split": split, **({"subset": subset} if subset else {}), "runs": list(tags), "items": len(items),
             "item_types": dict(Counter(i["qtype"] for i in items.values())), "table": table,
             "comparisons": comparisons, "generated": _dt.datetime.now().isoformat(timespec="seconds")}
 
 
 def render_markdown(report: Mapping[str, Any], title: str) -> str:
-    lines = [f"# {title}", "", f"题库 `{report['bank']}`，划分 `{report['split']}`（{report['items']} 题："
+    lines = [f"# {title}", "", f"题库 `{report['bank']}`，划分 `{report['split']}`"
+             + (f"，子集 `{report['subset']}`" if report.get("subset") else "") + f"（{report['items']} 题："
              + "、".join(f"{k} {v}" for k, v in report["item_types"].items()) + f"），轮次 {', '.join(report['runs'])}；"
              f"生成于 {report['generated']}。", "",
              "| 知识配置 | 观测数 | 正确率 [95% CI] | 按题型（正确 / 观测） | 注入知识含该题所需规则节（按题型计次） |",
@@ -446,6 +531,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     b.add_argument("--sets", nargs="+", required=True)
     b.add_argument("--name", required=True)
     b.add_argument("--workers", type=int, default=2)
+    b.add_argument("--version", default="d32", choices=list(QUESTION_VERSIONS),
+                   help="d33: held-out question types, no charged item below 3 dice (fresh banks only)")
     r = sub.add_parser("render")
     r.add_argument("--name", required=True)
     r.add_argument("--profiles", nargs="+", required=True)
@@ -469,16 +556,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     s.add_argument("--split", default=None, choices=["train", "dev", "test", "all"])
     s.add_argument("--tag", required=True)
     s.add_argument("--title", default="情境规则题")
+    s.add_argument("--subset", default=None, choices=["designed", "heldout"])
     args = parser.parse_args(argv)
     if args.cmd == "build":
-        print(json.dumps(build_bank(args.name, args.sets, args.workers), ensure_ascii=False))
+        print(json.dumps(build_bank(args.name, args.sets, args.workers, args.version), ensure_ascii=False))
     elif args.cmd == "render":
         print(json.dumps(render(args.name, args.profiles, args.tag, args.workers), ensure_ascii=False))
     elif args.cmd == "eval":
         print(json.dumps(evaluate(args.name, args.render, args.tag, args.model, args.kb, split=args.split,
                                   workers=args.workers, max_calls=args.max_calls, mode=args.mode)))
     else:
-        report = summarise(args.name, args.runs, args.kb, args.split)
+        report = summarise(args.name, args.runs, args.kb, args.split, args.subset)
         report["tag"] = args.tag
         out = Path(ensure_dir(reports_dir() / "bench"))
         (out / f"{args.tag}.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

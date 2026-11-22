@@ -22,7 +22,7 @@ experiment subject, not a certified agent.
 Spec strings (``envs.policy.build_policy``)::
 
     llm:<model-profile>[#kb=<knowledge-profile>,fallback=<policy spec>,budget=<calls/game>,
-                         model=<id override>,detail=0|1,reply=choice_first|reason_first]
+                         model=<id override>,detail=0|1,reply=choice_first|reason_first|checklist]
     llm-assist:<model-profile>#base=<policy spec>[,budget=<calls/game>]
 """
 
@@ -57,6 +57,12 @@ _PROTOCOL_REASON_FIRST = {
     "reroll_dice": '回复格式：{"reason": "<不超过 60 字的理由>", "reroll": [<要重掷的骰子位置编号，可为空>]}',
     "switch_hands": '回复格式：{"reason": "<不超过 60 字的理由>", "swap": [<要替换的手牌位置编号，可为空>]}',
 }
+# reply=checklist (D33 candidate): reason first, walking a fixed decision checklist that
+# came from the D32 training-split lethal misses (end-phase damage, opponent still acting,
+# miscounted costs) before the choice.
+_PROTOCOL_CHECKLIST = dict(_PROTOCOL_REASON_FIRST, index=(
+    '回复格式：{"reason": "<不超过 80 字：依次确认①本行动轮能否直接击倒对方角色或赢下（含结束阶段的伤害）；'
+    '②对方是否已宣布回合结束；③骰子与费用是否够；再说理由>", "choice": <选项编号>}'))
 ALL_REQUESTS = ("action", "choose_active", "reroll_dice", "switch_hands", "select_card")
 
 
@@ -69,7 +75,7 @@ class LLMPolicyConfig:
     max_tokens: int | None = None             # None = the profile's
     temperature: float | None = None
     retries_on_invalid: int = 1               # re-ask once when the reply is unusable
-    reply: str = "choice_first"               # or "reason_first"
+    reply: str = "choice_first"               # or "reason_first" / "checklist"
 
     def as_dict(self) -> dict[str, Any]:
         return {"request_types": list(self.request_types), "budget_per_game": self.budget_per_game,
@@ -134,7 +140,7 @@ def build_messages(
     reply: str = "choice_first",
 ) -> tuple[list[dict[str, str]], str, int]:
     """Prompt for one decision -> (messages, protocol key, options listed)."""
-    protocol = _PROTOCOL_REASON_FIRST if reply == "reason_first" else _PROTOCOL
+    protocol = {"reason_first": _PROTOCOL_REASON_FIRST, "checklist": _PROTOCOL_CHECKLIST}.get(reply, _PROTOCOL)
     request = context.request_type
     parts = [describer.state_text(context, detail=detail)]
     if detail:
@@ -465,10 +471,10 @@ def build_llm_policy(spec: str, *, seed: int, role: str, call_log: str | None = 
         detail=options.get("detail", "1") not in ("0", "false", "no"),
         reply=options.get("reply", "choice_first"),
     )
-    if config.reply not in ("choice_first", "reason_first"):
-        raise KeyError(f"llm spec option reply must be choice_first or reason_first, got {config.reply!r}")
+    if config.reply not in ("choice_first", "reason_first", "checklist"):
+        raise KeyError(f"llm spec option reply must be choice_first, reason_first or checklist, got {config.reply!r}")
     name = (f"llm:{profile_name}" + (f"+kb:{knowledge.name}" if selector is not None else "")
-            + ("+reason_first" if config.reply == "reason_first" else ""))
+            + (f"+{config.reply}" if config.reply != "choice_first" else ""))
     return LLMPolicy(client, fallback, selector=selector, config=config, name=name)
 
 

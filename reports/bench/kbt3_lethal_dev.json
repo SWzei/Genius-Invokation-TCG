@@ -1,0 +1,298 @@
+{
+  "set": "v2",
+  "split": "dev",
+  "metric": "converted",
+  "runs": [
+    "kbt_dev_r1",
+    "kbt_dev_r2"
+  ],
+  "items_in_split": 64,
+  "table": [
+    {
+      "subject": "llm:deepseek-flash",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.921875,
+      "ci95_obs": [
+        0.862,
+        0.957
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 59,
+          "rate": 0.9219
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 59,
+          "rate": 0.9219
+        }
+      },
+      "tokens_in_per_call": 1399.9,
+      "calls_per_item": 1.47,
+      "cost": 0.02606,
+      "first_reply_illegal_items": 8
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.976562,
+      "ci95_obs": [
+        0.933,
+        0.992
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 63,
+          "rate": 0.9844
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 62,
+          "rate": 0.9688
+        }
+      },
+      "tokens_in_per_call": 3073.3,
+      "calls_per_item": 1.14,
+      "cost": 0.01487,
+      "first_reply_illegal_items": 0
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.9375,
+      "ci95_obs": [
+        0.882,
+        0.968
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 59,
+          "rate": 0.9219
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 61,
+          "rate": 0.9531
+        }
+      },
+      "tokens_in_per_call": 2500.6,
+      "calls_per_item": 1.37,
+      "cost": 0.01997,
+      "first_reply_illegal_items": 2
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.976562,
+      "ci95_obs": [
+        0.933,
+        0.992
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 64,
+          "rate": 1.0
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 61,
+          "rate": 0.9531
+        }
+      },
+      "tokens_in_per_call": 3021.6,
+      "calls_per_item": 1.2,
+      "cost": 0.02554,
+      "first_reply_illegal_items": 0
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s4,reply=checklist",
+      "items": 64,
+      "observations": 128,
+      "mean": 0.960938,
+      "ci95_obs": [
+        0.912,
+        0.983
+      ],
+      "per_run": {
+        "kbt_dev_r1": {
+          "n": 64,
+          "hits": 61,
+          "rate": 0.9531
+        },
+        "kbt_dev_r2": {
+          "n": 64,
+          "hits": 62,
+          "rate": 0.9688
+        }
+      },
+      "tokens_in_per_call": 3102.6,
+      "calls_per_item": 1.02,
+      "cost": 0.01089,
+      "first_reply_illegal_items": 0
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": 0.0547,
+      "ci95": [
+        0.0007,
+        0.1087
+      ],
+      "better_items": 4,
+      "worse_items": 0,
+      "sign_test_p": 0.125
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": 0.0156,
+      "ci95": [
+        -0.046,
+        0.0772
+      ],
+      "better_items": 4,
+      "worse_items": 3,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "n": 64,
+      "delta": -0.0391,
+      "ci95": [
+        -0.0843,
+        0.0062
+      ],
+      "better_items": 1,
+      "worse_items": 5,
+      "sign_test_p": 0.2188
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": 0.0547,
+      "ci95": [
+        -0.0112,
+        0.1206
+      ],
+      "better_items": 5,
+      "worse_items": 2,
+      "sign_test_p": 0.4531
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "n": 64,
+      "delta": 0.0,
+      "ci95": [
+        -0.0309,
+        0.0309
+      ],
+      "better_items": 2,
+      "worse_items": 2,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first",
+      "n": 64,
+      "delta": 0.0391,
+      "ci95": [
+        -0.0062,
+        0.0843
+      ],
+      "better_items": 5,
+      "worse_items": 1,
+      "sign_test_p": 0.2188
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=checklist",
+      "b": "llm:deepseek-flash",
+      "n": 64,
+      "delta": 0.0391,
+      "ci95": [
+        -0.0112,
+        0.0893
+      ],
+      "better_items": 4,
+      "worse_items": 1,
+      "sign_test_p": 0.375
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=checklist",
+      "b": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "n": 64,
+      "delta": -0.0156,
+      "ci95": [
+        -0.0371,
+        0.0059
+      ],
+      "better_items": 0,
+      "worse_items": 2,
+      "sign_test_p": 0.5
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=checklist",
+      "b": "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first",
+      "n": 64,
+      "delta": 0.0234,
+      "ci95": [
+        -0.0106,
+        0.0575
+      ],
+      "better_items": 4,
+      "worse_items": 1,
+      "sign_test_p": 0.375
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=checklist",
+      "b": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "n": 64,
+      "delta": -0.0156,
+      "ci95": [
+        -0.0532,
+        0.022
+      ],
+      "better_items": 2,
+      "worse_items": 4,
+      "sign_test_p": 0.6875
+    }
+  ],
+  "stability": {
+    "llm:deepseek-flash": {
+      "items_with_2_runs": 64,
+      "disagree": 0
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "items_with_2_runs": 64,
+      "disagree": 1
+    },
+    "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first": {
+      "items_with_2_runs": 64,
+      "disagree": 4
+    },
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first": {
+      "items_with_2_runs": 64,
+      "disagree": 3
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=checklist": {
+      "items_with_2_runs": 64,
+      "disagree": 3
+    }
+  },
+  "generated": "2026-11-22T03:39:24",
+  "tag": "kbt3_lethal_dev"
+}

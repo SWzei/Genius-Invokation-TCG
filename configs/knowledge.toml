@@ -90,3 +90,27 @@ max_unit_frequency = 0.5
 max_strategy = 2
 custom = ["configs/knowledge/custom/lethal_window.md"]
 custom_chars = 800
+
+# ---------------------------------------------------------------------------
+# D33 候选（预先登记，见 reports/review/2026-11_kb_d33_prereg.md）。只追加，不改 kbt-s0…s4。
+# ---------------------------------------------------------------------------
+# 精简：只保留规则（检索 + D32 情境触发），去掉策略单元与斩杀窗口资料。
+[profiles.kbt3-lean]
+rules = true
+rule_selection = "retrieve"
+rule_triggers = true
+max_rules = 4
+
+# 触发补全：kbt-s4 + "对方仍在行动（未宣布结束）且我方可宣布结束 → R01 §4.2"。
+[profiles.kbt3-trig]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800

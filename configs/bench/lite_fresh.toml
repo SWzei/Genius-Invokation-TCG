@@ -1,0 +1,69 @@
+# Benchmark suite "lite_fresh" (D33): exactly the structure of "lite" (same groups, decks,
+# opponents and cell count) on a fresh, never-used seed block (seed_offset 200000), so a
+# configuration chosen with the help of "lite" results can be re-tested on unseen games.
+# Run it once per configuration as a final evaluation; do not tune against it.
+
+[suite]
+name = "lite_fresh"
+description = "lite on fresh seeds (D33 final evaluation): ladder on 2 pool decks + 2 held-out human decks (native rules and latest rules)"
+seeds = 2
+seed_offset = 200000
+
+# --- opponent ladder on decks the scripted experts / learned policies know --------
+[[groups]]
+name = "ladder-pool"
+decks = ["natlan_battleship", "unyielding_geo"]
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@mirror"
+  policy = "legal_random"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@mirror"
+  policy = "heuristic"
+  deck = "mirror"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@superconduct_aggro"
+  policy = "expert:<deck>"
+  deck = "superconduct_aggro"
+
+  [[groups.opponents]]
+  level = "L2-expert"
+  name = "expert@double_geo_navia"
+  policy = "expert:<deck>"
+  deck = "double_geo_navia"
+
+# --- held-out decks: tournament deck lists (test split), rules of their own version -
+[[groups]]
+name = "heldout-native"
+version = "v6.3.0"
+human = { split = "test", version = "v6.3.0", count = 2 }
+
+  [[groups.opponents]]
+  level = "L0-random"
+  name = "legal_random@human"
+  policy = "legal_random"
+  deck = "human"
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"
+
+# --- rules-version shift: the same deck lists under the engine's latest rules -------
+[[groups]]
+name = "heldout-latest"
+version = ""
+human = { split = "test", version = "v6.3.0", count = 2 }
+
+  [[groups.opponents]]
+  level = "L1-heuristic"
+  name = "heuristic@human"
+  policy = "heuristic"
+  deck = "human"

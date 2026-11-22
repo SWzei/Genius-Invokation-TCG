@@ -1,0 +1,74 @@
+{
+  "arms": [
+    {
+      "arm": "none",
+      "runs": [
+        "kbt3_fresh_r1:llm:deepseek-flash",
+        "kbt3_fresh_r2:llm:deepseek-flash"
+      ],
+      "per_run": {
+        "kbt3_fresh_r1": {
+          "games": 56,
+          "score": 0.7857
+        },
+        "kbt3_fresh_r2": {
+          "games": 56,
+          "score": 0.7054
+        }
+      },
+      "games": 112,
+      "invalid": 0,
+      "score": 0.745536,
+      "ci95": [
+        0.658,
+        0.817
+      ],
+      "cost_per_game": 0.01138,
+      "calls_per_game": 55.3,
+      "first_reply_legal": 0.9938
+    },
+    {
+      "arm": "c2",
+      "runs": [
+        "kbt3_fresh_r1:llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+        "kbt3_fresh_r2:llm:deepseek-flash#kb=kbt3-trig,reply=reason_first"
+      ],
+      "per_run": {
+        "kbt3_fresh_r1": {
+          "games": 56,
+          "score": 0.7679
+        },
+        "kbt3_fresh_r2": {
+          "games": 56,
+          "score": 0.7679
+        }
+      },
+      "games": 112,
+      "invalid": 0,
+      "score": 0.767857,
+      "ci95": [
+        0.682,
+        0.836
+      ],
+      "cost_per_game": 0.02195,
+      "calls_per_game": 55.3,
+      "first_reply_legal": 1.0
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "c2",
+      "b": "none",
+      "cells": 56,
+      "delta": 0.0223,
+      "ci95": [
+        -0.0653,
+        0.11
+      ],
+      "better_cells": 9,
+      "worse_cells": 9,
+      "sign_test_p": 1.0
+    }
+  ],
+  "generated": "2026-11-22T05:10:06"
+}

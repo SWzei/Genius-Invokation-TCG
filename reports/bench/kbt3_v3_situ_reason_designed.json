@@ -1,0 +1,84 @@
+{
+  "bank": "situ_v3",
+  "split": "all",
+  "subset": "designed",
+  "runs": [
+    "kbt3_v3_situ_reason_r1",
+    "kbt3_v3_situ_reason_r2"
+  ],
+  "items": 553,
+  "item_types": {
+    "charged": 73,
+    "reaction": 120,
+    "turn": 120,
+    "end": 120,
+    "summon": 120
+  },
+  "table": [
+    {
+      "kb": "none",
+      "items": 553,
+      "observations": 1106,
+      "accuracy": 0.86528,
+      "ci95": [
+        0.844,
+        0.884
+      ],
+      "by_type": {
+        "charged": "64/146",
+        "end": "240/240",
+        "reaction": "219/240",
+        "summon": "203/240",
+        "turn": "231/240"
+      },
+      "ref_in_knowledge": {
+        "charged": "0/146",
+        "end": "0/240",
+        "reaction": "0/240",
+        "summon": "0/240",
+        "turn": "0/240"
+      }
+    },
+    {
+      "kb": "kbt3-trig",
+      "items": 553,
+      "observations": 1106,
+      "accuracy": 0.950271,
+      "ci95": [
+        0.936,
+        0.962
+      ],
+      "by_type": {
+        "charged": "138/146",
+        "end": "240/240",
+        "reaction": "217/240",
+        "summon": "219/240",
+        "turn": "237/240"
+      },
+      "ref_in_knowledge": {
+        "charged": "122/146",
+        "end": "48/240",
+        "reaction": "104/240",
+        "summon": "2/240",
+        "turn": "48/240"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt3-trig",
+      "b": "none",
+      "n": 553,
+      "delta": 0.085,
+      "ci95": [
+        0.0599,
+        0.1101
+      ],
+      "better": 60,
+      "worse": 9,
+      "p": 0.0
+    }
+  ],
+  "generated": "2026-11-22T04:41:31",
+  "tag": "kbt3_v3_situ_reason_designed"
+}

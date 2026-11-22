@@ -1,0 +1,84 @@
+{
+  "bank": "situ_v3",
+  "split": "all",
+  "subset": "designed",
+  "runs": [
+    "kbt3_v3_situ_answer_r1",
+    "kbt3_v3_situ_answer_r2"
+  ],
+  "items": 553,
+  "item_types": {
+    "charged": 73,
+    "reaction": 120,
+    "turn": 120,
+    "end": 120,
+    "summon": 120
+  },
+  "table": [
+    {
+      "kb": "none",
+      "items": 553,
+      "observations": 1106,
+      "accuracy": 0.812839,
+      "ci95": [
+        0.789,
+        0.835
+      ],
+      "by_type": {
+        "charged": "66/146",
+        "end": "240/240",
+        "reaction": "184/240",
+        "summon": "191/240",
+        "turn": "218/240"
+      },
+      "ref_in_knowledge": {
+        "charged": "0/146",
+        "end": "0/240",
+        "reaction": "0/240",
+        "summon": "0/240",
+        "turn": "0/240"
+      }
+    },
+    {
+      "kb": "kbt3-trig",
+      "items": 553,
+      "observations": 1106,
+      "accuracy": 0.823689,
+      "ci95": [
+        0.8,
+        0.845
+      ],
+      "by_type": {
+        "charged": "73/146",
+        "end": "240/240",
+        "reaction": "182/240",
+        "summon": "188/240",
+        "turn": "228/240"
+      },
+      "ref_in_knowledge": {
+        "charged": "122/146",
+        "end": "48/240",
+        "reaction": "104/240",
+        "summon": "2/240",
+        "turn": "48/240"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt3-trig",
+      "b": "none",
+      "n": 553,
+      "delta": 0.0108,
+      "ci95": [
+        -0.0101,
+        0.0318
+      ],
+      "better": 29,
+      "worse": 24,
+      "p": 0.5831
+    }
+  ],
+  "generated": "2026-11-22T04:41:31",
+  "tag": "kbt3_v3_situ_answer_designed"
+}

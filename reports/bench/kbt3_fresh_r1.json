@@ -1,0 +1,437 @@
+{
+  "suite": {
+    "name": "lite_fresh",
+    "description": "lite on fresh seeds (D33 final evaluation): ladder on 2 pool decks + 2 held-out human decks (native rules and latest rules)",
+    "fingerprint": "0a81f37d495a1501",
+    "cells": 56,
+    "cells_by_group": {
+      "ladder-pool": 32,
+      "heldout-native": 16,
+      "heldout-latest": 8
+    },
+    "source": "lite_fresh.lock.json",
+    "seed_base": 7100001,
+    "human_decks": {
+      "human:A6Ax9BkPIECw": {
+        "deck_code": "A6Ax9BkPIECw9pcYE6ExijMbG6JwA8YgDDJgBskgDGGgacoWDZEQzNEcFMGh1EodE0AA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1605"
+      },
+      "human:AAEh57IOAqCw": {
+        "deck_code": "AAEh57IOAqCw6j4PA0Di9AgQIGGABp0UCbHQirMYGKFB04QfDIFgTcYUDNGQackWDZAA",
+        "native_version": "v6.3.0",
+        "split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1204"
+      }
+    }
+  },
+  "subjects": {
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first": {
+      "games": 56,
+      "valid_games": 56,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 56,
+        "rate": 0.7679,
+        "ci95": [
+          0.6423,
+          0.859
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 8.77,
+      "game_seconds_mean": 77.47,
+      "by_group": {
+        "heldout-latest": {
+          "n": 8,
+          "rate": 0.8125,
+          "ci95": [
+            0.4668,
+            0.9555
+          ]
+        },
+        "heldout-native": {
+          "n": 16,
+          "rate": 0.875,
+          "ci95": [
+            0.6398,
+            0.965
+          ]
+        },
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.7031,
+          "ci95": [
+            0.5302,
+            0.8325
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 16,
+          "rate": 0.9688,
+          "ci95": [
+            0.7593,
+            0.9967
+          ]
+        },
+        "L1-heuristic": {
+          "n": 24,
+          "rate": 0.8125,
+          "ci95": [
+            0.6181,
+            0.9206
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.5,
+          "ci95": [
+            0.28,
+            0.72
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 24,
+          "rate": 0.8542,
+          "ci95": [
+            0.6654,
+            0.9452
+          ]
+        },
+        "pool": {
+          "n": 32,
+          "rate": 0.7031,
+          "ci95": [
+            0.5302,
+            0.8325
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 40,
+          "rate": 0.725,
+          "ci95": [
+            0.5716,
+            0.8389
+          ]
+        },
+        "v6.3.0": {
+          "n": 16,
+          "rate": 0.875,
+          "ci95": [
+            0.6398,
+            0.965
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 28,
+          "rate": 0.7679,
+          "ci95": [
+            0.5854,
+            0.8857
+          ]
+        },
+        "1": {
+          "n": 28,
+          "rate": 0.7679,
+          "ci95": [
+            0.5854,
+            0.8857
+          ]
+        }
+      },
+      "model": {
+        "games": 56,
+        "decisions_asked": 3085,
+        "first_reply_legal_rate": 1.0,
+        "answer_used_rate": 1.0,
+        "fallback_decisions": 0,
+        "first_errors": {},
+        "errors": {},
+        "by_request": {
+          "switch_hands": {
+            "asked": 56,
+            "first_legal": 56,
+            "used": 56
+          },
+          "choose_active": {
+            "asked": 75,
+            "first_legal": 75,
+            "used": 75
+          },
+          "reroll_dice": {
+            "asked": 489,
+            "first_legal": 489,
+            "used": 489
+          },
+          "action": {
+            "asked": 2373,
+            "first_legal": 2373,
+            "used": 2373
+          },
+          "select_card": {
+            "asked": 92,
+            "first_legal": 92,
+            "used": 92
+          }
+        },
+        "calls": 3085,
+        "retries": 0,
+        "seconds_per_call": 1.16,
+        "decision_seconds_p50_median_game": 1.076,
+        "decision_seconds_p90_median_game": 1.27,
+        "decision_seconds_max": 2.366,
+        "prompt_tokens": 7913060,
+        "completion_tokens": 178024,
+        "reasoning_tokens": 0,
+        "cached_tokens": 259708,
+        "tokens_per_decision": 2622.7,
+        "tokens_per_game": 144484.0,
+        "calls_per_game": 55.1,
+        "cost": 1.255596,
+        "cost_per_game": 0.022421
+      }
+    },
+    "llm:deepseek-flash": {
+      "games": 56,
+      "valid_games": 56,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 56,
+        "rate": 0.7857,
+        "ci95": [
+          0.6618,
+          0.8729
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 8.68,
+      "game_seconds_mean": 66.14,
+      "by_group": {
+        "heldout-latest": {
+          "n": 8,
+          "rate": 0.75,
+          "ci95": [
+            0.4093,
+            0.9285
+          ]
+        },
+        "heldout-native": {
+          "n": 16,
+          "rate": 0.9062,
+          "ci95": [
+            0.6771,
+            0.978
+          ]
+        },
+        "ladder-pool": {
+          "n": 32,
+          "rate": 0.7344,
+          "ci95": [
+            0.5625,
+            0.856
+          ]
+        }
+      },
+      "by_level": {
+        "L0-random": {
+          "n": 16,
+          "rate": 0.9375,
+          "ci95": [
+            0.7167,
+            0.9889
+          ]
+        },
+        "L1-heuristic": {
+          "n": 24,
+          "rate": 0.875,
+          "ci95": [
+            0.69,
+            0.9566
+          ]
+        },
+        "L2-expert": {
+          "n": 16,
+          "rate": 0.5,
+          "ci95": [
+            0.28,
+            0.72
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 24,
+          "rate": 0.8542,
+          "ci95": [
+            0.6654,
+            0.9452
+          ]
+        },
+        "pool": {
+          "n": 32,
+          "rate": 0.7344,
+          "ci95": [
+            0.5625,
+            0.856
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 40,
+          "rate": 0.7375,
+          "ci95": [
+            0.5848,
+            0.8486
+          ]
+        },
+        "v6.3.0": {
+          "n": 16,
+          "rate": 0.9062,
+          "ci95": [
+            0.6771,
+            0.978
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 28,
+          "rate": 0.7857,
+          "ci95": [
+            0.6046,
+            0.8979
+          ]
+        },
+        "1": {
+          "n": 28,
+          "rate": 0.7857,
+          "ci95": [
+            0.6046,
+            0.8979
+          ]
+        }
+      },
+      "model": {
+        "games": 56,
+        "decisions_asked": 3059,
+        "first_reply_legal_rate": 0.9935,
+        "answer_used_rate": 1.0,
+        "fallback_decisions": 0,
+        "first_errors": {
+          "unparseable": 20
+        },
+        "errors": {},
+        "by_request": {
+          "switch_hands": {
+            "asked": 56,
+            "first_legal": 56,
+            "used": 56
+          },
+          "choose_active": {
+            "asked": 82,
+            "first_legal": 82,
+            "used": 82
+          },
+          "reroll_dice": {
+            "asked": 484,
+            "first_legal": 464,
+            "used": 484
+          },
+          "action": {
+            "asked": 2340,
+            "first_legal": 2340,
+            "used": 2340
+          },
+          "select_card": {
+            "asked": 97,
+            "first_legal": 97,
+            "used": 97
+          }
+        },
+        "calls": 3079,
+        "retries": 0,
+        "seconds_per_call": 0.97,
+        "decision_seconds_p50_median_game": 0.899,
+        "decision_seconds_p90_median_game": 1.056,
+        "decision_seconds_max": 2.459,
+        "prompt_tokens": 4236808,
+        "completion_tokens": 110012,
+        "reasoning_tokens": 0,
+        "cached_tokens": 281980,
+        "tokens_per_decision": 1421.0,
+        "tokens_per_game": 77622.0,
+        "calls_per_game": 55.0,
+        "cost": 0.660076,
+        "cost_per_game": 0.011787
+      }
+    }
+  },
+  "reference": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+  "paired_vs_reference": {
+    "llm:deepseek-flash": {
+      "vs": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "n_pairs": 56,
+      "delta": 0.0179,
+      "ci95": [
+        -0.0937,
+        0.1294
+      ],
+      "matchup_cluster_boot_ci95": [
+        -0.0625,
+        0.0982
+      ],
+      "better": 7,
+      "worse": 6,
+      "same": 43,
+      "sign_test_p": 1.0
+    }
+  },
+  "note": "win rates are simulator results on this suite's cells; intervals are Wilson 95% on valid games (errors, truncations and degraded games excluded and counted)",
+  "tag": "kbt3_fresh_r1",
+  "generated": "2026-11-22T04:25:57",
+  "stopped": null,
+  "total_calls": 6164,
+  "total_cost": 1.915672,
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  },
+  "raw": "data/bench/kbt3_fresh_r1/games.jsonl"
+}

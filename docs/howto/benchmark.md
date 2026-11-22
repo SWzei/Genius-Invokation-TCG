@@ -201,5 +201,25 @@ python -m bench.kb_train games --arm "none=ds_lite:llm:deepseek-flash;kbt_lite_r
 | `unit_frequency_file` / `max_unit_frequency` | 知识配置 | 不过滤 | 在 train 上触发过于频繁的策略单元不注入 |
 | 自定义资料 `when:` | 资料头 | 无 | 只在指定局面（`SITUATIONS`，如 `lethal_window`）出现时注入 |
 | `reply=reason_first` | LLM spec | `choice_first` | 回复格式先写依据（局面数字与规则）再给选项 |
+| `rule_trigger_set = "d33"` | 知识配置 | `d32` | 触发集合（`reps.kb_retrieval.TRIGGER_SETS`）；`d33` 在 `d32` 之上加"对方未宣布结束且我方可宣布结束 → R01 §4.2" |
+| `reply=checklist` | LLM spec | `choice_first` | 先写依据时按固定清单确认（能否本行动轮击倒或赢下、对方是否已结束、骰子与费用） |
 
 默认值下旧配置的清单输出与提示词不变。
+
+### 7.6 D33：保留数据与留出题型
+
+D32 已经用过 `test` 与 `lite`，D33 另起新的保留数据，并在
+`reports/review/2026-11_kb_d33_prereg.md` 里先登记候选与选择规则，再看 dev 结果：
+
+- 场景集 v3（`--seed-offset 3000`，120 局源对局）整体作保留集，只在最终评估时用；
+- 整局套件 `lite_fresh`（`configs/bench/lite_fresh.toml`）：结构与 `lite` 相同，`seed_offset = 200000`，种子与 `lite` 不重叠；
+- 题库版本 `--version d33`（`bench.kb_situ build`）：`charged` 只在骰子 ≥ 3 时出；另加 5 种**留出题型**
+  （`first_next`、`energy`、`hand_limit`、`dice_cap`、`tuning`，题目带 `heldout: true`），设计候选时不看它们；
+- `bench.kb_situ report --subset designed|heldout` 分开报告原题型与留出题型。
+
+```bash
+python -m bench.scenarios build --name v3 --games 120 --workers 2 --seed-offset 3000 --agreement-per-seat 0 --no-quiz
+python -m bench.kb_situ build --sets v3 --name situ_v3 --version d33
+python -m bench.run --suite lite_fresh --tag kbt3_fresh_r1 --subjects "llm:deepseek-flash" \
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first"
+```

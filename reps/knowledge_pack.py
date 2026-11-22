@@ -101,6 +101,8 @@ class KnowledgeProfile:
     # carries an element, ...) its governing sections come first; the rest is filled by
     # ``rule_selection``.
     rule_triggers: bool = False
+    # which trigger table (reps.kb_retrieval.TRIGGER_SETS); "d32" is the original one
+    rule_trigger_set: str = "d32"
     # Strategy units whose detector fires on more than this share of decisions in the
     # frequency table (measured on training data) carry no information about the
     # decision and are dropped. 1.0 = keep everything.
@@ -131,6 +133,7 @@ class KnowledgeProfile:
             **({"strategy_chars": self.strategy_chars} if self.strategy_chars != 360 else {}),
             **({"rule_selection": self.rule_selection} if self.rule_selection != "kind_map" else {}),
             **({"rule_triggers": True} if self.rule_triggers else {}),
+            **({"rule_trigger_set": self.rule_trigger_set} if self.rule_triggers and self.rule_trigger_set != "d32" else {}),
             **({"unit_frequency_file": self.unit_frequency_file,
                 "max_unit_frequency": self.max_unit_frequency} if self.unit_frequency_file else {}),
         }
@@ -153,6 +156,10 @@ def profile_from_mapping(name: str, raw: Mapping[str, Any]) -> KnowledgeProfile:
         raise ValueError(f"knowledge profile {name!r}: strategy_detail must be 'brief' or 'full'")
     if str(raw.get("rule_selection", "kind_map")) not in ("kind_map", "retrieve"):
         raise ValueError(f"knowledge profile {name!r}: rule_selection must be 'kind_map' or 'retrieve'")
+    from reps.kb_retrieval import TRIGGER_SETS
+
+    if str(raw.get("rule_trigger_set", "d32")) not in TRIGGER_SETS:
+        raise ValueError(f"knowledge profile {name!r}: rule_trigger_set must be one of {sorted(TRIGGER_SETS)}")
     values: dict[str, Any] = {}
     for key, value in raw.items():
         default = KnowledgeProfile.__dataclass_fields__[key].default
@@ -417,7 +424,7 @@ class KnowledgeSelector:
         if profile.rule_triggers:
             from reps.kb_retrieval import triggered_rules
 
-            seen = [kb.rules[ref] for ref in triggered_rules(context) if ref in kb.rules]
+            seen = [kb.rules[ref] for ref in triggered_rules(context, profile.rule_trigger_set) if ref in kb.rules]
         if profile.rule_selection == "retrieve":
             from reps.kb_retrieval import decision_query, section_index
 

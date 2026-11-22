@@ -131,13 +131,29 @@ RULE_TRIGGERS: tuple[tuple[str, Any, tuple[str, ...]], ...] = (
 )
 
 
-def triggered_rules(context: Any) -> list[str]:
+def _can_declare_end(context: Any) -> bool:
+    return any(getattr(getattr(spec, "kind", None), "value", "") == "action_declare_end"
+               for spec in getattr(context, "legal_low_level_specs", ()) or ())
+
+
+# D33 candidate: the opposite case of "opponent_declared_end". While the opponent is still
+# acting, declaring end hands them the rest of the round (R01 §4.2). From D32: a model
+# declared end "to win in the end phase" while the opponent could still act.
+TRIGGER_SETS: dict[str, tuple[tuple[str, Any, tuple[str, ...]], ...]] = {
+    "d32": RULE_TRIGGERS,
+    "d33": RULE_TRIGGERS + (
+        ("opponent_still_acting", lambda me, opp, ctx: not opp.declared_end and _can_declare_end(ctx), ("R01 §4.2",)),
+    ),
+}
+
+
+def triggered_rules(context: Any, trigger_set: str = "d32") -> list[str]:
     """Rule sections whose situation holds at this decision (visible information only)."""
     if getattr(context, "player_view", None) is None:
         return []
     me, opp = _players(context)
     refs: list[str] = []
-    for _name, test, sections in RULE_TRIGGERS:
+    for _name, test, sections in TRIGGER_SETS[trigger_set]:
         try:
             hit = test(me, opp, context)
         except (AttributeError, TypeError, ValueError):

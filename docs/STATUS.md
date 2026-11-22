@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -103,15 +103,30 @@
 
 | 项 | 状态 | 证据 |
 |---|---|---|
-| 当前最好的知识接入 | `llm:deepseek-flash#kb=kbt-s4,reply=reason_first`（情境触发规则节 + 先写依据再作答） | `reports/review/2026-11_kb_training.md` |
+| D32 选定的知识接入 | `llm:deepseek-flash#kb=kbt-s4,reply=reason_first`（情境触发规则节 + 先写依据再作答）；当前接入见 §3g | `reports/review/2026-11_kb_training.md` |
 | 情境规则题（test，260 题 × 2 轮，先写依据） | 0.923，对无知识 0.812：+0.112，39 / 2，p < 0.001；对原接入 0.840：+0.083，23 / 1 | `reports/bench/kbt_situ_test_reason.md` |
-| 整局 `lite`（S5 两轮 112 局） | 0.821，对无知识（三轮）0.747：逐格 +0.074 [+0.007, +0.141]，11 / 4，p = 0.118——**正向但未显著** | `reports/bench/kbt_lite.md` |
+| 整局 `lite`（S5 两轮 112 局） | 0.821，对无知识（三轮）0.747：逐格 +0.074 [+0.007, +0.141]，11 / 4，p = 0.118——**正向但未显著**；新种子上未复现（§3g） | `reports/bench/kbt_lite.md` |
 | 斩杀转化（test，70 题 × 2 轮） | S5 0.936，与无知识 0.943 持平；原接入 0.879，显著更差（0 / 7，p = 0.016） | `reports/bench/kbt_lethal_test.md` |
 | 无收益的改动 | 规则 BM25 检索（S1）、训练集频次剪枝（S2）、斩杀窗口定向资料（S3）：train / dev 上都在噪声内 | `reports/bench/kbt_situ_dev.md` |
 | 只改回复格式、不加知识 | 斩杀上无变化（0.898 对 0.922）；与触发规则合用才有效 | `reports/bench/kbt_lethal_dev.md` |
 | 数据划分 | 场景集 v2 按种子 train / dev / test；test 与整局只跑过一次 | `docs/howto/benchmark.md` §7.1 |
 
 全部是模拟器内结果，不进强度验收。用法：`docs/howto/benchmark.md` §7。
+
+## 3g. 针对性优化与防过拟合检验（D33，2026-11-22）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 当前知识接入 | `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first`（D32 方案 + "对方未结束且我方可结束 → R01 §4.2" 触发）；按预先登记规则选出，dev 优势在噪声内 | `reports/review/2026-11_kb_d33.md` §2 |
+| 整局 `lite_fresh`（新种子，每方 112 局） | 0.768 对无知识 0.746：逐格 +0.022 [−0.065, +0.110]，9 / 9——**无可测提升** | `reports/bench/kbt3_fresh.md` |
+| 斩杀转化 v3（141 题 × 2 轮） | 无知识 0.947 / D32 方案 0.954 / 当前 0.943，两两差 ≤ 0.011 | `reports/bench/kbt3_v3_lethal.md` |
+| 情境题 v3 原题型（先写依据） | 0.950 对 0.865：+0.085，60 / 9，p < 0.001 | `reports/bench/kbt3_v3_situ_reason_designed.md` |
+| 情境题 v3 留出题型 | 规则被注入的"下回合先手"0.154 → 0.958；其余 4 种 −0.036（25 / 46，p = 0.017），未注入的无收益 | `reports/bench/kbt3_v3_situ_reason_heldout.md` |
+| 跨模型（GLM-4.7-Flash，v3 test 子集，先写依据，1 轮） | 0.644 对无知识 0.426：+0.218（114 / 29）；其余 4 种留出题型 +0.106（26 / 9）；"下回合先手"规则被注入但未用上（−0.075） | `reports/bench/kbt3_v3_situ_glm_test.md` |
+| 已知缺陷 | 知识库 R03 §2 写"技能后 +1 充能"未写上限：充能已满题 76/84 → 37/84 | `reports/review/2026-11_kb_d33.md` §3.1 |
+| 保留数据 | v3、`lite_fresh` 已各用一次；再比较需新种子 | `docs/howto/benchmark.md` §7.6 |
+
+全部是模拟器内结果，不进强度验收。
 
 ## 4. 当前排产
 

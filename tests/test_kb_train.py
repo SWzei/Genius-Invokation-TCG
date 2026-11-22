@@ -240,3 +240,24 @@ def test_scenario_build_resumes_from_its_per_game_cache(tmp_path, monkeypatch):
     assert calls.count(first_seed) == 1 and calls.count(first_seed + 1) == 1     # done games are not replayed
     assert out["source_games"] == 4 and out["counts"] == {"lethal": 4}
     assert sum(v["sources"] for v in out["splits"].values()) == 4
+
+
+def test_d33_trigger_set_adds_the_opponent_still_acting_case_only_when_selected():
+    from reps.schema import OptionKind
+
+    def ctx(*, ended):
+        active = SimpleNamespace(health=5, defeated=False, is_active=True, aura=0)
+        me = SimpleNamespace(characters=[active], summons=[], declared_end=False)
+        opp = SimpleNamespace(characters=[active], summons=[], declared_end=ended)
+        specs = [SimpleNamespace(kind=OptionKind.ACTION_DECLARE_END)]
+        return SimpleNamespace(player_view=SimpleNamespace(players=[me, opp]), acting_player=0,
+                               legal_low_level_specs=specs, request_type=None)
+
+    assert kb_retrieval.triggered_rules(ctx(ended=False)) == []                      # d32 table unchanged
+    assert kb_retrieval.triggered_rules(ctx(ended=False), "d33") == ["R01 §4.2"]
+    assert kb_retrieval.triggered_rules(ctx(ended=True), "d33") == ["R03 §3", "R01 §4.3"]
+    profile = profile_from_mapping("t", {"rules": True, "rule_triggers": True, "rule_trigger_set": "d33"})
+    assert profile.as_dict()["rule_trigger_set"] == "d33"
+    assert "rule_trigger_set" not in profile_from_mapping("t", {"rules": True, "rule_triggers": True}).as_dict()
+    with pytest.raises(ValueError):
+        profile_from_mapping("t", {"rule_trigger_set": "d99"})

@@ -17,6 +17,8 @@
 | [`review/2026-11_d30_technical_summary.md`](./review/2026-11_d30_technical_summary.md) | Technical Summary（D30）：实际修改、验证结果、局限与后续建议 | valid |
 | [`review/2026-11_deepseek_kb.md`](./review/2026-11_deepseek_kb.md) | DeepSeek-V4.1-Flash 接入与本地知识库基础能力评测（D31）：知识库体检、规则问答、知识配置的场景与整局实验、运行间噪声基线 | valid |
 | [`review/2026-11_kb_training.md`](./review/2026-11_kb_training.md) | 知识接入的分阶段优化（D32）：train/dev/test 划分、S0–S5 各阶段记录、情境规则题与斩杀转化、test 与整局终评、失败与修复 | valid |
+| [`review/2026-11_kb_d33_prereg.md`](./review/2026-11_kb_d33_prereg.md) | D33 预先登记：候选、留出题型、dev 选择规则、最终评估；之后只追加 | valid |
+| [`review/2026-11_kb_d33.md`](./review/2026-11_kb_d33.md) | 针对性优化与防过拟合检验（D33）：dev 选择、v3 / `lite_fresh` 新数据终评、留出题型、充能上限缺失导致的害处、GLM 对照 | valid |
 | [`review/2026-11_d30_summary.md`](./review/2026-11_d30_summary.md) | Technical Summary（D30）：改动、验证结果、局限与后续建议 | valid |
 | [`bench/`](./bench/) | `bench.run` / `bench.scenarios` / `bench.compare` 生成的汇总（`do_not_edit`） | generated |
 | [`EXPLOIT_LADDER.md`](./EXPLOIT_LADDER.md) | 逐 deck PG 剥削阶梯：dgeo 0.880 / ungeo 0.909 | valid |

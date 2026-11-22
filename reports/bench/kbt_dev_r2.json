@@ -213,6 +213,105 @@
         "completion_tokens": 4773,
         "cost": 0.006627
       }
+    },
+    "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 64,
+        "rate": 0.9531,
+        "ci95": [
+          0.871,
+          0.9839
+        ]
+      },
+      "convert_ended_by": {
+        "win": 61,
+        "opponent_turn": 3
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 64,
+        "first_reply_legal_rate": 0.9844,
+        "answer_used_rate": 0.9844,
+        "seconds_mean": 2.296,
+        "prompt_tokens": 212336,
+        "completion_tokens": 4818,
+        "cost": 0.006858
+      }
+    },
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 64,
+        "rate": 0.9531,
+        "ci95": [
+          0.871,
+          0.9839
+        ]
+      },
+      "convert_ended_by": {
+        "win": 61,
+        "opponent_turn": 3
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 64,
+        "first_reply_legal_rate": 1.0,
+        "answer_used_rate": 1.0,
+        "seconds_mean": 2.045,
+        "prompt_tokens": 232668,
+        "completion_tokens": 4134,
+        "cost": 0.006974
+      }
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=checklist": {
+      "lethal": null,
+      "lethal_converted": {
+        "n": 64,
+        "rate": 0.9688,
+        "ci95": [
+          0.893,
+          0.9914
+        ]
+      },
+      "convert_ended_by": {
+        "win": 62,
+        "opponent_turn": 2
+      },
+      "lethal_kept": null,
+      "lethal_chance": null,
+      "lethal_by_position": {
+        "final": null,
+        "earlier": null
+      },
+      "expert_agreement": null,
+      "failed": 0,
+      "is_generator": false,
+      "model": {
+        "decisions_asked": 64,
+        "first_reply_legal_rate": 1.0,
+        "answer_used_rate": 1.0,
+        "seconds_mean": 1.755,
+        "prompt_tokens": 202056,
+        "completion_tokens": 4543,
+        "cost": 0.005151
+      }
     }
   },
   "generators": [
@@ -270,10 +369,34 @@
       "worse": 2,
       "delta": -0.0156,
       "sign_test_p": 1.0
+    },
+    "llm:deepseek-flash#kb=kbt3-lean,reply=reason_first": {
+      "vs": "llm:deepseek-flash",
+      "n": 64,
+      "better": 3,
+      "worse": 1,
+      "delta": 0.0312,
+      "sign_test_p": 0.625
+    },
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first": {
+      "vs": "llm:deepseek-flash",
+      "n": 64,
+      "better": 4,
+      "worse": 2,
+      "delta": 0.0312,
+      "sign_test_p": 0.6875
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=checklist": {
+      "vs": "llm:deepseek-flash",
+      "n": 64,
+      "better": 4,
+      "worse": 1,
+      "delta": 0.0469,
+      "sign_test_p": 0.375
     }
   },
   "note": "lethal = picks an option the engine verified as winning on the spot; chance = mean |winning|/|options|. Not taking it is not always a mistake (a free action first can keep the win), so read it as 'takes the win when it is on the table'. expert_agreement is similarity to the scripted pilot, not quality. A subject marked is_generator played the source games.",
   "tag": "kbt_dev_r2",
-  "generated": "2026-11-21T20:47:24",
+  "generated": "2026-11-22T03:39:17",
   "raw": "data/bench/kbt_dev_r2/scenarios.jsonl"
 }

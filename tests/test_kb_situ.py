@@ -98,3 +98,42 @@ def test_reason_mode_asks_for_a_justification_first():
     plain = kb_situ.build_messages(item, "局面", "")[0]["content"]
     reason = kb_situ.build_messages(item, "局面", "", mode="reason")[0]["content"]
     assert '"reason"' not in plain and reason.index('"reason"') < reason.index('"answer"')
+
+
+def test_d33_question_set_adds_heldout_types_and_drops_moot_charged_items():
+    rng = random.Random(4)
+    view = _view(dice=2, opp_ended=True, summons=1)
+    view["me"]["characters"][0].update(energy=1, max_energy=2)
+    view["me"]["hand_count"] = 9
+    d32 = {q["qtype"] for q in kb_situ.questions_for(view, 0, random.Random(4))}
+    d33 = {q["qtype"]: q for q in kb_situ.questions_for(view, 0, rng, "d33")}
+    assert "charged" in d32 and "charged" not in d33                     # 2 dice: a normal attack cannot be paid
+    held = {t for t, q in d33.items() if q.get("heldout")}
+    assert held == {"first_next", "energy", "hand_limit", "dice_cap", "tuning"}
+    gold = {t: q["options"][q["answer"]] for t, q in d33.items()}
+    assert gold["first_next"] == "对方先手" and gold["energy"] == "2/2"
+    f = d33["hand_limit"]["facts"]
+    assert gold["hand_limit"] == f"{min(9 + f['draw'], 10)} 张"
+    f = d33["dice_cap"]["facts"]
+    assert gold["dice_cap"] == f"{min(2 + f['gain'], 16)} 个"
+    assert all(len(set(q["options"].values())) == 4 for q in d33.values())
+    with pytest.raises(ValueError):
+        kb_situ.questions_for(view, 0, rng, "d99")
+
+
+def test_heldout_numeric_answers_cap_correctly_across_many_positions():
+    for seed in range(200):
+        rng = random.Random(seed)
+        view = _view(dice=rng.randint(0, 16), opp_ended=rng.random() < 0.5, summons=rng.randint(0, 4))
+        view["me"]["characters"][0].update(energy=rng.randint(0, 3), max_energy=3)
+        view["me"]["hand_count"] = rng.randint(0, 10)
+        for q in kb_situ.heldout_questions(view, rng):
+            gold = q["options"][q["answer"]]
+            f = q["facts"]
+            if q["qtype"] == "energy":
+                assert gold == f"{min(f['energy'] + 1, f['max_energy'])}/{f['max_energy']}"
+            elif q["qtype"] == "hand_limit":
+                assert gold == f"{min(f['hand'] + f['draw'], 10)} 张"
+            elif q["qtype"] == "dice_cap":
+                assert gold == f"{min(f['dice'] + f['gain'], 16)} 个"
+            assert len(set(q["options"].values())) == 4

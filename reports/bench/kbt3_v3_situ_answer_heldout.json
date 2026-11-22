@@ -1,0 +1,84 @@
+{
+  "bank": "situ_v3",
+  "split": "all",
+  "subset": "heldout",
+  "runs": [
+    "kbt3_v3_situ_answer_r1",
+    "kbt3_v3_situ_answer_r2"
+  ],
+  "items": 598,
+  "item_types": {
+    "first_next": 120,
+    "energy": 120,
+    "hand_limit": 120,
+    "dice_cap": 120,
+    "tuning": 118
+  },
+  "table": [
+    {
+      "kb": "none",
+      "items": 598,
+      "observations": 1196,
+      "accuracy": 0.543478,
+      "ci95": [
+        0.515,
+        0.572
+      ],
+      "by_type": {
+        "dice_cap": "116/240",
+        "energy": "174/240",
+        "first_next": "17/240",
+        "hand_limit": "128/240",
+        "tuning": "215/236"
+      },
+      "ref_in_knowledge": {
+        "dice_cap": "0/240",
+        "energy": "0/240",
+        "first_next": "0/240",
+        "hand_limit": "0/240",
+        "tuning": "0/236"
+      }
+    },
+    {
+      "kb": "kbt3-trig",
+      "items": 598,
+      "observations": 1196,
+      "accuracy": 0.618729,
+      "ci95": [
+        0.591,
+        0.646
+      ],
+      "by_type": {
+        "dice_cap": "116/240",
+        "energy": "177/240",
+        "first_next": "85/240",
+        "hand_limit": "128/240",
+        "tuning": "234/236"
+      },
+      "ref_in_knowledge": {
+        "dice_cap": "0/240",
+        "energy": "144/240",
+        "first_next": "204/240",
+        "hand_limit": "0/240",
+        "tuning": "0/236"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "kbt3-trig",
+      "b": "none",
+      "n": 598,
+      "delta": 0.0753,
+      "ci95": [
+        0.0493,
+        0.1012
+      ],
+      "better": 74,
+      "worse": 22,
+      "p": 0.0
+    }
+  ],
+  "generated": "2026-11-22T04:41:31",
+  "tag": "kbt3_v3_situ_answer_heldout"
+}

@@ -1,0 +1,147 @@
+{
+  "set": "v3",
+  "split": "all",
+  "metric": "converted",
+  "runs": [
+    "kbt3_v3_lethal_r1",
+    "kbt3_v3_lethal_r2"
+  ],
+  "items_in_split": 141,
+  "table": [
+    {
+      "subject": "llm:deepseek-flash",
+      "items": 141,
+      "observations": 282,
+      "mean": 0.946809,
+      "ci95_obs": [
+        0.914,
+        0.968
+      ],
+      "per_run": {
+        "kbt3_v3_lethal_r1": {
+          "n": 141,
+          "hits": 134,
+          "rate": 0.9504
+        },
+        "kbt3_v3_lethal_r2": {
+          "n": 141,
+          "hits": 133,
+          "rate": 0.9433
+        }
+      },
+      "tokens_in_per_call": 1523.8,
+      "calls_per_item": 1.24,
+      "cost": 0.05232,
+      "first_reply_illegal_items": 9
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "items": 141,
+      "observations": 282,
+      "mean": 0.953901,
+      "ci95_obs": [
+        0.923,
+        0.973
+      ],
+      "per_run": {
+        "kbt3_v3_lethal_r1": {
+          "n": 141,
+          "hits": 135,
+          "rate": 0.9574
+        },
+        "kbt3_v3_lethal_r2": {
+          "n": 141,
+          "hits": 134,
+          "rate": 0.9504
+        }
+      },
+      "tokens_in_per_call": 3028.3,
+      "calls_per_item": 1.18,
+      "cost": 0.0735,
+      "first_reply_illegal_items": 3
+    },
+    {
+      "subject": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "items": 141,
+      "observations": 282,
+      "mean": 0.943262,
+      "ci95_obs": [
+        0.91,
+        0.965
+      ],
+      "per_run": {
+        "kbt3_v3_lethal_r1": {
+          "n": 141,
+          "hits": 133,
+          "rate": 0.9433
+        },
+        "kbt3_v3_lethal_r2": {
+          "n": 141,
+          "hits": 133,
+          "rate": 0.9433
+        }
+      },
+      "tokens_in_per_call": 2989.3,
+      "calls_per_item": 1.16,
+      "cost": 0.04854,
+      "first_reply_illegal_items": 3
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 141,
+      "delta": 0.0071,
+      "ci95": [
+        -0.0336,
+        0.0477
+      ],
+      "better_items": 6,
+      "worse_items": 7,
+      "sign_test_p": 1.0
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "b": "llm:deepseek-flash",
+      "n": 141,
+      "delta": -0.0035,
+      "ci95": [
+        -0.0482,
+        0.0411
+      ],
+      "better_items": 7,
+      "worse_items": 10,
+      "sign_test_p": 0.6291
+    },
+    {
+      "a": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first",
+      "b": "llm:deepseek-flash#kb=kbt-s4,reply=reason_first",
+      "n": 141,
+      "delta": -0.0106,
+      "ci95": [
+        -0.0337,
+        0.0124
+      ],
+      "better_items": 4,
+      "worse_items": 7,
+      "sign_test_p": 0.5488
+    }
+  ],
+  "stability": {
+    "llm:deepseek-flash": {
+      "items_with_2_runs": 141,
+      "disagree": 1
+    },
+    "llm:deepseek-flash#kb=kbt-s4,reply=reason_first": {
+      "items_with_2_runs": 141,
+      "disagree": 5
+    },
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first": {
+      "items_with_2_runs": 141,
+      "disagree": 8
+    }
+  },
+  "generated": "2026-11-22T06:43:57",
+  "tag": "kbt3_v3_lethal"
+}
