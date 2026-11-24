@@ -1,0 +1,50 @@
+{
+ "none": {
+  "n": 120,
+  "core_swap": 0.133,
+  "sig_hands": 38,
+  "sig_swap": 0.184,
+  "arc_swap": 0.075,
+  "cards_per_hand": 2.02,
+  "skipped": {
+   "nohand": 0,
+   "nocore": 0
+  }
+ },
+ "none2": {
+  "n": 120,
+  "core_swap": 0.142,
+  "sig_hands": 38,
+  "sig_swap": 0.237,
+  "arc_swap": 0.067,
+  "cards_per_hand": 2.12,
+  "skipped": {
+   "nohand": 0,
+   "nocore": 0
+  }
+ },
+ "r3": {
+  "n": 120,
+  "core_swap": 0.05,
+  "sig_hands": 38,
+  "sig_swap": 0.158,
+  "arc_swap": 0.0,
+  "cards_per_hand": 1.88,
+  "skipped": {
+   "nohand": 0,
+   "nocore": 0
+  }
+ },
+ "v10": {
+  "n": 120,
+  "core_swap": 0.183,
+  "sig_hands": 38,
+  "sig_swap": 0.316,
+  "arc_swap": 0.108,
+  "cards_per_hand": 1.91,
+  "skipped": {
+   "nohand": 0,
+   "nocore": 0
+  }
+ }
+}

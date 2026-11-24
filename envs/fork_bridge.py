@@ -509,6 +509,12 @@ class _ForkWorker:
             except Exception:
                 pass
         self._stderr_thread.join(timeout=1)
+        for pipe in (self.process.stdout, self.process.stderr):   # D35: release the pipe file objects
+            try:
+                if pipe is not None:
+                    pipe.close()
+            except Exception:
+                pass
 
 
 class ForkBridge:

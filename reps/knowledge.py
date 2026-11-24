@@ -261,6 +261,16 @@ _VERSION_DETECTORS: dict[str, dict[str, Detector]] = {
 }
 
 
+# v1.0-s2 (D36 round 1): s1 minus S01-P9 (it made skipped bursts more frequent), plus S02-P8.
+_VERSION_DETECTORS["1.0-s2"] = {
+    "S02-P7": _VERSION_DETECTORS["1.0-s1"]["S02-P7"],
+    "S09-P4": _VERSION_DETECTORS["1.0-s1"]["S09-P4"],
+    # 攻击优先：行动阶段、技能可用、手上 >= 3 骰
+    "S02-P8": lambda c: _is(c, DecisionType.ACTION) and OptionKind.ACTION_USE_SKILL.value in _kinds(c)
+    and len(_me(c).dice) >= 3,
+}
+
+
 def detector_table(version: str = "") -> dict[str, Detector]:
     """The detectors in force for a KB version ("" / "1.0" = the original table)."""
     return {**_DETECTORS, **_VERSION_DETECTORS.get(str(version), {})}

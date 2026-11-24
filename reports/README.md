@@ -19,6 +19,10 @@
 | [`review/2026-11_kb_training.md`](./review/2026-11_kb_training.md) | 知识接入的分阶段优化（D32）：train/dev/test 划分、S0–S5 各阶段记录、情境规则题与斩杀转化、test 与整局终评、失败与修复 | valid |
 | [`review/2026-11_kb_d33_prereg.md`](./review/2026-11_kb_d33_prereg.md) | D33 预先登记：候选、留出题型、dev 选择规则、最终评估；之后只追加 | valid |
 | [`review/2026-11_kb_d33.md`](./review/2026-11_kb_d33.md) | 针对性优化与防过拟合检验（D33）：dev 选择、v3 / `lite_fresh` 新数据终评、留出题型、充能上限缺失导致的害处、GLM 对照 | valid |
+| [`review/2026-11_kb_d36_prereg.md`](./review/2026-11_kb_d36_prereg.md) | D36 预先登记：多轮进化的候选、门禁、停止边界与 test 计划；之后只追加 | valid |
+| [`review/2026-11_kb_d36.md`](./review/2026-11_kb_d36.md) | 多轮进化：带知识库的 DeepSeek 镜像对战（D36）：各轮改动、逐项门禁、最终 test、观测层对照、花费 | valid |
+| [`review/2026-11_kb_d35_prereg.md`](./review/2026-11_kb_d35_prereg.md) | D35 预先登记：分歧点评测的判据与预算、技术修复的核对；之后只追加 | valid |
+| [`review/2026-11_kb_d35.md`](./review/2026-11_kb_d35.md) | 技术问题排查、教师管线与分歧点评测（D35） | valid |
 | [`review/2026-11_kb_d34_prereg.md`](./review/2026-11_kb_d34_prereg.md) | D34 预先登记：模型对战设计、分区、门禁、停止规则；之后只追加 | valid |
 | [`review/2026-11_kb_d34.md`](./review/2026-11_kb_d34.md) | 模型对战驱动的知识库分层进化（D34）：A/A 校准、A/B 主指标、规则卡与引擎核对、教师分析、策略层门禁 | valid |
 | [`review/2026-11_d30_summary.md`](./review/2026-11_d30_summary.md) | Technical Summary（D30）：改动、验证结果、局限与后续建议 | valid |

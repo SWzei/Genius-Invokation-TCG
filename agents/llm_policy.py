@@ -22,7 +22,7 @@ experiment subject, not a certified agent.
 Spec strings (``envs.policy.build_policy``)::
 
     llm:<model-profile>[#kb=<knowledge-profile>,fallback=<policy spec>,budget=<calls/game>,
-                         model=<id override>,detail=0|1,reply=choice_first|reason_first|checklist]
+                         model=<id override>,detail=0|1,reply=choice_first|reason_first|checklist,elements=0|1]
     llm-assist:<model-profile>#base=<policy spec>[,budget=<calls/game>]
 """
 
@@ -477,9 +477,13 @@ def build_llm_policy(spec: str, *, seed: int, role: str, call_log: str | None = 
     )
     if config.reply not in ("choice_first", "reason_first", "checklist"):
         raise KeyError(f"llm spec option reply must be choice_first, reason_first or checklist, got {config.reply!r}")
+    elements = options.get("elements", "0") not in ("0", "false", "no")
     name = (f"llm:{profile_name}" + (f"+kb:{knowledge.name}" if selector is not None else "")
-            + (f"+{config.reply}" if config.reply != "choice_first" else ""))
-    return LLMPolicy(client, fallback, selector=selector, config=config, name=name)
+            + (f"+{config.reply}" if config.reply != "choice_first" else "") + ("+elements" if elements else ""))
+    from reps.describe import DecisionDescriber
+
+    describer = DecisionDescriber(elements=True) if elements else None
+    return LLMPolicy(client, fallback, selector=selector, describer=describer, config=config, name=name)
 
 
 def build_llm_assist_from_spec(spec: str, *, seed: int, role: str) -> Any:

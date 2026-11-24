@@ -1,0 +1,119 @@
+{
+ "generated": "2026-11-23T02:21:06",
+ "tag": "d35_target",
+ "action_answers": {
+  "none": 464,
+  "none2": 464,
+  "v10": 464,
+  "s1": 464
+ },
+ "hits": {
+  "none2": {
+   "burst_skipped": 7,
+   "end_with_dice": 8,
+   "low_hp_end": 2,
+   "tune_after_opp": 3,
+   "draw_at_full_hand": 5
+  },
+  "s1": {
+   "burst_skipped": 10,
+   "low_hp_end": 2,
+   "draw_at_full_hand": 7,
+   "end_after_opp": 1,
+   "tune_after_opp": 1,
+   "end_with_dice": 2
+  },
+  "none": {
+   "burst_skipped": 5,
+   "end_with_dice": 6,
+   "tune_after_opp": 3,
+   "draw_at_full_hand": 5,
+   "end_after_opp": 1,
+   "low_hp_end": 1
+  },
+  "v10": {
+   "end_after_opp": 1,
+   "draw_at_full_hand": 6,
+   "burst_skipped": 7,
+   "low_hp_end": 3,
+   "end_with_dice": 8,
+   "tune_after_opp": 2
+  }
+ },
+ "choice_kinds": {
+  "none": {
+   "skill:普通攻击": 162,
+   "action_elemental_tuning": 12,
+   "skill:元素爆发": 74,
+   "action_switch_active": 21,
+   "action_play_card": 146,
+   "skill:元素战技": 29,
+   "action_declare_end": 11,
+   "skill:特技": 9
+  },
+  "none2": {
+   "skill:普通攻击": 153,
+   "action_elemental_tuning": 10,
+   "skill:元素爆发": 76,
+   "action_switch_active": 18,
+   "action_play_card": 158,
+   "skill:元素战技": 24,
+   "action_declare_end": 13,
+   "skill:特技": 12
+  },
+  "v10": {
+   "skill:普通攻击": 134,
+   "action_play_card": 189,
+   "skill:元素爆发": 74,
+   "skill:元素战技": 24,
+   "action_elemental_tuning": 12,
+   "action_declare_end": 16,
+   "action_switch_active": 7,
+   "skill:特技": 8
+  },
+  "s1": {
+   "skill:普通攻击": 135,
+   "action_play_card": 187,
+   "skill:元素爆发": 77,
+   "skill:元素战技": 29,
+   "action_elemental_tuning": 9,
+   "action_declare_end": 10,
+   "skill:特技": 9,
+   "action_switch_active": 8
+  }
+ },
+ "rate_per_100_actions": {
+  "none": {
+   "end_with_dice": 1.29,
+   "end_after_opp": 0.22,
+   "burst_skipped": 1.08,
+   "draw_at_full_hand": 1.08,
+   "low_hp_end": 0.22,
+   "tune_after_opp": 0.65
+  },
+  "none2": {
+   "end_with_dice": 1.72,
+   "end_after_opp": 0.0,
+   "burst_skipped": 1.51,
+   "draw_at_full_hand": 1.08,
+   "low_hp_end": 0.43,
+   "tune_after_opp": 0.65
+  },
+  "s1": {
+   "end_with_dice": 0.43,
+   "end_after_opp": 0.22,
+   "burst_skipped": 2.16,
+   "draw_at_full_hand": 1.51,
+   "low_hp_end": 0.43,
+   "tune_after_opp": 0.22
+  },
+  "v10": {
+   "end_with_dice": 1.72,
+   "end_after_opp": 0.22,
+   "burst_skipped": 1.51,
+   "draw_at_full_hand": 1.29,
+   "low_hp_end": 0.65,
+   "tune_after_opp": 0.43
+  }
+ }
+}

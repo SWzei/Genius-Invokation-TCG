@@ -162,3 +162,53 @@ max_strategy = 2
 custom = ["configs/knowledge/custom/lethal_window.md"]
 custom_chars = 800
 kb_version = "v1.0-s1"
+
+# D36 round 1 (reports/review/2026-11_kb_d36_prereg.md): KB v1.0-s2 (attack-first S02-P8 + s1's
+# verified S02-P7 etc.), trigger set d32 (drop the always-on R01 §4.2 trigger), priority slots.
+[profiles.kbt6-r1]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d32"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train_s1.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+strategy_priority = ["S02-P8", "S02-P7"]
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.0-s2"
+
+# D36 round 2: as kbt6-r1 but keeps the d33 trigger set (R1 lost R01 §4.2 for "who starts next
+# round" questions: situational dev first_next 49 -> 37), relying on S02-P8 / S02-P7 alone.
+[profiles.kbt6-r2]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train_s1.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+strategy_priority = ["S02-P8", "S02-P7"]
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.0-s2"
+
+# D36 round 3: D33 access (kbt3-trig) on KB v1.0-s3, whose S05-P1 (mulligan) keeps the team's signature
+# cards and the arcane card first. Built from v1.0, not s2.
+[profiles.kbt6-r3]
+rules = true
+strategy = true
+rule_selection = "retrieve"
+rule_triggers = true
+rule_trigger_set = "d33"
+max_rules = 4
+unit_frequency_file = "configs/knowledge/unit_frequency_train.json"
+max_unit_frequency = 0.5
+max_strategy = 2
+custom = ["configs/knowledge/custom/lethal_window.md"]
+custom_chars = 800
+kb_version = "v1.0-s3"

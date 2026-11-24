@@ -1,0 +1,41 @@
+{
+ "tag": "d34_ab_v10_train",
+ "probe": null,
+ "counts": {
+  "knowledge": {
+   "n": 40,
+   "cards": 85,
+   "core_hands": 40,
+   "core_swapped": 8,
+   "signature_cards": 16,
+   "signature_swapped": 7,
+   "arcane_swapped": 3
+  },
+  "plain": {
+   "n": 40,
+   "cards": 101,
+   "core_hands": 40,
+   "core_swapped": 6,
+   "signature_cards": 16,
+   "signature_swapped": 3,
+   "arcane_swapped": 3
+  }
+ },
+ "rates": {
+  "knowledge": {
+   "n": 40,
+   "core_swap": 0.2,
+   "signature_swap": 0.438,
+   "arcane_swap": 0.075,
+   "cards_per_hand": 2.12
+  },
+  "plain": {
+   "n": 40,
+   "core_swap": 0.15,
+   "signature_swap": 0.188,
+   "arcane_swap": 0.075,
+   "cards_per_hand": 2.52
+  }
+ },
+ "generated": "2026-11-23T03:58:03"
+}

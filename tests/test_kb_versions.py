@@ -233,3 +233,28 @@ def test_s1_detectors_fire_on_their_stated_conditions():
     assert t["S01-P9"](ctx(dice=3)) and not t["S01-P9"](ctx(dice=3, energy=1)) and not t["S01-P9"](ctx(dice=2))
     assert t["S09-P4"](ctx(supports=4)) and not t["S09-P4"](ctx(supports=3))
     assert knowledge._DETECTORS["S09-P4"](ctx(supports=3))             # v1.0 condition unchanged
+
+
+def test_call_log_spend_counts_calls_in_flight_incrementally(tmp_path):
+    """D35: the runner's cap reads the call log (games still running included), not only finished rows."""
+    from bench.run import _CallLog
+
+    path = tmp_path / "calls.jsonl"
+    log = _CallLog(path)
+    assert log.totals() == (0, 0.0)
+    path.write_text('{"cost": 0.01}\n{"cost": 0.02}\n{"cost": 0.', encoding="utf-8")   # last line still being written
+    assert log.totals() == (2, pytest.approx(0.03))
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write('04}\n{"ok": false}\n')
+    assert log.totals() == (4, pytest.approx(0.07))
+
+
+def test_budget_kill_marks_the_game_for_retry(monkeypatch):
+    import bench.run as run
+
+    procs = run._Processes()
+    procs.kill_all()                                      # budget already exhausted: any new game dies at once
+    task = {"subject": "s", "key": "k", "cell": {"group": "g"}}
+    row = run._spawn(task, 60, Path("/dev/null"), procs)
+    assert row["error"] == "game process stopped: budget" and row["score"] is None
+    assert row["error"].startswith("game process")       # resumed runs retry these

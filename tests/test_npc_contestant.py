@@ -187,6 +187,8 @@ def test_injection_uses_required_burst():
 
 
 @pytest.mark.slow
+@pytest.mark.skipif(not __import__('conftest').npc_overlay_available(),
+                    reason='engine overlay (PvE NPC characters) not installed')
 def test_contestant_policy_same_seed_reproducible():
     from envs.match import run_match
     from reps.schema import DeckSpec

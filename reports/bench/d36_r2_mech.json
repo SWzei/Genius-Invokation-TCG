@@ -1,0 +1,140 @@
+{
+ "generated": "2026-11-23T03:03:09",
+ "tag": "d36_r1_mech",
+ "action_answers": {
+  "none2": 720,
+  "r1": 720,
+  "none": 720,
+  "v10": 720,
+  "r2": 720
+ },
+ "hits": {
+  "v10": {
+   "burst_skipped": 19,
+   "end_with_dice": 10,
+   "draw_at_full_hand": 4,
+   "low_hp_end": 1
+  },
+  "r2": {
+   "end_with_dice": 3,
+   "low_hp_end": 1,
+   "draw_at_full_hand": 4,
+   "burst_skipped": 9
+  },
+  "none": {
+   "end_with_dice": 18,
+   "low_hp_end": 4,
+   "tune_after_opp": 1,
+   "burst_skipped": 9,
+   "end_after_opp": 1
+  },
+  "none2": {
+   "end_with_dice": 8,
+   "low_hp_end": 2,
+   "burst_skipped": 9,
+   "draw_at_full_hand": 1,
+   "end_after_opp": 1
+  },
+  "r1": {
+   "draw_at_full_hand": 3,
+   "end_after_opp": 1,
+   "end_with_dice": 3,
+   "low_hp_end": 2,
+   "burst_skipped": 8
+  }
+ },
+ "choice_kinds": {
+  "none2": {
+   "skill:普通攻击": 236,
+   "skill:元素爆发": 63,
+   "skill:元素战技": 169,
+   "skill:特技": 10,
+   "action_elemental_tuning": 6,
+   "action_play_card": 211,
+   "action_switch_active": 16,
+   "action_declare_end": 9
+  },
+  "r1": {
+   "skill:元素爆发": 68,
+   "skill:普通攻击": 287,
+   "skill:元素战技": 166,
+   "skill:特技": 9,
+   "action_play_card": 170,
+   "action_switch_active": 12,
+   "action_elemental_tuning": 4,
+   "action_declare_end": 4
+  },
+  "none": {
+   "skill:普通攻击": 230,
+   "skill:元素爆发": 62,
+   "skill:元素战技": 171,
+   "action_play_card": 212,
+   "skill:特技": 10,
+   "action_elemental_tuning": 7,
+   "action_switch_active": 9,
+   "action_declare_end": 19
+  },
+  "v10": {
+   "action_play_card": 276,
+   "skill:元素战技": 142,
+   "skill:普通攻击": 207,
+   "skill:元素爆发": 61,
+   "skill:特技": 9,
+   "action_elemental_tuning": 5,
+   "action_declare_end": 10,
+   "action_switch_active": 10
+  },
+  "r2": {
+   "skill:元素爆发": 65,
+   "skill:元素战技": 171,
+   "skill:普通攻击": 302,
+   "action_play_card": 160,
+   "skill:特技": 9,
+   "action_declare_end": 3,
+   "action_switch_active": 8,
+   "action_elemental_tuning": 2
+  }
+ },
+ "rate_per_100_actions": {
+  "none": {
+   "end_with_dice": 2.5,
+   "end_after_opp": 0.14,
+   "burst_skipped": 1.25,
+   "draw_at_full_hand": 0.0,
+   "low_hp_end": 0.56,
+   "tune_after_opp": 0.14
+  },
+  "none2": {
+   "end_with_dice": 1.11,
+   "end_after_opp": 0.14,
+   "burst_skipped": 1.25,
+   "draw_at_full_hand": 0.14,
+   "low_hp_end": 0.28,
+   "tune_after_opp": 0.0
+  },
+  "r1": {
+   "end_with_dice": 0.42,
+   "end_after_opp": 0.14,
+   "burst_skipped": 1.11,
+   "draw_at_full_hand": 0.42,
+   "low_hp_end": 0.28,
+   "tune_after_opp": 0.0
+  },
+  "r2": {
+   "end_with_dice": 0.42,
+   "end_after_opp": 0.0,
+   "burst_skipped": 1.25,
+   "draw_at_full_hand": 0.56,
+   "low_hp_end": 0.14,
+   "tune_after_opp": 0.0
+  },
+  "v10": {
+   "end_with_dice": 1.39,
+   "end_after_opp": 0.0,
+   "burst_skipped": 2.64,
+   "draw_at_full_hand": 0.56,
+   "low_hp_end": 0.14,
+   "tune_after_opp": 0.0
+  }
+ }
+}

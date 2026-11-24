@@ -1,0 +1,74 @@
+{
+ "generated": "2026-11-22T22:02:41",
+ "tag": "d35_dp",
+ "action_answers": {
+  "v10": 479,
+  "none": 479,
+  "none2": 479,
+  "s1": 479
+ },
+ "hits": {
+  "none2": {
+   "tune_after_opp": 4,
+   "end_with_dice": 5,
+   "draw_at_full_hand": 10,
+   "low_hp_end": 4,
+   "burst_skipped": 1
+  },
+  "s1": {
+   "tune_after_opp": 1,
+   "end_with_dice": 4,
+   "draw_at_full_hand": 7,
+   "low_hp_end": 3,
+   "burst_skipped": 3
+  },
+  "none": {
+   "tune_after_opp": 4,
+   "draw_at_full_hand": 8,
+   "low_hp_end": 6,
+   "end_with_dice": 2,
+   "burst_skipped": 1
+  },
+  "v10": {
+   "tune_after_opp": 2,
+   "draw_at_full_hand": 10,
+   "end_with_dice": 6,
+   "low_hp_end": 6,
+   "burst_skipped": 2
+  }
+ },
+ "rate_per_100_actions": {
+  "none": {
+   "end_with_dice": 0.42,
+   "end_after_opp": 0.0,
+   "burst_skipped": 0.21,
+   "draw_at_full_hand": 1.67,
+   "low_hp_end": 1.25,
+   "tune_after_opp": 0.84
+  },
+  "none2": {
+   "end_with_dice": 1.04,
+   "end_after_opp": 0.0,
+   "burst_skipped": 0.21,
+   "draw_at_full_hand": 2.09,
+   "low_hp_end": 0.84,
+   "tune_after_opp": 0.84
+  },
+  "s1": {
+   "end_with_dice": 0.84,
+   "end_after_opp": 0.0,
+   "burst_skipped": 0.63,
+   "draw_at_full_hand": 1.46,
+   "low_hp_end": 0.63,
+   "tune_after_opp": 0.21
+  },
+  "v10": {
+   "end_with_dice": 1.25,
+   "end_after_opp": 0.0,
+   "burst_skipped": 0.42,
+   "draw_at_full_hand": 2.09,
+   "low_hp_end": 1.25,
+   "tune_after_opp": 0.42
+  }
+ }
+}

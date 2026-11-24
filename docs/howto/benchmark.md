@@ -252,3 +252,60 @@ python -m bench.run --suite anchor --subjects SPEC --tag T        # 外部锚点
 |---|---|---|---|
 | `kb_version` | 知识配置 | `""`（v1.0） | 选择知识库版本 |
 | `--rival` / `--trace` | `bench.run` | — | 模型对战的对手；保存决策记录 |
+
+### 7.8 D35：重放、分歧点评测与教师材料
+
+带记录的 train 对局（`--trace`）可以逐决策**精确重放**（`bench.forks`；D34 的 40 局 40/40 重放到相同胜者），
+也可以在任意决策处**分叉**：打一个指定选项，再由同一续打策略替双方打完。
+
+```bash
+# 决策模式（不调用模型）：知识方与无知识方各自的出现率，带例子
+python -m bench.mirror_mine --tag d34_ab_v10_train --out d35_mine_v10_train
+# 分歧点：在 train 局面上问各策略会怎么选（每局面每策略 1 次调用）
+python -m bench.divergence probe --games d34_ab_v10_train --tag T --per-seat 8 \
+    --policy none="llm:deepseek-flash#reply=reason_first" none2="llm:deepseek-flash#reply=reason_first" \
+    v10="llm:deepseek-flash#kb=kbt3-trig,reply=reason_first" --max-cost 3 --until 21:55
+# 续打两个分支：脚本（免费）或模型；--max-cost 按调用记录实时计（含在途），--until 到点不再提交
+python -m bench.divergence rollout --tag T --compare v10:none none2:none --continuation heuristic
+python -m bench.divergence rollout --tag T --compare v10:none --continuation "llm:deepseek-flash#reply=reason_first" \
+    --max-dps 60 --reps 2 --first-reps-only 30 --max-cost 10 --until 21:58
+python -m bench.divergence report --tag T --compare none2:none v10:none
+```
+
+定向机制核对：`probe --select-units S02-P7 S01-P9 --select-version 1.0-s1` 只取这些单元触发的局面；
+`python -m bench.mirror_mine --tag <probe tag> --behaviour --out NAME` 按策略统计同一批局面上的决策模式与行动类别。
+D35 结论：分歧点**续打**被噪声淹没，不作门禁初筛；按局面提问与定向核对便宜而有用（见 `reports/review/2026-11_kb_d35.md`）。
+
+`none2`（与 `none` 完全相同的配置）是空白对照：温度 0 下模型对同一局面的回答也不完全一致，
+`none2:none` 的分歧点给出"纯噪声"的分歧率与分支差分布。分歧点只取 train 局面（工具拒绝读 dev / test 对局）。
+
+| 新增项 | 位置 | 默认 | 作用 |
+|---|---|---|---|
+| `elements=1` | LLM spec | 关 | 状态文本在角色名后标出元素（`甘雨［冰］`）；默认文本不变 |
+| `--elements` | `bench.kb_situ render` | 关 | 情境题的状态文本同上（另起渲染 tag） |
+| `--max-cost` 实时计 | `bench.run` | — | 以调用记录计花费（含在途对局）；超过 `--hard-cost-factor`（默认 1.2）倍时结束在途对局，下次续跑重打 |
+| 题库 `situ_v2d33` | `configs/bench/kb_situ/` | — | v2 局面上的 `d33` 题型（含充能、先手、调和、手牌与骰子上限），替代已饱和的 D32 题库做规则层守门 |
+
+### 7.9 D36：自然分歧点、换牌统计与平局结构
+
+镜像对局的两局种子与座位牌组相同，所以两局一直相同，直到两种策略第一次选得不一样（**自然分歧点**，免费、精确）。
+D36 train 30 对里有 28 对第一次不同就在起手换牌。
+
+```bash
+# 每对的第一个不同决策，按决策类型计数（只读 train 对局）
+python -m bench.mirror_mine --tag d36_train_v10 --natural --out d36_natural_train
+# 起手换牌：每一方换掉专属牌（"才能加入牌组"）、秘传、至少一张核心牌的比例
+python -m bench.mirror_mine --tag d36_train_v10 --mulligan --out d36_mull_train
+# 同一批换牌局面上各策略的换牌（先用 bench.divergence probe --select-units S05-P1 取局面）
+python -m bench.mirror_mine --tag d36_train_v10 --mulligan --probe <probe tag> --out NAME
+```
+
+**平局结构**：在 `mirror_*` 套件上，约 60–70% 的对是"同一座位两局都赢"（对分 1，平局），由座位与牌组决定。
+平局比例为 t 时，胜率最多是 0.5 + (1 − t)/2；t ≈ 0.7 时上限约 0.65。
+所以镜像胜率的目标若高于这个上限，知识方必须在座位或牌组不利的局里翻盘，单靠改变某类决策的频率不够（见 `reports/review/2026-11_kb_d36.md`）。
+
+| 新增项 | 位置 | 作用 |
+|---|---|---|
+| `--natural` / `--mulligan [--probe TAG]` | `bench.mirror_mine` | 自然分歧点；起手换牌统计（只读 train） |
+| 套件 `mirror_test150` | `configs/bench/mirror_test150.lock.json` | test 牌组 150 对（前 100 对与 `mirror_test` 相同）；D36 最终 test 已用掉，再比较需新种子 |
+| `v1.0-s2`、`v1.0-s3` | `configs/knowledge/kb_versions/` | D36 的策略层补丁版本（未入库）；配置 `kbt6-r1` / `kbt6-r2` / `kbt6-r3` |

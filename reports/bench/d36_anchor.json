@@ -1,0 +1,177 @@
+{
+  "suite": {
+    "name": "anchor",
+    "description": "D34 external anchor: two pool decks against two scripted experts, fresh seeds",
+    "fingerprint": "77f4eabf75b1b957",
+    "cells": 32,
+    "cells_by_group": {
+      "anchor-expert": 32
+    },
+    "source": "anchor.lock.json",
+    "seed_base": 7100001,
+    "human_decks": {}
+  },
+  "subjects": {
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1": {
+      "games": 32,
+      "valid_games": 32,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 32,
+        "rate": 0.4375,
+        "ci95": [
+          0.2817,
+          0.6067
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 7.56,
+      "game_seconds_mean": 94.12,
+      "by_group": {
+        "anchor-expert": {
+          "n": 32,
+          "rate": 0.4375,
+          "ci95": [
+            0.2817,
+            0.6067
+          ]
+        }
+      },
+      "by_level": {
+        "L2-expert": {
+          "n": 32,
+          "rate": 0.4375,
+          "ci95": [
+            0.2817,
+            0.6067
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "pool": {
+          "n": 32,
+          "rate": 0.4375,
+          "ci95": [
+            0.2817,
+            0.6067
+          ]
+        }
+      },
+      "by_version": {
+        "default": {
+          "n": 32,
+          "rate": 0.4375,
+          "ci95": [
+            0.2817,
+            0.6067
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 16,
+          "rate": 0.4375,
+          "ci95": [
+            0.231,
+            0.6682
+          ]
+        },
+        "1": {
+          "n": 16,
+          "rate": 0.4375,
+          "ci95": [
+            0.231,
+            0.6682
+          ]
+        }
+      },
+      "model": {
+        "games": 32,
+        "decisions_asked": 1702,
+        "first_reply_legal_rate": 1.0,
+        "answer_used_rate": 1.0,
+        "fallback_decisions": 0,
+        "first_errors": {},
+        "errors": {},
+        "by_request": {
+          "switch_hands": {
+            "asked": 32,
+            "first_legal": 32,
+            "used": 32
+          },
+          "choose_active": {
+            "asked": 55,
+            "first_legal": 55,
+            "used": 55
+          },
+          "reroll_dice": {
+            "asked": 242,
+            "first_legal": 242,
+            "used": 242
+          },
+          "action": {
+            "asked": 1283,
+            "first_legal": 1283,
+            "used": 1283
+          },
+          "select_card": {
+            "asked": 90,
+            "first_legal": 90,
+            "used": 90
+          }
+        },
+        "calls": 1702,
+        "retries": 1,
+        "seconds_per_call": 1.464,
+        "decision_seconds_p50_median_game": 1.421,
+        "decision_seconds_p90_median_game": 1.815,
+        "decision_seconds_max": 5.054,
+        "prompt_tokens": 4357506,
+        "completion_tokens": 100087,
+        "reasoning_tokens": 0,
+        "cached_tokens": 118272,
+        "tokens_per_decision": 2619.0,
+        "tokens_per_game": 139300.0,
+        "calls_per_game": 53.2,
+        "cost": 0.696291,
+        "cost_per_game": 0.021759
+      }
+    }
+  },
+  "reference": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1",
+  "paired_vs_reference": {},
+  "note": "win rates are simulator results on this suite's cells; intervals are Wilson 95% on valid games (errors, truncations and degraded games excluded and counted)",
+  "tag": "d36_anchor",
+  "generated": "2026-11-23T06:10:10",
+  "stopped": null,
+  "total_calls": 1702,
+  "total_cost": 0.696291,
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  },
+  "raw": "data/bench/d36_anchor/games.jsonl"
+}

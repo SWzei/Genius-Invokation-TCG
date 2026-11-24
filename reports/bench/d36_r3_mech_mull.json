@@ -1,0 +1,73 @@
+{
+ "tag": "d36_train_v10",
+ "probe": "d36_r3_mech",
+ "counts": {
+  "none": {
+   "n": 120,
+   "cards": 242,
+   "core_hands": 120,
+   "core_swapped": 16,
+   "signature_cards": 50,
+   "signature_swapped": 8,
+   "arcane_swapped": 9
+  },
+  "none2": {
+   "n": 120,
+   "cards": 254,
+   "core_hands": 120,
+   "core_swapped": 17,
+   "signature_cards": 50,
+   "signature_swapped": 11,
+   "arcane_swapped": 8
+  },
+  "r3": {
+   "n": 120,
+   "cards": 226,
+   "core_hands": 120,
+   "core_swapped": 6,
+   "signature_cards": 50,
+   "signature_swapped": 6,
+   "arcane_swapped": 0
+  },
+  "v10": {
+   "n": 120,
+   "cards": 229,
+   "core_hands": 120,
+   "core_swapped": 22,
+   "signature_cards": 50,
+   "signature_swapped": 13,
+   "arcane_swapped": 13
+  }
+ },
+ "rates": {
+  "none": {
+   "n": 120,
+   "core_swap": 0.133,
+   "signature_swap": 0.16,
+   "arcane_swap": 0.075,
+   "cards_per_hand": 2.02
+  },
+  "none2": {
+   "n": 120,
+   "core_swap": 0.142,
+   "signature_swap": 0.22,
+   "arcane_swap": 0.067,
+   "cards_per_hand": 2.12
+  },
+  "r3": {
+   "n": 120,
+   "core_swap": 0.05,
+   "signature_swap": 0.12,
+   "arcane_swap": 0.0,
+   "cards_per_hand": 1.88
+  },
+  "v10": {
+   "n": 120,
+   "core_swap": 0.183,
+   "signature_swap": 0.26,
+   "arcane_swap": 0.108,
+   "cards_per_hand": 1.91
+  }
+ },
+ "generated": "2026-11-23T03:58:03"
+}

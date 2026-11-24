@@ -54,11 +54,18 @@ def _worker(store: SessionStore, driver, env=None):
         proc.stdin.flush()
 
     events = []
-    for line in proc.stdout:
-        event = json.loads(line)
-        events.append(event)
-        driver(event, tell)
-    assert proc.wait(timeout=30) == 0
+    try:
+        for line in proc.stdout:
+            event = json.loads(line)
+            events.append(event)
+            driver(event, tell)
+        assert proc.wait(timeout=30) == 0
+    finally:
+        for pipe in (proc.stdin, proc.stdout):
+            try:
+                pipe.close()
+            except (BrokenPipeError, OSError):
+                pass
     return events
 
 

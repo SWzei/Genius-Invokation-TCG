@@ -42,6 +42,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tag", default=None, help="run directory / report name (default: the suite name)")
     p.add_argument("--workers", type=int, default=2, help="games in parallel (one process each)")
     p.add_argument("--groups", nargs="*", default=None, help="only these groups")
+    p.add_argument("--rep-from", type=int, default=0,
+                   help="skip replicates (pairs) below this index (D36: train pairs 20.. after D34 used 0..19)")
     p.add_argument("--replicates", type=int, default=None,
                    help="only the first N seed replicates of every matchup (a balanced subset)")
     p.add_argument("--max-cells", type=int, default=None, help="only the first N cells of the suite (smoke)")
@@ -53,25 +55,95 @@ def build_parser() -> argparse.ArgumentParser:
                    help="model-vs-model suites (bench.mirror): the policy spec that replaces '<rival>' in cells")
     p.add_argument("--trace", action="store_true",
                    help="keep every decision (prompt, reply, knowledge) of both sides under <run>/traces/ (D34 train games)")
+    p.add_argument("--hard-cost-factor", type=float, default=1.2,
+                   help="kill games in flight once the call log passes this multiple of --max-cost / --max-calls")
     p.add_argument("--report-only", action="store_true")
     return p
 
 
-def _spawn(task: dict[str, Any], timeout: float, call_log: Path) -> dict[str, Any]:
+class _Processes:
+    """Game processes in flight, so a hard budget stop can kill them (D35)."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._procs: set[subprocess.Popen] = set()
+        self.killed = threading.Event()
+
+    def add(self, proc: subprocess.Popen) -> None:
+        with self._lock:
+            self._procs.add(proc)
+        if self.killed.is_set():
+            proc.kill()
+
+    def discard(self, proc: subprocess.Popen) -> None:
+        with self._lock:
+            self._procs.discard(proc)
+
+    def kill_all(self) -> None:
+        self.killed.set()
+        with self._lock:
+            for proc in list(self._procs):
+                try:
+                    proc.kill()
+                except Exception:  # noqa: BLE001 - already gone
+                    pass
+
+
+def _spawn(task: dict[str, Any], timeout: float, call_log: Path,
+           procs: "_Processes | None" = None) -> dict[str, Any]:
     env = dict(os.environ)
     env.setdefault("PYTHONPATH", str(REPO_ROOT))
     env["GITCG_LLM_CALL_LOG"] = str(call_log)
+    base = {"subject": task["subject"], "cell": task["key"], **task["cell"], "score": None}
+    proc = subprocess.Popen([sys.executable, "-m", "bench.play"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, text=True, cwd=REPO_ROOT, env=env)
+    if procs is not None:
+        procs.add(proc)
     try:
-        proc = subprocess.run([sys.executable, "-m", "bench.play"], input=json.dumps(task), text=True,
-                              capture_output=True, cwd=REPO_ROOT, env=env, timeout=timeout)
+        stdout, stderr = proc.communicate(json.dumps(task), timeout=timeout)
     except subprocess.TimeoutExpired:
-        return {"subject": task["subject"], "cell": task["key"], **task["cell"], "score": None,
-                "error": f"game process exceeded {timeout:.0f}s", "truncated": True}
-    marker = proc.stdout.rfind("@@ROW@@")
+        proc.kill()
+        proc.communicate()
+        return {**base, "error": f"game process exceeded {timeout:.0f}s", "truncated": True}
+    finally:
+        if procs is not None:
+            procs.discard(proc)
+    if procs is not None and procs.killed.is_set() and proc.returncode != 0:
+        # "game process ..." errors are retried on resume, so a budget stop loses no game.
+        return {**base, "error": "game process stopped: budget", "truncated": True}
+    marker = stdout.rfind("@@ROW@@")
     if proc.returncode != 0 or marker < 0:
-        return {"subject": task["subject"], "cell": task["key"], **task["cell"], "score": None,
-                "error": f"game process failed ({proc.returncode}): {proc.stderr[-300:]}", "truncated": False}
-    return json.loads(proc.stdout[marker + len("@@ROW@@"):].strip().splitlines()[0])
+        return {**base, "error": f"game process failed ({proc.returncode}): {stderr[-300:]}", "truncated": False}
+    return json.loads(stdout[marker + len("@@ROW@@"):].strip().splitlines()[0])
+
+
+class _CallLog:
+    """Spend so far from the run's call log: every model call, including games still in flight.
+
+    Row usage only covers finished games, so a cap checked on rows overshoots by the
+    games in progress (D34: thinking games, ~15 min each). Read incrementally."""
+
+    def __init__(self, path: Path) -> None:
+        self.path, self.offset, self.calls, self.cost = path, 0, 0, 0.0
+
+    def totals(self) -> tuple[int, float]:
+        if not self.path.exists():
+            return self.calls, self.cost
+        with self.path.open("rb") as handle:
+            handle.seek(self.offset)
+            chunk = handle.read()
+        end = chunk.rfind(b"\n")
+        if end < 0:
+            return self.calls, self.cost
+        for line in chunk[: end + 1].splitlines():
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            self.calls += 1
+            self.cost += float(row.get("cost") or 0.0)
+        self.offset += end + 1
+        return self.calls, self.cost
 
 
 def _totals(rows: list[dict[str, Any]]) -> tuple[int, float]:
@@ -120,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
                          encoding="utf-8")
 
     cells = [c for c in suite.cells if (args.groups is None or c.group in args.groups)
-             and (args.replicates is None or c.rep < args.replicates)]
+             and (args.replicates is None or c.rep < args.replicates) and c.rep >= args.rep_from]
     if args.max_cells is not None:
         cells = cells[: args.max_cells]
     stopped: str | None = None
@@ -140,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
                 subject, cell = queue.pop(0)
                 if subject in dead:
                     continue
-                calls, cost = _totals(rows)
+                calls, cost = _spend()
                 if args.max_calls is not None and calls >= args.max_calls:
                     stopped = f"max_calls reached ({calls})"
                     return
@@ -154,14 +226,38 @@ def main(argv: list[str] | None = None) -> int:
                 if args.trace:
                     slug = hashlib.sha256(subject.encode("utf-8")).hexdigest()[:10]
                     task["trace_path"] = str(run_dir / "traces" / slug / f"{cell.key.translate(str.maketrans('/|: ', '____'))}.json")
-                running[pool.submit(_spawn, task, args.game_timeout, run_dir / "calls.jsonl")] = (subject, cell)
+                running[pool.submit(_spawn, task, args.game_timeout, run_dir / "calls.jsonl", procs)] = (subject, cell)
+
+        call_log = _CallLog(run_dir / "calls.jsonl")
+        call_log.totals()                          # spend of earlier sessions of this tag counts too
+        procs = _Processes()
+
+        def _spend() -> tuple[int, float]:
+            """Live spend: the call log (includes games in flight); never below the finished rows."""
+            log_calls, log_cost = call_log.totals()
+            row_calls, row_cost = _totals(rows)
+            return max(log_calls, row_calls), max(log_cost, row_cost)
+
+        def _hard_stop() -> None:
+            nonlocal stopped
+            if procs.killed.is_set():
+                return
+            calls, cost = _spend()
+            over = ((args.max_cost is not None and cost >= args.max_cost * args.hard_cost_factor)
+                    or (args.max_calls is not None and calls >= args.max_calls * args.hard_cost_factor))
+            if over:
+                stopped = f"hard budget stop: {calls} calls, cost {cost:.4f}; games in flight killed"
+                print(f"[bench] {stopped}", flush=True)
+                queue.clear()
+                procs.kill_all()
 
         queue, running = list(todo), {}
         started = time.perf_counter()
         with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
             submit_next(pool, queue, running)
             while running:
-                finished, _ = wait(list(running), return_when=FIRST_COMPLETED)
+                finished, _ = wait(list(running), timeout=15, return_when=FIRST_COMPLETED)
+                _hard_stop()
                 for future in finished:
                     subject, cell = running.pop(future)
                     row = future.result()

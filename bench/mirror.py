@@ -213,6 +213,7 @@ def main(argv: list[str] | None = None) -> int:
     b = sub.add_parser("build")
     b.add_argument("--split", required=True, choices=sorted(SPLITS))
     b.add_argument("--pairs", type=int, required=True)
+    b.add_argument("--name", default=None, help="lock file name (default mirror_<split>); same seeds as the split")
     sub.add_parser("decks")
     r = sub.add_parser("report")
     r.add_argument("--tag", nargs="+", required=True)
@@ -228,7 +229,9 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(dict(sorted(counts.items())), indent=1))
     elif args.command == "build":
         suite = build_pairs(args.split, args.pairs, candidate_decks(lite_decks()))
-        path = SUITE_DIR / f"mirror_{args.split}.lock.json"
+        if args.name:
+            suite.name = args.name
+        path = SUITE_DIR / f"{args.name or 'mirror_' + args.split}.lock.json"
         if path.exists():
             raise SystemExit(f"{path} exists (suites are append-only): delete it by hand if it was never played")
         path.write_text(json.dumps(suite_to_lock(suite), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

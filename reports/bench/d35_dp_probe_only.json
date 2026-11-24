@@ -1,0 +1,96 @@
+{
+ "generated": "2026-11-22T20:13:20",
+ "tag": "d35_dp",
+ "probe_calls": 2560,
+ "probe_cost": 0.3421,
+ "continuation_cost_per_branch": {},
+ "comparisons": [
+  {
+   "pair": "none2:none",
+   "positions": 640,
+   "dps": 168,
+   "disagreement": 0.263,
+   "by_request": {
+    "action": {
+     "positions": 479,
+     "dps": 130
+    },
+    "choose_active": {
+     "positions": 23,
+     "dps": 5
+    },
+    "reroll_dice": {
+     "positions": 97,
+     "dps": 22
+    },
+    "select_card": {
+     "positions": 22,
+     "dps": 6
+    },
+    "switch_hands": {
+     "positions": 19,
+     "dps": 5
+    }
+   },
+   "by_continuation": {}
+  },
+  {
+   "pair": "v10:none",
+   "positions": 640,
+   "dps": 252,
+   "disagreement": 0.394,
+   "by_request": {
+    "action": {
+     "positions": 479,
+     "dps": 187
+    },
+    "choose_active": {
+     "positions": 23,
+     "dps": 3
+    },
+    "reroll_dice": {
+     "positions": 97,
+     "dps": 44
+    },
+    "select_card": {
+     "positions": 22,
+     "dps": 6
+    },
+    "switch_hands": {
+     "positions": 19,
+     "dps": 12
+    }
+   },
+   "by_continuation": {}
+  },
+  {
+   "pair": "s1:v10",
+   "positions": 640,
+   "dps": 194,
+   "disagreement": 0.303,
+   "by_request": {
+    "action": {
+     "positions": 479,
+     "dps": 159
+    },
+    "choose_active": {
+     "positions": 23,
+     "dps": 0
+    },
+    "reroll_dice": {
+     "positions": 97,
+     "dps": 27
+    },
+    "select_card": {
+     "positions": 22,
+     "dps": 5
+    },
+    "switch_hands": {
+     "positions": 19,
+     "dps": 3
+    }
+   },
+   "by_continuation": {}
+  }
+ ]
+}

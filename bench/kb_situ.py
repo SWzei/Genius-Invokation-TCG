@@ -123,7 +123,7 @@ def questions_for(view: Mapping[str, Any], seat: int, rng: random.Random,
     :func:`heldout_questions` -- types that no knowledge-access change was designed for."""
     if version not in QUESTION_VERSIONS:
         raise ValueError(f"question version must be one of {QUESTION_VERSIONS}")
-    me, opp = view["me"], view["opponent"]
+    me = view["me"]
     out = []
     dice = len(me["dice"])
     if version == "d32" or dice >= 3:
@@ -334,7 +334,7 @@ def _render_task(task: Mapping[str, Any]) -> dict[str, Any]:
     scenario_set = load_set(task["set"])
     source = scenario_set["sources"][int(task["source"])]
     built = context_at(source, int(task["seat"]), int(task["ordinal"]))
-    describer = DecisionDescriber()
+    describer = DecisionDescriber(elements=bool(task.get("elements")))
     out = {"id": task["id"], "state": describer.state_text(built.context, detail=False), "packs": {}}
     for name, key in task["profiles"].items():
         pack = KnowledgeSelector(get_knowledge_profile(name)).select(built.context)
@@ -342,10 +342,18 @@ def _render_task(task: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
-def render(name: str, profiles: Sequence[str], tag: str, workers: int = 2) -> dict[str, Any]:
+def render(name: str, profiles: Sequence[str], tag: str, workers: int = 2, *, elements: bool = False) -> dict[str, Any]:
+    """``elements`` (D35): state text names each character's element (as ``llm:...#elements=1``).
+    A render cache holds one state text per position, so use a separate ``tag`` for it."""
     bank = load_bank(name)
     keys = {p: _profile_key(p) for p in profiles}
-    path = Path(ensure_dir(data_dir("bench", tag))) / "render.jsonl"
+    run = Path(ensure_dir(data_dir("bench", tag)))
+    marker = run / "render_options.json"
+    options = {"elements": bool(elements)}
+    if marker.exists() and json.loads(marker.read_text(encoding="utf-8")) != options:
+        raise SystemExit(f"{run}: render cache was made with other options; use another --tag")
+    marker.write_text(json.dumps(options), encoding="utf-8")
+    path = run / "render.jsonl"
     have: dict[str, set] = defaultdict(set)
     if path.exists():
         for line in path.read_text(encoding="utf-8").splitlines():
@@ -355,7 +363,7 @@ def render(name: str, profiles: Sequence[str], tag: str, workers: int = 2) -> di
     for ctx in bank["contexts"]:
         missing = {p: k for p, k in keys.items() if k not in have[ctx["id"]]}
         if missing or ctx["id"] not in have:
-            tasks.append({**ctx, "profiles": missing})
+            tasks.append({**ctx, "profiles": missing, "elements": bool(elements)})
     with path.open("a", encoding="utf-8") as fh:
         for row in recycled_map(_render_task, tasks, workers=workers, tasks_per_child=8):
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
@@ -538,6 +546,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     r.add_argument("--profiles", nargs="+", required=True)
     r.add_argument("--tag", required=True)
     r.add_argument("--workers", type=int, default=2)
+    r.add_argument("--elements", action="store_true", help="state text names character elements (D35)")
     e = sub.add_parser("eval")
     e.add_argument("--name", required=True)
     e.add_argument("--render", required=True, help="tag of the render cache")
@@ -561,7 +570,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.cmd == "build":
         print(json.dumps(build_bank(args.name, args.sets, args.workers, args.version), ensure_ascii=False))
     elif args.cmd == "render":
-        print(json.dumps(render(args.name, args.profiles, args.tag, args.workers), ensure_ascii=False))
+        print(json.dumps(render(args.name, args.profiles, args.tag, args.workers, elements=args.elements),
+                         ensure_ascii=False))
     elif args.cmd == "eval":
         print(json.dumps(evaluate(args.name, args.render, args.tag, args.model, args.kb, split=args.split,
                                   workers=args.workers, max_calls=args.max_calls, mode=args.mode)))

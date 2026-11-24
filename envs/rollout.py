@@ -103,6 +103,8 @@ def _mp_context():  # noqa: D401 - kept for reference/back-compat
     Kept only so external callers do not break. Use ``run_tasks``, which spawns
     independent worker subprocesses instead.
     """
+    import multiprocessing as mp
+
     return mp.get_context("spawn")
 
 
@@ -267,24 +269,39 @@ def _drive_worker(
             pass
 
     limit = _shard_timeout(len(shard)) if timeout is None else float(timeout)
-    stdout_thread.join(timeout=limit)
-    if stdout_thread.is_alive():
-        _kill_process()
-        stdout_thread.join(timeout=5.0)
-        raise RuntimeError(
-            f"rollout worker hung: stdout not closed after {limit:.0f}s "
-            f"({received}/{len(shard)} results); killed pid={process.pid}"
-        )
     try:
-        returncode = process.wait(timeout=limit)
-    except subprocess.TimeoutExpired:
-        _kill_process()
-        process.wait(timeout=5.0)
-        raise RuntimeError(
-            f"rollout worker hung: process did not exit within {limit:.0f}s "
-            f"({received}/{len(shard)} results); killed pid={process.pid}"
-        ) from None
-    stderr_thread.join(timeout=1)
+        stdout_thread.join(timeout=limit)
+        if stdout_thread.is_alive():
+            _kill_process()
+            stdout_thread.join(timeout=5.0)
+            raise RuntimeError(
+                f"rollout worker hung: stdout not closed after {limit:.0f}s "
+                f"({received}/{len(shard)} results); killed pid={process.pid}"
+            )
+        try:
+            returncode = process.wait(timeout=limit)
+        except subprocess.TimeoutExpired:
+            _kill_process()
+            raise RuntimeError(
+                f"rollout worker hung: process did not exit within {limit:.0f}s "
+                f"({received}/{len(shard)} results); killed pid={process.pid}"
+            ) from None
+        stderr_thread.join(timeout=1)
+    finally:
+        # Reap the child and release its pipes on every path (D35: the success path
+        # leaked both pipe file objects, and a killed hung worker was never waited).
+        if process.poll() is None and killed.is_set():
+            try:
+                process.wait(timeout=5.0)
+            except subprocess.TimeoutExpired:
+                pass
+        stderr_thread.join(timeout=1)
+        for pipe in (process.stdout, process.stderr):
+            try:
+                if pipe is not None:
+                    pipe.close()
+            except Exception:  # noqa: BLE001 - a reader thread may still hold it
+                pass
 
     detail = "".join(stderr_chunks)[-2000:]
     if drain_errors:

@@ -1,0 +1,612 @@
+{
+ "tag": "d36_train_v10",
+ "pairs": 30,
+ "first_divergence_by_request": {
+  "switch_hands": 28,
+  "choose_active": 1,
+  "reroll_dice": 1
+ },
+ "rows": [
+  {
+   "seed": 7400021,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 运筹帷幄",
+     "reason": "保留0费装备与快速切换，秘传牌必留；运筹帷幄费用偏高且前期收益一般，换掉找更早可用的牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 运筹帷幄、黄金剧团的奖赏",
+     "reason": "保留秘传与0费装备/事件，重复的圣遗物和抓牌卡换掉找更优起手"
+    }
+   }
+  },
+  {
+   "seed": 7400022,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 很棒，哥们。、琴音之诗",
+     "reason": "保留秘传牌与两件圣遗物，其余低协同事件换掉找更稳的起手。"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 很棒，哥们。、指挥的礼帽",
+     "reason": "保留秘传与低费圣遗物组件，换掉依赖特技的「很棒，哥们。」和两张圣遗物装备，减少卡手。"
+    }
+   }
+  },
+  {
+   "seed": 7400023,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 净觉花、强劲冲浪拍档！、灵光明烁之心",
+     "reason": "保留秘传与玛薇卡装备，其余低协同牌换掉找角色与骰子牌"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 净觉花、强劲冲浪拍档！",
+     "reason": "保留秘传与低费装备；净觉花需弃支援且当前无支援，冲浪需召唤物配合，均偏后期，换掉找早期资源。"
+    }
+   }
+  },
+  {
+   "seed": 7400024,
+   "pair_score": 2,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 万千子嗣、万千子嗣、温泉时光",
+     "reason": "秘传牌必留；两张万千子嗣重复且草系装备前期收益低，温泉时光依赖召唤物，一并换掉找更稳的展开。"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 万千子嗣",
+     "reason": "保留秘传与低费支援/事件；两张同名草装备冗余且偏后期，换掉一张找更多早期资源。"
+    }
+   }
+  },
+  {
+   "seed": 7400025,
+   "pair_score": 2,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 奇瑰之汤、苦舍桓、「花羽会」",
+     "reason": "保留秘传与草系核心装备，其余低协同卡换掉找骰子与角色牌"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 奇瑰之汤、万千子嗣",
+     "reason": "保留秘传与低费支援，换掉偏后期的草装备与料理，寻找更早可用的资源。"
+    }
+   }
+  },
+  {
+   "seed": 7400026,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 西尔弗和迈勒斯、灵光明烁之心",
+     "reason": "秘传必留；运筹帷幄与最好的伙伴优质留；西尔弗和迈勒斯偏慢、灵光明烁之心收益低，换掉找更契合的资源。"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 西尔弗和迈勒斯",
+     "reason": "保留秘传、过牌与0费圣遗物；西尔弗和迈勒斯偏后期，换掉找早期节奏牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400027,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 赤王陵、卯师傅、欧庇克莱歌剧院",
+     "reason": "秘传牌必留；赤王陵偏慢且依赖对方抓牌，两张卯师傅重复且缺料理配合，歌剧院费用条件难达成，换掉重复与慢速牌找早期资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 卯师傅",
+     "reason": "秘传牌必留；赤王陵与歌剧院有价值保留；两张卯师傅重复且缺料理配合，换掉一张即可。"
+    }
+   }
+  },
+  {
+   "seed": 7400028,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 赌徒的耳环",
+     "reason": "保留秘传与低费资源牌，赌徒耳环偏后期且需击倒触发，换掉以找更早可用的牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 赌徒的耳环、欧庇克莱歌剧院、奇瑰之汤",
+     "reason": "保留秘传与低费装备，其余高费单卡换掉找岩系配合与充能牌"
+    }
+   }
+  },
+  {
+   "seed": 7400029,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 「魔女M的祝福」、强劲冲浪拍档！",
+     "reason": "保留秘传与低费资源牌；魔女M的祝福和冲浪拍档依赖召唤物，当前无召唤物配合，换掉找更通用组件。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 「魔女M的祝福」、强劲冲浪拍档！、西尔弗和迈勒斯",
+     "reason": "保留秘传与伙伴支援，其余三张与卡齐娜召唤流配合弱，换掉找更契合的牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400030,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 幻戏倒计时：3、琴音之诗",
+     "reason": "保留秘传与低费过牌/恰斯卡组件；幻戏倒计时3费偏高且琴音之诗无圣遗物配合，换掉这两张。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 幻戏倒计时：3、琴音之诗、运筹帷幄",
+     "reason": "保留秘传与恰斯卡配合牌，换掉高费幻戏倒计时及低效的琴音之诗、运筹帷幄，寻求更顺滑起手。"
+    }
+   }
+  },
+  {
+   "seed": 7400031,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 赌徒的耳环、欧庇克莱歌剧院",
+     "reason": "保留秘传与低费事件，换掉偏慢的装备与支援，争取更顺的起手节奏。"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 赌徒的耳环",
+     "reason": "保留秘传与低费资源牌，野猪公主配合装备弃置有潜力，奇瑰之汤早期可用；赌徒耳环偏后期，换掉找更早节奏牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400032,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 图莱杜拉的回忆、图莱杜拉的回忆、饰金之梦",
+     "reason": "保留0费圣遗物与秘传；两张同名3费法器重复且早期难打出，饰金之梦费用偏高，换掉以找低费资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 图莱杜拉的回忆、饰金之梦",
+     "reason": "秘传牌必留；黄金剧团0费可留；两张图莱杜拉重复且3费偏高，饰金之梦与队伍三元素契合但费用高，换掉重复武器与饰金找更顺滑的牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400033,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 2,
+    "step": 2,
+    "seat": 0,
+    "request": "choose_active",
+    "a": {
+     "role": "knowledge",
+     "choice": "选择【愚人众·霜役人】出战",
+     "reason": "对方为岩冰阵容，霜役人11血最耐打，适合首发承伤；雷电将军需充能展开，申鹤偏辅助，均不宜先出。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "选择【雷电将军】出战",
+     "reason": "先手第0回合无骰，需选出战角色。雷电将军充能2、雷元素利于后续爆发与充能循环，且10血稳健，适合开局站场。"
+    }
+   }
+  },
+  {
+   "seed": 7400034,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 温泉时光、万千子嗣",
+     "reason": "秘传必留；两张同名装备冗余，换掉一张；温泉时光前期收益低，换掉。保留湖中垂柳过牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 温泉时光、万千子嗣、万千子嗣",
+     "reason": "秘传必留；两张万千子嗣重复且费用高，温泉时光收益低，换掉腾出空间找骰子与低费牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400035,
+   "pair_score": 2,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 强劲冲浪拍档！、迪娜泽黛",
+     "reason": "秘传必留；立本0费、灵光0费可留；冲浪需召唤物配合、迪娜泽黛需伙伴牌配合，早期难用，换掉找更稳的组件。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 强劲冲浪拍档！",
+     "reason": "秘传必留；立本、迪娜泽黛、灵光都是优质低费牌；冲浪拍档依赖召唤物，当前卡组无召唤物配合，换掉。"
+    }
+   }
+  },
+  {
+   "seed": 7400036,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 赌徒的耳环",
+     "reason": "保留低费可打出的恰斯卡与丝柯克组件及秘传；赌徒耳环偏后期，换掉找更早节奏牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 赌徒的耳环、野猪公主",
+     "reason": "保留丝柯克核心装备与恰斯卡配合牌，秘传必留；赌徒耳环与野猪公主当前配合弱，换掉找更稳的展开。"
+    }
+   }
+  },
+  {
+   "seed": 7400037,
+   "pair_score": 2,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 不明流通渠道",
+     "reason": "保留秘传、过牌与低费装备；换掉高费的不明流通渠道，争取更早展开。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 灵光明烁之心、野猪公主",
+     "reason": "保留秘传与娜维娅专属装备，换掉低效的野猪公主和灵光，运筹帷幄可留作过牌"
+    }
+   }
+  },
+  {
+   "seed": 7400038,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 偷懒的新方法",
+     "reason": "保留秘传、低费支援与过牌；黄金剧团0费可留；偷懒的新方法费用高且依赖早柚，换掉。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 黄金剧团的奖赏",
+     "reason": "保留秘传、支援、过牌与早柚专属装备，仅换掉0费圣遗物以找更契合的牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400039,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 强劲冲浪拍档！",
+     "reason": "保留秘传与两张运筹帷幄、卯师傅等早期资源；冲浪拍档需召唤物配合，开局无用，换掉。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 强劲冲浪拍档！、卯师傅",
+     "reason": "保留秘传与过牌，冲浪搭档无召唤物配合且卯师傅缺料理，换掉这两张找更稳的起手。"
+    }
+   }
+  },
+  {
+   "seed": 7400040,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 旧时庭园、偷懒的新方法",
+     "reason": "保留0费圣遗物与支援等早期可打出的牌；旧时庭园需先有装备才能打出，偷懒的新方法费用偏高，换掉这两张找更顺手的开局。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 赌徒的耳环",
+     "reason": "保留早柚专属装备与低费圣遗物/支援，秘传牌暂留；换掉赌徒耳环，因其依赖击倒且当前无骰配合。"
+    }
+   }
+  },
+  {
+   "seed": 7400041,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 可控性去危害化式定向爆破、唐杜尔烤鸡",
+     "reason": "保留秘传、迪娜泽黛与冰共鸣等低费核心；爆破条件苛刻、烤鸡费用偏高，换掉找更早可打的牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 可控性去危害化式定向爆破、迪娜泽黛、唐杜尔烤鸡",
+     "reason": "保留秘传与冰共鸣，爆破条件苛刻、烤鸡费用高，换掉这两张及迪娜泽黛找更实用牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400042,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 迪娜泽黛、琴音之诗、奇瑰之汤",
+     "reason": "保留0费立本与秘传牌；迪娜泽黛需伙伴牌配合、琴音之诗需圣遗物、奇瑰之汤收益低，换掉这三张找更通用组件。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 琴音之诗、奇瑰之汤",
+     "reason": "秘传牌必留；立本、迪娜泽黛是优质支援；琴音之诗与奇瑰之汤配合度低，换掉找更契合的牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400043,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 4,
+    "step": 3,
+    "seat": 0,
+    "request": "reroll_dice",
+    "a": {
+     "role": "knowledge",
+     "choice": "重掷 火火雷雷雷岩岩",
+     "reason": "保留万能骰，重投火雷岩杂色，争取水/草骰以配合芙宁娜与阿佩普技能。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "重掷 雷雷雷岩岩",
+     "reason": "保留万能、火、草相关骰，重掷3雷2岩，争取水/草骰以配合芙宁娜与阿佩普。"
+    }
+   }
+  },
+  {
+   "seed": 7400044,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 为「死」而战、幻戏倒计时：3、野猪公主",
+     "reason": "保留0费支援与料理，换掉高费幻戏倒计时和收益低的秘传与野猪公主，找低费节奏牌。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 幻戏倒计时：3、兽肉薄荷卷、野猪公主",
+     "reason": "秘传牌必留；幻戏倒计时费用高且当前无骰，兽肉薄荷卷与野猪公主配合弱，黄金屋可留作支援。替换高费与低协同牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400045,
+   "pair_score": 2,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 奇瑰之汤、「邪龙」的苏醒",
+     "reason": "保留0费装备与0费事件，秘传牌留作防守；换掉费用偏高、前期难用的邪龙与料理。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 奇瑰之汤、「邪龙」的苏醒、本大爷还没有输！",
+     "reason": "保留秘传与0费装备，其余低协同事件换掉找角色牌与骰子"
+    }
+   }
+  },
+  {
+   "seed": 7400046,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 图莱杜拉的回忆、琴音之诗",
+     "reason": "保留0费圣遗物与低费事件，换掉高费武器和依赖圣遗物的配合牌，找更早可用的资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 图莱杜拉的回忆",
+     "reason": "保留秘传与低费装备/事件，图莱杜拉费用高且无适配法器角色，换掉找更实用牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400047,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 1,
+    "step": 1,
+    "seat": 1,
+    "request": "switch_hands",
+    "a": {
+     "role": "plain",
+     "choice": "替换 元素共鸣：交织之岩、运筹帷幄、元素共鸣：交织之岩",
+     "reason": "保留秘传与钟离专属装备，两张岩共鸣和运筹帷幄前期价值低，换掉找岩骰与节奏牌。"
+    },
+    "b": {
+     "role": "knowledge",
+     "choice": "替换 万家灶火、炊金馔玉",
+     "reason": "保留0费岩共鸣与过牌，换掉高费装备与秘传，找低费启动件"
+    }
+   }
+  },
+  {
+   "seed": 7400048,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 为「死」而战、狼的末路",
+     "reason": "保留低费可早期打出的卯师傅、收获时间与坚定之岩；秘传与3费武器偏后期，换掉找更顺手的开局资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 狼的末路",
+     "reason": "保留秘传与岩共鸣，卯师傅和收获时间配合料理体系可留；狼的末路费用高且无双手剑角色，换掉。"
+    }
+   }
+  },
+  {
+   "seed": 7400049,
+   "pair_score": 0,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 神性之陨、原木刀、寒天宣命祝词",
+     "reason": "保留低费可早期打出的万家灶火与奇瑰之汤；换掉三张高费装备牌，寻找更早可用的资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 奇瑰之汤、原木刀",
+     "reason": "保留秘传与阿贝多、绫华关键装备；奇瑰之汤和原木刀价值较低，换掉找更契合的牌。"
+    }
+   }
+  },
+  {
+   "seed": 7400050,
+   "pair_score": 1,
+   "first": {
+    "ordinal": 0,
+    "step": 1,
+    "seat": 0,
+    "request": "switch_hands",
+    "a": {
+     "role": "knowledge",
+     "choice": "替换 为「死」而战、幻戏倒计时：3",
+     "reason": "保留0费立本与低费共鸣/收获时间；秘传与3费幻戏倒计时偏后期，换掉找早期资源。"
+    },
+    "b": {
+     "role": "plain",
+     "choice": "替换 为「死」而战、幻戏倒计时：3、收获时间",
+     "reason": "保留立本与坚定之岩；秘传卡费用高且当前收益低，幻戏倒计时与收获时间节奏偏慢，换掉找更顺手的开局牌。"
+    }
+   }
+  }
+ ],
+ "generated": "2026-11-23T03:58:35"
+}

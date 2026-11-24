@@ -232,6 +232,8 @@ def test_npc_policy_rejects_unknown_rotation():
 
 
 @pytest.mark.slow
+@pytest.mark.skipif(not __import__('conftest').npc_overlay_available(),
+                    reason='engine overlay (PvE NPC characters) not installed')
 def test_npc_policy_same_seed_reproducible():
     from envs.decks import deck_spec
     from envs.match import run_match

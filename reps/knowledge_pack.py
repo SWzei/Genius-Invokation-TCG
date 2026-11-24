@@ -117,6 +117,9 @@ class KnowledgeProfile:
     kb_root: str = ""                                    # "" = $GITCG_KB_DIR
     # KB version (D34, reps.kb_versions): "" = v1.0 at kb_root / $GITCG_KB_DIR
     kb_version: str = ""
+    # D36: strategy units that, when their detector fires, take the first slots and are
+    # exempt from max_unit_frequency (a principle meant to apply at most action decisions).
+    strategy_priority: tuple[str, ...] = ()
 
     @property
     def enabled(self) -> bool:
@@ -137,6 +140,7 @@ class KnowledgeProfile:
             **({"rule_triggers": True} if self.rule_triggers else {}),
             **({"rule_trigger_set": self.rule_trigger_set} if self.rule_triggers and self.rule_trigger_set != "d32" else {}),
             **({"kb_version": self.kb_version} if self.kb_version else {}),
+            **({"strategy_priority": list(self.strategy_priority)} if self.strategy_priority else {}),
             **({"unit_frequency_file": self.unit_frequency_file,
                 "max_unit_frequency": self.max_unit_frequency} if self.unit_frequency_file else {}),
         }
@@ -487,11 +491,15 @@ class KnowledgeSelector:
         frequency = self._frequency()
         # a versioned KB (D34) brings its own detector table; v1.0 keeps the original call
         units = matching_units(context, version=kb.version) if profile.kb_version else matching_units(context)
+        if profile.strategy_priority:                # D36: listed units first, in the listed order
+            first = [u for u in profile.strategy_priority if u in units]
+            units = tuple(first) + tuple(u for u in units if u not in first)
         for unit_id in units:
             unit = kb.units.get(unit_id)
             if unit is None:
                 continue
-            if frequency and frequency.get(unit_id, 0.0) > profile.max_unit_frequency:
+            if frequency and frequency.get(unit_id, 0.0) > profile.max_unit_frequency \
+                    and unit_id not in profile.strategy_priority:
                 continue
             if profile.strategy_docs and not any(tag in unit.doc for tag in profile.strategy_docs):
                 continue

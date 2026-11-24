@@ -1,0 +1,293 @@
+{
+  "suite": {
+    "name": "mirror_test150",
+    "description": "model-vs-model pairs (test): 150 pairs, seat and deck swapped",
+    "fingerprint": "239c723ee5dd3858",
+    "cells": 300,
+    "cells_by_group": {
+      "mirror-test": 300
+    },
+    "source": "mirror_test150.lock.json",
+    "seed_base": 7100001,
+    "human_decks": {
+      "human:ABGA5yoOAqDA": {
+        "deck_code": "ABGA5yoOAqDA6mgPCECg9IoQCWHQBp0UGLFBioQYDKFg08YfDIGQTckUDdEAadEWDZAA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1805"
+      },
+      "human:AEBS3gkPAiDQ": {
+        "deck_code": "AEBS3gkPAiDQ8kEPBlGQAmkQCTFwA5cTE7EROzEQGZExCpMQE7FhDDYQDMFg1MYdDUAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "「逐辉星聚」月话杯",
+        "game_id": "08becd575f03586b0102"
+      },
+      "human:ARFxo9YOHJDR": {
+        "deck_code": "ARFxo9YOHJDR6S4OEqDg6pceCZBx9FcPFUFxO9kTHbGQisYaDCFgr9EaDfER1KEdGkAA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1003"
+      },
+      "human:ATBx6dYOHJDR": {
+        "deck_code": "ATBx6dYOHJDR6i4OEqHg6ZcPFUBx9FcTHbGRO9kVDLFgisYaDSEQr9EaGvER1KEdGsAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "火星杯",
+        "game_id": "b6f0b1310ef0b4e10301"
+      },
+      "human:AUGB9nAfHWHw": {
+        "deck_code": "AUGB9nAfHWHwh50YCXHQ56EPCkEQA7YQCzFgTLoUC8GhioUYGKFQ6MIeDIEh3JQdGcAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "火星杯",
+        "game_id": "b6f0b1310ef0b4e10701"
+      },
+      "human:AWAwxDkMEUBg": {
+        "deck_code": "AWAwxDkMEUBgyU8MBJDx1ioTEoGhOFcVFaBx9IIPGEAi9hEYIaEQisEZDFER1DYdE8AA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1803"
+      },
+      "human:EQBR4I0PEUDg": {
+        "deck_code": "EQBR4I0PEUDg9JcPCVBx9lcPDGFgW8YYDKGQiskQDaEAE9ERDTEQ1N0dDUHw3N8dDsAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "共鸣杯",
+        "game_id": "47a5b7630fc651f10901"
+      },
+      "human:EXCA6ioOAqDA": {
+        "deck_code": "EXCA6ioOAqDA9GgPCEGgBooQCWHQS50UC7ExioQYGKFA08YfDIFgTckUDNGQadAWHpAA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca1201"
+      },
+      "human:EaCS9AsPIUFQ": {
+        "deck_code": "EaCS9AsPIUFQA5cQEzExijMYDKFgusYbDKKgA8ogDTIQBtEgDWFAzNQcFMGh1EodFUAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "共鸣杯",
+        "game_id": "47a5b7630fc651f10501"
+      },
+      "human:FhHA5yEPHkDh": {
+        "deck_code": "FhHA5yEPHkDh9PEdHzER07cdG7Fx+IQfGIFAacYWDJFgzMkcDMGQ1NAdDUEA3NEdDcAA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca0101"
+      },
+      "human:H0Chyd0MFJAB": {
+        "deck_code": "H0Chyd0MFJAB0UQNCBBg2oYeCJDg9JcPE0AB9TAQE4ExCFcTIbEQO78YC6Hw1MQdDEAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "共鸣杯",
+        "game_id": "47a5b7630fc651f10803"
+      },
+      "human:HJDR28YOIZBx": {
+        "deck_code": "HJDR28YOIZBx6cgOHKCC6hoPCEDg9I4PCVBx9lcPGWExO5MQE7FQC8YaDPFg1NkdDUAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "共鸣杯",
+        "game_id": "47a5b7630fc651f11204"
+      },
+      "human:HLDi7BYOHMBw": {
+        "deck_code": "HLDi7BYOHMBw8ZcPCRBx8p0PGSDR854PGWDg9rQbC6FA+cMfDZFAPtQTDeGw1OsdDkAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "「逐辉星聚」月话杯",
+        "game_id": "08becd575f03586b0103"
+      },
+      "human:HMDh8RkPHBBx": {
+        "deck_code": "HMDh8RkPHBBx8pMPGSAx8/IPH1Ah9p4PGWHgutQbDaFA+dcTDeGwPuscDsGw1OwdDkAA",
+        "native_version": "v6.2.0",
+        "mirror_split": "test",
+        "tournament": "共鸣杯",
+        "game_id": "47a5b7630fc651f10702"
+      },
+      "human:HqDA9CwPAkGg": {
+        "deck_code": "HqDA9CwPAkGgBooQCGGgS50YCaHRioQaGOFArsYdDDFg28kdDLGQTdAUHtFwaeoWDpAA",
+        "native_version": "v6.3.0",
+        "mirror_split": "test",
+        "tournament": "2026「枫达杯」",
+        "game_id": "fba33768478f60ca0901"
+      }
+    }
+  },
+  "subjects": {
+    "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1": {
+      "games": 300,
+      "valid_games": 300,
+      "invalid_games": 0,
+      "degraded_games": 0,
+      "win_rate": {
+        "n": 300,
+        "rate": 0.535,
+        "ci95": [
+          0.4785,
+          0.5906
+        ]
+      },
+      "engine_fallbacks": 0,
+      "io_errors": 0,
+      "mean_rounds": 8.42,
+      "game_seconds_mean": 177.29,
+      "by_group": {
+        "mirror-test": {
+          "n": 300,
+          "rate": 0.535,
+          "ci95": [
+            0.4785,
+            0.5906
+          ]
+        }
+      },
+      "by_level": {
+        "model": {
+          "n": 300,
+          "rate": 0.535,
+          "ci95": [
+            0.4785,
+            0.5906
+          ]
+        }
+      },
+      "by_deck_kind": {
+        "human": {
+          "n": 300,
+          "rate": 0.535,
+          "ci95": [
+            0.4785,
+            0.5906
+          ]
+        }
+      },
+      "by_version": {
+        "v6.2.0": {
+          "n": 150,
+          "rate": 0.54,
+          "ci95": [
+            0.4602,
+            0.6178
+          ]
+        },
+        "v6.3.0": {
+          "n": 150,
+          "rate": 0.53,
+          "ci95": [
+            0.4504,
+            0.6081
+          ]
+        }
+      },
+      "by_side": {
+        "0": {
+          "n": 150,
+          "rate": 0.5533,
+          "ci95": [
+            0.4734,
+            0.6306
+          ]
+        },
+        "1": {
+          "n": 150,
+          "rate": 0.5167,
+          "ci95": [
+            0.4373,
+            0.5952
+          ]
+        }
+      },
+      "model": {
+        "games": 300,
+        "decisions_asked": 16600,
+        "first_reply_legal_rate": 0.9999,
+        "answer_used_rate": 1.0,
+        "fallback_decisions": 0,
+        "first_errors": {
+          "no_choice": 1
+        },
+        "errors": {},
+        "by_request": {
+          "switch_hands": {
+            "asked": 300,
+            "first_legal": 300,
+            "used": 300
+          },
+          "choose_active": {
+            "asked": 543,
+            "first_legal": 543,
+            "used": 543
+          },
+          "reroll_dice": {
+            "asked": 2583,
+            "first_legal": 2583,
+            "used": 2583
+          },
+          "action": {
+            "asked": 12670,
+            "first_legal": 12669,
+            "used": 12670
+          },
+          "select_card": {
+            "asked": 504,
+            "first_legal": 504,
+            "used": 504
+          }
+        },
+        "calls": 16601,
+        "retries": 1,
+        "seconds_per_call": 1.495,
+        "decision_seconds_p50_median_game": 1.453,
+        "decision_seconds_p90_median_game": 1.869,
+        "decision_seconds_max": 4.608,
+        "prompt_tokens": 42481583,
+        "completion_tokens": 971271,
+        "reasoning_tokens": 0,
+        "cached_tokens": 1260032,
+        "tokens_per_decision": 2617.6,
+        "tokens_per_game": 144843.0,
+        "calls_per_game": 55.3,
+        "cost": 6.769777,
+        "cost_per_game": 0.022566
+      }
+    }
+  },
+  "reference": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1",
+  "paired_vs_reference": {},
+  "note": "win rates are simulator results on this suite's cells; intervals are Wilson 95% on valid games (errors, truncations and degraded games excluded and counted)",
+  "tag": "d36_test_main",
+  "generated": "2026-11-23T06:15:22",
+  "stopped": null,
+  "total_calls": 32822,
+  "total_cost": 10.630641,
+  "engine_lock": {
+    "engine": {
+      "repo": "https://github.com/piovium/genius-invokation",
+      "commit": "6f01d5c1c1cee1791d6b9b3bfff5312208ce0a21",
+      "pybinding_version": "0.21.0"
+    },
+    "cards": {
+      "data_version": "v4-latest-CHS@2026-10-07",
+      "pool_note": "跟随最新卡池；升级按大版本显式迁移，不追中间小版本"
+    },
+    "reference": {
+      "rebel_base_rl_commit": "b211b031cbfaa1117a60290b32c102fa166a9517"
+    },
+    "runtime": {
+      "python": "3.12",
+      "platform": "linux",
+      "shuffle": "python_seeded_no_shuffle"
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+    "gitcg_version": "0.21.0",
+    "engine_ref_commit": null
+  },
+  "raw": "data/bench/d36_test_main/games.jsonl"
+}

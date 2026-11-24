@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34、排查与分歧点评测 D35、多轮进化与镜像对战 D36）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -136,7 +136,31 @@
 | 模型对战 A/B（v1.0 对无知识，dev 80 对） | 0.547 [0.488, 0.605]，16 好 / 56 平 / 8 差——方向为正，未显著 | `reports/bench/d34_ab_v10_dev.md` |
 | A/A 噪声 | 30 对 0.500；三分之二的对两局相同；80 对的 95% CI 半宽约 ±0.06 | `reports/bench/d34_aa.md` |
 | 规则卡的引擎核对 | 先手 141/141、重击 144/144、信息划分 144/144、上限一致；充能对普通角色 66/66（例外为特殊资源角色） | `reports/bench/kb_engine_check_v11.md` |
-| 保留数据 | `mirror_test` 未用；`mirror_dev` 前 80 对已用于主指标与 1 次门禁 | `docs/howto/benchmark.md` §7.7 |
+| 保留数据 | `mirror_test` 的前 100 对已并入 `mirror_test150` 并在 D36 用掉；`mirror_dev` 前 80 对已用于主指标与 1 次门禁 | `docs/howto/benchmark.md` §7.7 |
+
+全部是模拟器内结果，不进强度验收。
+
+## 3i. 教师管线与分歧点评测（D35，2026-11-23）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 推荐的模型接入 | `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`（`elements=1` 在整局对战中显著优于原配置，见 §3j） | `reports/review/2026-11_kb_d35.md` §1.3 |
+| 知识库版本 | 仍为 v1.0；v1.2 在新题库上先手题 −0.061，未入库 | 同上 |
+| 教师材料 | 精确重放 + 两边对照的模式计数（`bench.mirror_mine`）+ 同一局面问各策略（`bench.divergence probe`，可定向） | `docs/howto/benchmark.md` §7.8 |
+| 分歧点评测 | 可行，但续打噪声淹没单个决定的作用；不作门禁初筛 | `reports/bench/d35_dp.md` |
+| 规则层守门题库 | `situ_v2d33`（dev 487 题，含充能、先手、调和、手牌与骰子上限） | `configs/bench/kb_situ/situ_v2d33.json` |
+
+全部是模拟器内结果，不进强度验收。
+
+## 3j. 多轮进化与镜像对战（D36，2026-11-23）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 知识库版本 | 仍为 **v1.0**；v1.0-s2（攻击优先）、v1.0-s3（起手换牌）机制核对通过但 dev 被拒，保留为未入库版本 | `reports/review/2026-11_kb_d36.md` |
+| 镜像对战（v1.0 对无知识，新观测层，`mirror_test150` 150 对） | 0.535 [0.482, 0.588]，43 好 / 74 平 / 33 差，单侧 p = 0.151——方向为正，未显著，未达 0.70 | `reports/bench/d36_test_main_pairs.md` |
+| 观测层 `elements=1` | 对旧观测层（都无知识，80 对）0.584 [0.522, 0.647]，单侧 p = 0.010，显著；推荐用法 | `reports/bench/d36_test_obs_pairs.md` |
+| 守门 | 锚点 0.438（32 局，对 D34 0.531 不显著）；斩杀 0.938 | `reports/bench/d36_anchor.md` |
+| 保留数据 | `mirror_test150` 已用（主测 150 对 + 观测层对照前 80 对）；`mirror_dev` 前 40 对用于两次第一阶段门禁 | `docs/howto/benchmark.md` §7.9 |
 
 全部是模拟器内结果，不进强度验收。
 

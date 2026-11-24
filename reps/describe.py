@@ -53,6 +53,7 @@ class AssetEntry:
     kind: str = ""             # 角色 / 技能类型 / 事件 / 装备 / 支援 / 召唤物 / 状态 ...
     cost: str = ""
     description: str = ""
+    element: str = ""          # characters only: 冰 / 水 / 火 / 雷 / 风 / 岩 / 草 (from the asset tags)
 
 
 class AssetText:
@@ -81,7 +82,8 @@ class AssetText:
                 continue
             name = str(item.get("name") or item.get("englishName") or definition_id)
             if isinstance(item.get("skills"), list) and "hp" in item:
-                entries[definition_id] = AssetEntry(definition_id, name, "角色")
+                element = next((_ELEMENT_TAGS[t] for t in item.get("tags") or () if t in _ELEMENT_TAGS), "")
+                entries[definition_id] = AssetEntry(definition_id, name, "角色", element=element)
                 for skill in item["skills"]:
                     if isinstance(skill.get("id"), int):
                         entries[int(skill["id"])] = AssetEntry(
@@ -110,6 +112,11 @@ class AssetText:
 
     def name(self, definition_id: int) -> str:
         return self.get(definition_id).name
+
+
+_ELEMENT_TAGS = {"GCG_TAG_ELEMENT_CRYO": "冰", "GCG_TAG_ELEMENT_HYDRO": "水", "GCG_TAG_ELEMENT_PYRO": "火",
+                 "GCG_TAG_ELEMENT_ELECTRO": "雷", "GCG_TAG_ELEMENT_ANEMO": "风", "GCG_TAG_ELEMENT_GEO": "岩",
+                 "GCG_TAG_ELEMENT_DENDRO": "草"}
 
 
 @lru_cache(maxsize=1)
@@ -141,8 +148,11 @@ def _variables(variables: Mapping[str, Any]) -> dict[str, int]:
 class DecisionDescriber:
     """Structured + text description of decisions for one acting seat."""
 
-    def __init__(self, assets: AssetText | None = None) -> None:
+    def __init__(self, assets: AssetText | None = None, *, elements: bool = False) -> None:
         self.assets = assets if assets is not None else AssetText.load()
+        # D35: name each character's element in the state text (opt-in: the default text is unchanged,
+        # so earlier runs stay comparable). D34 train games showed the model guessing elements at reroll.
+        self.elements = elements
 
     # -- state ---------------------------------------------------------------- #
     def _entity(self, entity: Any, *, with_text: bool = True) -> dict[str, Any]:
@@ -158,7 +168,7 @@ class DecisionDescriber:
     def _character(self, character: Any) -> dict[str, Any]:
         entry = self.assets.get(int(character.definition_id))
         return {
-            "id": int(character.definition_id), "name": entry.name,
+            "id": int(character.definition_id), "name": entry.name, "element": entry.element,
             "hp": int(character.health), "max_hp": int(character.max_health),
             "energy": int(character.energy), "max_energy": int(character.max_energy),
             "aura": AURA_NAMES.get(int(character.aura), f"附着#{int(character.aura)}"),
@@ -340,7 +350,8 @@ class DecisionDescriber:
         lines = [f"【{label}】"]
         for i, c in enumerate(side["characters"]):
             flags = ("（出战）" if c["active"] else "") + ("（已倒下）" if c["defeated"] else "")
-            line = (f"  角色{i + 1} {c['name']}{flags} 生命 {c['hp']}/{c['max_hp']} "
+            name = f"{c['name']}［{c['element']}］" if self.elements and c.get("element") else c["name"]
+            line = (f"  角色{i + 1} {name}{flags} 生命 {c['hp']}/{c['max_hp']} "
                     f"充能 {c['energy']}/{c['max_energy']} 附着 {c['aura']}")
             if c["entities"]:
                 line += " | 装备/状态：" + "；".join(self._entity_text(e, False) for e in c["entities"])

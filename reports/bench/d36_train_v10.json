@@ -1,0 +1,34 @@
+{
+ "generated": "2026-11-23T02:19:56",
+ "tags": [
+  "d36_train_v10"
+ ],
+ "arms": [
+  {
+   "tag": "d36_train_v10",
+   "subject": "llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1",
+   "rival": "llm:deepseek-flash#reply=reason_first,elements=1",
+   "pairs": 30,
+   "win_rate": 0.4667,
+   "se": 0.0584,
+   "ci95": [
+    0.3522,
+    0.5811
+   ],
+   "pair_sd": 0.6397,
+   "better": 5,
+   "worse": 7,
+   "even": 18,
+   "p_sign": 0.7744,
+   "dropped_pairs": 0,
+   "games": 60,
+   "errors": 0,
+   "degraded": 0,
+   "seat0_win_rate": 0.4667,
+   "same_seat_won_both": 18,
+   "mean_rounds": 6.4,
+   "cost_per_game_subject": 0.01821,
+   "cost_per_game_rival": 0.00993
+  }
+ ]
+}

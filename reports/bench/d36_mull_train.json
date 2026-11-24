@@ -1,0 +1,41 @@
+{
+ "tag": "d36_train_v10",
+ "probe": null,
+ "counts": {
+  "knowledge": {
+   "n": 60,
+   "cards": 111,
+   "core_hands": 60,
+   "core_swapped": 14,
+   "signature_cards": 25,
+   "signature_swapped": 9,
+   "arcane_swapped": 8
+  },
+  "plain": {
+   "n": 60,
+   "cards": 126,
+   "core_hands": 60,
+   "core_swapped": 7,
+   "signature_cards": 25,
+   "signature_swapped": 4,
+   "arcane_swapped": 4
+  }
+ },
+ "rates": {
+  "knowledge": {
+   "n": 60,
+   "core_swap": 0.233,
+   "signature_swap": 0.36,
+   "arcane_swap": 0.133,
+   "cards_per_hand": 1.85
+  },
+  "plain": {
+   "n": 60,
+   "core_swap": 0.117,
+   "signature_swap": 0.16,
+   "arcane_swap": 0.067,
+   "cards_per_hand": 2.1
+  }
+ },
+ "generated": "2026-11-23T03:58:03"
+}

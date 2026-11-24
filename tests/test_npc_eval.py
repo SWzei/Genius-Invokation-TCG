@@ -140,6 +140,8 @@ def test_objective_keys_disambiguate_same_type():
 
 
 @pytest.mark.slow
+@pytest.mark.skipif(not __import__('conftest').npc_overlay_available(),
+                    reason='engine overlay (PvE NPC characters) not installed')
 def test_run_npc_eval_end_to_end_and_resume(tmp_path: Path):
     from envs.decks import deck_spec
 
