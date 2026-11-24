@@ -364,7 +364,7 @@ python -m bench.facts_check --probe T --out NAME
 
 **思考写在正文里的模型**（Gemma 4）：回复以 `<thought>…</thought>` 开头，接口不允许关闭；`common.llm.extract_json_object` 解析前先去掉 `<thought>` / `<think>` 段。
 
-**事后汇总**：`python -m scripts.d38_posthoc_summary --out NAME` 列出所有"同一模型带 KB 对不带"的题目与对局比较，按全部口径计算（只读已有数据）。
+**事后汇总**：`python -m scripts.d38_posthoc_summary --out NAME` 列出所有"同一模型带 KB 对不带"的题目与对局比较，按全部口径计算；`python -m scripts.kb_iteration_summary --out NAME` 在固定题集上重算 D32–D37 每个阶段对不带知识库（或当时版本）的结果（都只读已有数据）。
 
 **限额处理**：
 - Gemini 的每分钟 429（"Please retry in Xs"）按可重试处理并等待提示的秒数；每天限额（"per day"）仍按致命错误停用客户端，余下决策由脚本代答（降级，整对剔除）。

@@ -186,6 +186,7 @@
 | Sonnet（会话内子代理，局面题） | 斩杀 0.922 对 0.875（p = 0.227），情境 0.95 对 0.98，不显著；不是 Sonnet 4.6，没有整局对战 | `reports/bench/d38_sonnet_lethal.md` |
 | 可用的免费模型接入 | `glm-4-flash-250414`（可跑满镜像对战）、`gemini-decision-1`（约 12–14 局 / 小时）；`gemini-35-flash-lite`、`groq-gpt-oss-120b` 受每日额度限制（每天约 4 局、1 局），`gemma-4-26b-r30` 受每分钟 1.6 万 token 与 503 过载限制（2026-11-24 实测每分钟约 2 次调用），需付费档 | `docs/howto/benchmark.md` §7.11 |
 | 知识层面 vs 对局（事后汇总，探索性） | 情境规则题上知识库显著提高正确率，且越弱的模型提升越大：GLM-4.7-Flash +0.218、DeepSeek +0.118（同题，均 p < 0.001），Sonnet −0.03；对局胜率上没有这个模式（DeepSeek 两次保留数据事后合并 0.539，p = 0.044；小模型都不显著） | `reports/bench/d38_posthoc.md` |
+| 综合评估（D31–D38） | 知识库经模型管理的迭代（16 项提案、4 项采纳：S4、S5、C2、`elements=1`）显著提高规则掌握（保留题 +0.112、新数据 +0.110，DeepSeek）；对局上 DeepSeek 4/4 次方向为正、单次不显著 | `reports/review/2026-11_kb_synthesis.md`、`reports/bench/kb_iteration_stages.md` |
 | 推荐的模型接入 | 不变：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；知识库不作为小模型对局的推荐配置 | `reports/review/2026-11_kb_d38.md` |
 
 全部是模拟器内结果，不进强度验收。

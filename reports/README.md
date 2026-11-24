@@ -19,6 +19,7 @@
 | [`review/2026-11_kb_training.md`](./review/2026-11_kb_training.md) | 知识接入的分阶段优化（D32）：train/dev/test 划分、S0–S5 各阶段记录、情境规则题与斩杀转化、test 与整局终评、失败与修复 | valid |
 | [`review/2026-11_kb_d33_prereg.md`](./review/2026-11_kb_d33_prereg.md) | D33 预先登记：候选、留出题型、dev 选择规则、最终评估；之后只追加 | valid |
 | [`review/2026-11_kb_d33.md`](./review/2026-11_kb_d33.md) | 针对性优化与防过拟合检验（D33）：dev 选择、v3 / `lite_fresh` 新数据终评、留出题型、充能上限缺失导致的害处、GLM 对照 | valid |
+| [`review/2026-11_kb_synthesis.md`](./review/2026-11_kb_synthesis.md) | 知识库综合评估（D31–D38）：做题与对局、模型管理的迭代（16 项提案、4 项采纳）、逐阶段进步、跨模型强弱，推荐表述与限定 | valid |
 | [`review/2026-11_kb_d38_prereg.md`](./review/2026-11_kb_d38_prereg.md) | D38 预先登记：小模型（GLM-4-Flash、Gemini Decision 1、Flash Lite、GPT-OSS-120B）与 Sonnet 子代理的比较、主指标与 Holm 校正、截止时间、免费档限额导致的调整；之后只追加 | valid |
 | [`review/2026-11_kb_d38.md`](./review/2026-11_kb_d38.md) | 小模型上的知识库提升（D38）：各模型的对战结果与胜率区间、Sonnet 子代理局面题、免费档限制、代码改动、花费；§10 全部实验的事后汇总（探索性，全表见 `bench/d38_posthoc.md`） | valid |
 | [`review/2026-11_kb_d37_prereg.md`](./review/2026-11_kb_d37_prereg.md) | D37 预先登记：评测指标校准规则、派生事实与角色卡的核实与门禁、dev 与跨模型计划、预算；之后只追加 | valid |
