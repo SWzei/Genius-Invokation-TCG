@@ -79,7 +79,7 @@ def lite_decks() -> set[str]:
     return ids
 
 
-def build_pairs(split: str, n_pairs: int, decks: Mapping[str, Mapping[str, Any]]) -> Suite:
+def build_pairs(split: str, n_pairs: int, decks: Mapping[str, Mapping[str, Any]], *, same_deck: bool = False) -> Suite:
     deck_set = "dev" if split == "aa" else split
     by_version: dict[str, list[str]] = {}
     for deck_id, entry in sorted(decks.items()):
@@ -95,12 +95,16 @@ def build_pairs(split: str, n_pairs: int, decks: Mapping[str, Mapping[str, Any]]
     for rep in range(n_pairs):
         version = versions[rep % len(versions)]
         x, y = rng.sample(by_version[version], 2)
+        if same_deck:                                # D37: both seats play deck x (deck advantage removed)
+            y = x
         seed = BENCH_SEED_BASE + SEED_OFFSET + 10_000 * SPLITS[split] + rep
         for deck, opp, side in ((x, y, 0), (y, x, 1)):          # p0 = x, p1 = y in both games
             cells.append(Cell(group, deck, f"rival@{opp}", "model", RIVAL, opp, version, seed, side, "human", rep))
         used[x], used[y] = decks[x], decks[y]
-    return Suite(f"mirror_{split}", f"model-vs-model pairs ({split}): {n_pairs} pairs, seat and deck swapped",
-                 cells, dict(sorted(used.items())), source=f"bench.mirror build --split {split} --pairs {n_pairs}")
+    kind = "same deck on both seats, seat swapped" if same_deck else "seat and deck swapped"
+    return Suite(f"mirror_{split}", f"model-vs-model pairs ({split}): {n_pairs} pairs, {kind}",
+                 cells, dict(sorted(used.items())),
+                 source=f"bench.mirror build --split {split} --pairs {n_pairs}" + (" --same-deck" if same_deck else ""))
 
 
 # ---------------------------------------------------------------------------- report
@@ -214,6 +218,7 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--split", required=True, choices=sorted(SPLITS))
     b.add_argument("--pairs", type=int, required=True)
     b.add_argument("--name", default=None, help="lock file name (default mirror_<split>); same seeds as the split")
+    b.add_argument("--same-deck", action="store_true", help="both seats play the pair's first deck (D37)")
     sub.add_parser("decks")
     r = sub.add_parser("report")
     r.add_argument("--tag", nargs="+", required=True)
@@ -228,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
             counts[key] = counts.get(key, 0) + 1
         print(json.dumps(dict(sorted(counts.items())), indent=1))
     elif args.command == "build":
-        suite = build_pairs(args.split, args.pairs, candidate_decks(lite_decks()))
+        suite = build_pairs(args.split, args.pairs, candidate_decks(lite_decks()), same_deck=args.same_deck)
         if args.name:
             suite.name = args.name
         path = SUITE_DIR / f"{args.name or 'mirror_' + args.split}.lock.json"

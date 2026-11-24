@@ -75,6 +75,8 @@ def play_cell(subject: str, cell: Mapping[str, Any], decks: Mapping[str, Any] | 
         # The model did not really play this game: its fallback policy did.
         "degraded": _degraded(summary),
         "fatal": fatal,
+        # D37: per-seat public end state (seat order, not subject order); see bench.metrics
+        "outcome": record.outcome,
     })
     if rival_summary:                               # model-vs-model games (D34): the opponent is a model too
         row.update({"rival_llm": rival_summary, "rival_degraded": _degraded(rival_summary),

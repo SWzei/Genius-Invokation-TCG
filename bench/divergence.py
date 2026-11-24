@@ -118,8 +118,12 @@ def _over_budget(run: Path, max_cost: float | None) -> float | None:
 
 def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: int, workers: int,
           max_games: int | None = None, max_cost: float | None = None, until: str | None = None,
-          select_units: Sequence[str] = (), select_version: str = "") -> dict[str, Any]:
-    """``select_units``: instead of spreading ``per_seat`` picks over the game, take up to
+          select_units: Sequence[str] = (), select_version: str = "", select_facts: bool = False) -> dict[str, Any]:
+    """``select_facts`` (D37): take up to ``per_seat`` action decisions per seat where the skill
+    previews matter (an option defeats the opponent's active character, or two skill options
+    deal different damage); each row carries those labels under ``facts``.
+
+    ``select_units``: instead of spreading ``per_seat`` picks over the game, take up to
     ``per_seat`` decisions per seat where one of these strategy units' detectors fires
     (detector table of ``select_version``) -- a targeted mechanism check for a candidate."""
     """Ask every policy for its choice at sampled positions of the traced games."""
@@ -131,11 +135,12 @@ def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: in
     meta_path = run / "meta.json"
     meta = {"games": games_tag, "policies": dict(policies), "per_seat": per_seat,
             **({"select_units": list(select_units), "select_version": select_version} if select_units else {}),
+            **({"select_facts": True} if select_facts else {}),
             "created": _dt.datetime.now().isoformat(timespec="seconds")}
     if meta_path.exists():
         old = json.loads(meta_path.read_text(encoding="utf-8"))
         if old.get("games") != games_tag or old.get("per_seat") != per_seat or \
-                old.get("select_units", []) != list(select_units):
+                old.get("select_units", []) != list(select_units) or bool(old.get("select_facts")) != select_facts:
             raise SystemExit(f"{meta_path}: run was probed with other settings; use a new --tag")
         meta["policies"] = {**old.get("policies", {}), **dict(policies)}
     meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -154,9 +159,16 @@ def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: in
         targets = {seat: set(sample_ordinals(source["seats"][seat], per_seat, rng)) for seat in (0, 1)}
         captured: dict[tuple[int, int], Any] = {}
         triggered: dict[int, list[tuple[int, Any]]] = {0: [], 1: []}
+        labels: dict[tuple[int, int], dict[str, Any]] = {}
 
         def keep(seat: int, ordinal: int, built: Any) -> None:
-            if select_units:
+            if select_facts:
+                rec = source["seats"][seat][ordinal]
+                label = facts_labels(built.context) if rec["source"] != "forced" and rec["n"] >= 2 else None
+                if label is not None:
+                    labels[(seat, ordinal)] = label
+                    triggered[seat].append((ordinal, built))
+            elif select_units:
                 from reps.knowledge import matching_units
 
                 rec = source["seats"][seat][ordinal]
@@ -171,6 +183,11 @@ def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: in
             print(f"[divergence] {path.name}: replay failed ({result}); skipped", flush=True)
             continue
         for seat, found in triggered.items():
+            if select_facts:                # D37: knock-out positions first, then the others
+                ko = [f for f in found if labels[(seat, f[0])]["ko"]]
+                rest = [f for f in found if not labels[(seat, f[0])]["ko"]]
+                found = (rng.sample(ko, per_seat) if len(ko) > per_seat else ko)
+                found += rng.sample(rest, min(len(rest), per_seat - len(found)))
             for ordinal, built in (rng.sample(found, per_seat) if len(found) > per_seat else found):
                 captured[(seat, ordinal)] = built
         jobs = [(seat, ordinal, name, spec) for (seat, ordinal) in sorted(captured) for name, spec in policies.items()
@@ -189,7 +206,8 @@ def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: in
                     "spec": spec, "index": index, "n": rec["n"], "request": rec["request"],
                     "actor": rec["role"], "recorded_index": rec["index"], "recorded_text": rec["final_text"],
                     "text": trace.get("final_text"), "reason": trace.get("reason"), "source": trace.get("source"),
-                    "knowledge": [i.get("id") for i in (trace.get("knowledge") or {}).get("items", [])]}
+                    "knowledge": [i.get("id") for i in (trace.get("knowledge") or {}).get("items", [])],
+                    **({"facts": labels[(seat, ordinal)]} if (seat, ordinal) in labels else {})}
 
         rows = []
         with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
@@ -200,6 +218,27 @@ def probe(games_tag: str, tag: str, policies: Mapping[str, str], *, per_seat: in
         print(f"[divergence] {g_index + 1}/{len(paths)} {path.name}: {len(captured)} positions, {len(rows)} answers",
               flush=True)
     return {"asked": asked}
+
+
+def facts_labels(context: Any) -> dict[str, Any] | None:
+    """D37: option labels from the skill previews, or None when previews do not discriminate."""
+    from reps.facts import option_effects
+    from reps.schema import OptionKind
+
+    if context.request_type.value != "action":
+        return None
+    specs = context.legal_low_level_specs
+    effects = [option_effects(context, s) for s in specs]
+    dealt = [sum(e["value"] for e in eff if e["kind"] == "damage" and e["side"] == "对方") for eff in effects]
+    skills = [i for i, s in enumerate(specs) if s.kind == OptionKind.ACTION_USE_SKILL]
+    ko = [i for i, eff in enumerate(effects)
+          if any(e["kind"] == "damage" and e["side"] == "对方" and e["active"] and e["defeated"] for e in eff)]
+    skill_dealt = {i: dealt[i] for i in skills}
+    distinct = len(set(skill_dealt.values())) >= 2
+    if not ko and not distinct:
+        return None
+    top = max(skill_dealt.values()) if skill_dealt else 0
+    return {"ko": ko, "skills": skills, "dealt": skill_dealt, "best": [i for i in skills if dealt[i] == top]}
 
 
 def divergence_points(tag: str, a: str, b: str) -> list[dict[str, Any]]:
@@ -433,6 +472,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--until", default=None, help="local HH:MM: no new game probed after it (rerun resumes)")
     p.add_argument("--select-units", nargs="*", default=[], help="only positions where these units' detectors fire")
     p.add_argument("--select-version", default="", help="KB version string of the detector table, e.g. 1.0-s1")
+    p.add_argument("--select-facts", action="store_true",
+                   help="only action decisions where skill previews discriminate (D37); rows carry the labels")
     r = sub.add_parser("rollout")
     r.add_argument("--tag", required=True)
     r.add_argument("--compare", nargs="+", required=True, help="a:b ...")
@@ -453,7 +494,8 @@ def main(argv: list[str] | None = None) -> int:
         policies = dict(item.split("=", 1) for item in args.policy)
         print(json.dumps(probe(args.games, args.tag, policies, per_seat=args.per_seat, workers=args.workers,
                                max_games=args.max_games, max_cost=args.max_cost, until=args.until,
-                               select_units=args.select_units, select_version=args.select_version)))
+                               select_units=args.select_units, select_version=args.select_version,
+                               select_facts=args.select_facts)))
     elif args.command == "rollout":
         print(json.dumps(rollout(args.tag, args.compare, args.continuation, reps=args.reps, workers=args.workers,
                                  max_dps=args.max_dps, max_cost=args.max_cost, first_reps_only=args.first_reps_only,

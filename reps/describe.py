@@ -148,11 +148,26 @@ def _variables(variables: Mapping[str, Any]) -> dict[str, int]:
 class DecisionDescriber:
     """Structured + text description of decisions for one acting seat."""
 
-    def __init__(self, assets: AssetText | None = None, *, elements: bool = False) -> None:
+    def __init__(self, assets: AssetText | None = None, *, elements: bool = False, facts: bool = False,
+                 cards: bool = False) -> None:
         self.assets = assets if assets is not None else AssetText.load()
         # D35: name each character's element in the state text (opt-in: the default text is unchanged,
         # so earlier runs stay comparable). D34 train games showed the model guessing elements at reroll.
         self.elements = elements
+        # D37: derived facts (skill previews, public thresholds) before the options; see reps.facts.
+        self.facts = facts
+        # D37: per-game character cards of both sides first in the prompt; see reps.dossier.
+        self.cards = cards
+
+    def cards_text(self, context: DecisionContext) -> str:
+        from .dossier import dossier_text
+
+        return dossier_text(context, self.assets)
+
+    def facts_text(self, context: DecisionContext, listed: int) -> str:
+        from .facts import facts_text
+
+        return facts_text(context, self.assets, listed)
 
     # -- state ---------------------------------------------------------------- #
     def _entity(self, entity: Any, *, with_text: bool = True) -> dict[str, Any]:

@@ -309,3 +309,35 @@ python -m bench.mirror_mine --tag d36_train_v10 --mulligan --probe <probe tag> -
 | `--natural` / `--mulligan [--probe TAG]` | `bench.mirror_mine` | 自然分歧点；起手换牌统计（只读 train） |
 | 套件 `mirror_test150` | `configs/bench/mirror_test150.lock.json` | test 牌组 150 对（前 100 对与 `mirror_test` 相同）；D36 最终 test 已用掉，再比较需新种子 |
 | `v1.0-s2`、`v1.0-s3` | `configs/knowledge/kb_versions/` | D36 的策略层补丁版本（未入库）；配置 `kbt6-r1` / `kbt6-r2` / `kbt6-r3` |
+
+### 7.10 D37：多维指标、派生事实、角色卡
+
+**逐局公开终局**：`bench.play` 的每行带 `outcome`，按座位记录存活数、剩余生命、生命上限、被击倒数、受到的伤害。
+数据来自对局结束时的公开状态与公开伤害事件，与双方提示无关。
+
+```bash
+# 任意镜像轮次的多维指标（W 胜负 / H 生命差 / K 击倒差 / D 伤害占比；对分、单侧符号检验、CI）
+python -m bench.metrics report --tag T --out NAME
+# 指标校准（脚本策略，零模型费用）：已知差距 + A/A
+python -m bench.run --suite mirror_train300 --subjects heuristic --rival noisy:0.1:heuristic --rep-from 60 --replicates 180 --tag T1
+python -m bench.metrics validate --known T1 T2 --null T3 --out NAME
+# 同牌组格式（双方同一副牌，只换座位）
+python -m bench.mirror build --split train --pairs 300 --name mirror_train300same --same-deck
+# 预演核对与教师计数（重放 train 对局）；按预演定向取局面做机制核对
+python -m bench.facts_check --tag d36_train_v10 d34_ab_v10_train --out d37_facts_train
+python -m bench.divergence probe --games d36_train_v10 --tag T --per-seat 4 --select-facts --policy base=... v11=...
+python -m bench.facts_check --probe T --out NAME
+```
+
+| 新增项 | 位置 | 默认 | 作用 |
+|---|---|---|---|
+| `facts=1` | LLM spec | 关 | 行动决策前给出派生事实：引擎对本方每个技能选项的预演（伤害、反应、生命变化、击倒），能击倒的选项、伤害最高的选项，对方可放爆发、本方低血量（`reps.facts`） |
+| `cards=1` | LLM spec | 关 | 提示最前面给出双方 6 个角色的技能卡（卡牌数据原文），整局不变，便于前缀缓存（`reps.dossier`） |
+| `noisy:<ε>:<spec>` | 策略 spec | — | 以概率 ε 均匀随机选合法选项，否则交给 `<spec>`；已知强弱的校准对手 |
+| `--same-deck` | `bench.mirror build` | 关 | 一对的两个座位用同一副牌 |
+| `--select-facts` | `bench.divergence probe` | 关 | 只取预演能区分选项的行动局面（击倒局面优先），每行带标签 |
+| 锁文件 `mirror_train300`、`mirror_train300same`、`mirror_dev200` | `configs/bench/` | — | 与原锁文件同一种子块、前缀相同；D37 校准用 train 第 60–179 对，dev 用第 100–149 对 |
+
+**信息合法性**：
+- 预演来自引擎发给本方的行动请求（与官方客户端的伤害预览同源），在源头只保留技能对角色的伤害、治疗、附着。
+- `tests/test_facts.py` 的引擎泄漏测试：对方隐藏手牌不同而公开局面相同时，提示逐字相同。

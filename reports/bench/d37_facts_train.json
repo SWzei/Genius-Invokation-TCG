@@ -1,0 +1,146 @@
+{
+ "replayed": 100,
+ "faithful": 100,
+ "preview_checked": 2101,
+ "preview_same": 2054,
+ "preview_accuracy": 0.9776,
+ "preview_contained": 2095,
+ "preview_contained_rate": 0.9971,
+ "mismatch_examples": [
+  {
+   "predicted": [
+    [
+     -500002,
+     2,
+     0,
+     0
+    ]
+   ],
+   "actual": [
+    [
+     -500002,
+     1,
+     0,
+     0
+    ]
+   ]
+  },
+  {
+   "predicted": [
+    [
+     -500000,
+     8,
+     0,
+     1
+    ]
+   ],
+   "actual": [
+    [
+     -500000,
+     5,
+     0,
+     0
+    ]
+   ]
+  },
+  {
+   "predicted": [
+    [
+     -500002,
+     2,
+     0,
+     0
+    ]
+   ],
+   "actual": [
+    [
+     -500002,
+     1,
+     107,
+     0
+    ],
+    [
+     -500001,
+     1,
+     0,
+     0
+    ],
+    [
+     -500000,
+     1,
+     0,
+     0
+    ]
+   ]
+  },
+  {
+   "predicted": [
+    [
+     -500001,
+     2,
+     0,
+     0
+    ]
+   ],
+   "actual": []
+  },
+  {
+   "predicted": [
+    [
+     -500000,
+     3,
+     0,
+     1
+    ]
+   ],
+   "actual": [
+    [
+     -500000,
+     4,
+     0,
+     1
+    ]
+   ]
+  },
+  {
+   "predicted": [
+    [
+     -500001,
+     1,
+     0,
+     0
+    ]
+   ],
+   "actual": [
+    [
+     -500001,
+     2,
+     0,
+     0
+    ]
+   ]
+  }
+ ],
+ "teacher": {
+  "knowledge": {
+   "actions": 3741,
+   "skills": 1141,
+   "skill_below_max": 169,
+   "ko_available": 189,
+   "ko_taken": 158,
+   "ko_skill_used_other": 2,
+   "opp_full_energy": 1502,
+   "opp_full_energy_skill": 448
+  },
+  "plain": {
+   "actions": 3614,
+   "skills": 1193,
+   "skill_below_max": 194,
+   "opp_full_energy": 1265,
+   "opp_full_energy_skill": 416,
+   "ko_available": 184,
+   "ko_taken": 164,
+   "ko_skill_used_other": 7
+  }
+ }
+}

@@ -1,0 +1,199 @@
+{
+ "known": [
+  {
+   "tag": "d37_cal_v1s",
+   "subject": "heuristic",
+   "rival": "noisy:0.1:heuristic",
+   "pairs": 120,
+   "metrics": {
+    "W": {
+     "pairs": 120,
+     "better": 29,
+     "worse": 22,
+     "even": 69,
+     "pair_rate": 0.5292,
+     "tie_rate": 0.575,
+     "mean": 0.0667,
+     "sd": 0.6316,
+     "ci95": [
+      -0.0463,
+      0.1797
+     ],
+     "p_one": 0.2005,
+     "n80": 767.2
+    },
+    "H": {
+     "pairs": 120,
+     "better": 57,
+     "worse": 56,
+     "even": 7,
+     "pair_rate": 0.5042,
+     "tie_rate": 0.0583,
+     "mean": 0.0215,
+     "sd": 0.2951,
+     "ci95": [
+      -0.0313,
+      0.0743
+     ],
+     "p_one": 0.5,
+     "n80": 83830.3
+    },
+    "K": {
+     "pairs": 120,
+     "better": 42,
+     "worse": 44,
+     "even": 34,
+     "pair_rate": 0.4917,
+     "tie_rate": 0.2833,
+     "mean": 0.025,
+     "sd": 0.6175,
+     "ci95": [
+      -0.0855,
+      0.1355
+     ],
+     "p_one": 0.6267,
+     "n80": Infinity
+    },
+    "D": {
+     "pairs": 120,
+     "better": 61,
+     "worse": 56,
+     "even": 3,
+     "pair_rate": 0.5208,
+     "tie_rate": 0.025,
+     "mean": 0.0076,
+     "sd": 0.0742,
+     "ci95": [
+      -0.0057,
+      0.0209
+     ],
+     "p_one": 0.3559,
+     "n80": 3470.0
+    }
+   }
+  }
+ ],
+ "null": [
+  {
+   "tag": "d37_cal_v3sb",
+   "subject": "noisy:0.1@a:heuristic",
+   "rival": "noisy:0.1@b:heuristic",
+   "pairs": 120,
+   "metrics": {
+    "W": {
+     "pairs": 120,
+     "better": 23,
+     "worse": 25,
+     "even": 72,
+     "pair_rate": 0.4917,
+     "tie_rate": 0.6,
+     "mean": -0.0208,
+     "sd": 0.6197,
+     "ci95": [
+      -0.1317,
+      0.09
+     ],
+     "p_one": 0.6673,
+     "n80": Infinity
+    },
+    "H": {
+     "pairs": 120,
+     "better": 55,
+     "worse": 57,
+     "even": 8,
+     "pair_rate": 0.4917,
+     "tie_rate": 0.0667,
+     "mean": 0.0114,
+     "sd": 0.3322,
+     "ci95": [
+      -0.048,
+      0.0708
+     ],
+     "p_one": 0.6115,
+     "n80": Infinity
+    },
+    "K": {
+     "pairs": 120,
+     "better": 37,
+     "worse": 48,
+     "even": 35,
+     "pair_rate": 0.4542,
+     "tie_rate": 0.2917,
+     "mean": -0.0389,
+     "sd": 0.6295,
+     "ci95": [
+      -0.1515,
+      0.0737
+     ],
+     "p_one": 0.9036,
+     "n80": Infinity
+    },
+    "D": {
+     "pairs": 120,
+     "better": 55,
+     "worse": 64,
+     "even": 1,
+     "pair_rate": 0.4625,
+     "tie_rate": 0.0083,
+     "mean": 0.0013,
+     "sd": 0.0873,
+     "ci95": [
+      -0.0143,
+      0.0169
+     ],
+     "p_one": 0.8203,
+     "n80": Infinity
+    }
+   },
+   "rejection_40": {
+    "W": 0.022,
+    "H": 0.0275,
+    "K": 0.0065,
+    "D": 0.013
+   }
+  }
+ ],
+ "verdict": {
+  "W": {
+   "calibrated": true,
+   "direction": true,
+   "n80_sum": 767.2,
+   "n80_sum_W": 767.2,
+   "sensitive": true,
+   "spearman_W": 1.0,
+   "valid": true,
+   "passes": true
+  },
+  "H": {
+   "calibrated": true,
+   "direction": true,
+   "n80_sum": 83830.3,
+   "n80_sum_W": 767.2,
+   "sensitive": false,
+   "spearman_W": 0.7741,
+   "valid": true,
+   "passes": false
+  },
+  "K": {
+   "calibrated": true,
+   "direction": true,
+   "n80_sum": Infinity,
+   "n80_sum_W": 767.2,
+   "sensitive": false,
+   "spearman_W": 0.8687,
+   "valid": true,
+   "passes": false
+  },
+  "D": {
+   "calibrated": true,
+   "direction": true,
+   "n80_sum": 3470.0,
+   "n80_sum_W": 767.2,
+   "sensitive": false,
+   "spearman_W": 0.7129,
+   "valid": true,
+   "passes": false
+  }
+ },
+ "primary": "W"
+}

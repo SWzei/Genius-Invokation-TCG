@@ -22,7 +22,7 @@ experiment subject, not a certified agent.
 Spec strings (``envs.policy.build_policy``)::
 
     llm:<model-profile>[#kb=<knowledge-profile>,fallback=<policy spec>,budget=<calls/game>,
-                         model=<id override>,detail=0|1,reply=choice_first|reason_first|checklist,elements=0|1]
+                         model=<id override>,detail=0|1,reply=choice_first|reason_first|checklist,elements=0|1,facts=0|1,cards=0|1]
     llm-assist:<model-profile>#base=<policy spec>[,budget=<calls/game>]
 """
 
@@ -145,6 +145,8 @@ def build_messages(
     protocol = {"reason_first": _PROTOCOL_REASON_FIRST, "checklist": _PROTOCOL_CHECKLIST}.get(reply, _PROTOCOL)
     request = context.request_type
     parts = [describer.state_text(context, detail=detail)]
+    if getattr(describer, "cards", False):         # D37: same text all game long, so it goes first
+        parts.insert(0, describer.cards_text(context))
     if detail:
         skills = describer.active_skills_text(context)
         if skills:
@@ -168,6 +170,10 @@ def build_messages(
     total = len(context.legal_low_level_specs)
     listed = min(total, max(1, int(max_options)))
     note = "" if listed == total else f"\n（共 {total} 个合法选项，仅列出前 {listed} 个）"
+    if getattr(describer, "facts", False) and request == DecisionType.ACTION:
+        facts = describer.facts_text(context, listed)
+        if facts:
+            parts.append("派生事实（由本方可见信息计算，已经引擎核对）：\n" + facts)
     parts.append("合法选项：\n" + describer.options_text(context, range(listed)) + note + "\n" + protocol["index"])
     return _wrap(parts), "index", listed
 
@@ -478,11 +484,15 @@ def build_llm_policy(spec: str, *, seed: int, role: str, call_log: str | None = 
     if config.reply not in ("choice_first", "reason_first", "checklist"):
         raise KeyError(f"llm spec option reply must be choice_first, reason_first or checklist, got {config.reply!r}")
     elements = options.get("elements", "0") not in ("0", "false", "no")
+    facts = options.get("facts", "0") not in ("0", "false", "no")          # D37: derived facts
+    cards = options.get("cards", "0") not in ("0", "false", "no")          # D37: per-game character cards
     name = (f"llm:{profile_name}" + (f"+kb:{knowledge.name}" if selector is not None else "")
-            + (f"+{config.reply}" if config.reply != "choice_first" else "") + ("+elements" if elements else ""))
+            + (f"+{config.reply}" if config.reply != "choice_first" else "") + ("+elements" if elements else "")
+            + ("+facts" if facts else "") + ("+cards" if cards else ""))
     from reps.describe import DecisionDescriber
 
-    describer = DecisionDescriber(elements=True) if elements else None
+    describer = (DecisionDescriber(elements=elements, facts=facts, cards=cards)
+                 if (elements or facts or cards) else None)
     return LLMPolicy(client, fallback, selector=selector, describer=describer, config=config, name=name)
 
 

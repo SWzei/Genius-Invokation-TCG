@@ -69,6 +69,31 @@ class RandomPolicy:
 
 
 @dataclass
+class NoisyPolicy:
+    """D37: with probability ``epsilon`` a uniform legal choice, else ``base`` decides.
+
+    A known handicap for calibrating evaluation metrics: ``noisy:0.3:heuristic`` is
+    weaker than ``heuristic`` by construction, and two ``noisy`` players with the
+    same spec and independent random streams are equally strong (A/A).
+    """
+
+    base: Policy
+    epsilon: float
+    seed: int | None = None
+    name: str = "noisy"
+    _rng: random.Random = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        self._rng = random.Random(self.seed)
+
+    def choose(self, built: BuiltDecisionContext) -> int:
+        codes = list(built.context.legal_low_level_codes)
+        if len(codes) > 1 and self._rng.random() < self.epsilon:
+            return int(self._rng.choice(codes))
+        return int(self.base.choose(built))
+
+
+@dataclass
 class CallablePolicy:
     """Wrap a plain ``fn(built) -> int`` (used for LLM-assisted agents, tests)."""
 
@@ -178,7 +203,8 @@ def build_policy(spec: str, *, seed: int, role: str) -> Policy:
     reproduces the same agents (M0 replay consistency).
 
     Specs: ``expert:<slug>`` | ``neural:<checkpoint>[#t=<temp>]`` | ``heuristic``
-    | ``legal_random`` | ``random`` | ``llm:<model profile>[#kb=...,fallback=...]``
+    | ``legal_random`` | ``random`` | ``noisy:<epsilon>:<spec>`` (D37)
+    | ``llm:<model profile>[#kb=...,fallback=...]``
     | ``llm-assist:<model profile>#base=<spec>`` (``agents.llm_policy``; never part
     of strength acceptance). The ``neural`` spec loads the CVPN from a
     checkpoint (with the encoder config saved beside it) so a trained checkpoint
@@ -201,6 +227,16 @@ def build_policy(spec: str, *, seed: int, role: str) -> Policy:
         )
     if spec == "random":
         return RandomPolicy(seed=derive_seed(seed, role, "random"))
+    if spec.startswith("noisy:"):                  # D37: noisy:<epsilon>[@salt]:<base spec>
+        _, eps, base = spec.split(":", 2)
+        # The seed folds in the seat, so in a mirror pair the two players would share one random
+        # stream per seat and both games would be identical. A salt gives a player its own stream
+        # (A/A: ``noisy:0.1@a:heuristic`` against ``noisy:0.1@b:heuristic``).
+        epsilon = float(eps.split("@", 1)[0])
+        if not 0.0 <= epsilon <= 1.0:
+            raise ValueError(f"noisy epsilon must be in [0, 1]: {spec!r}")
+        return NoisyPolicy(build_policy(base, seed=seed, role=role), epsilon,
+                           seed=derive_seed(seed, role, "noisy", eps), name=f"noisy{eps}")
     # 2026-11 (D29): model-API players. Imported lazily so the pure-policy paths
     # (rollout / arena / collectors) keep their import footprint.
     if spec.startswith("llm:"):

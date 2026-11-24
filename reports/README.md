@@ -19,6 +19,8 @@
 | [`review/2026-11_kb_training.md`](./review/2026-11_kb_training.md) | 知识接入的分阶段优化（D32）：train/dev/test 划分、S0–S5 各阶段记录、情境规则题与斩杀转化、test 与整局终评、失败与修复 | valid |
 | [`review/2026-11_kb_d33_prereg.md`](./review/2026-11_kb_d33_prereg.md) | D33 预先登记：候选、留出题型、dev 选择规则、最终评估；之后只追加 | valid |
 | [`review/2026-11_kb_d33.md`](./review/2026-11_kb_d33.md) | 针对性优化与防过拟合检验（D33）：dev 选择、v3 / `lite_fresh` 新数据终评、留出题型、充能上限缺失导致的害处、GLM 对照 | valid |
+| [`review/2026-11_kb_d37_prereg.md`](./review/2026-11_kb_d37_prereg.md) | D37 预先登记：评测指标校准规则、派生事实与角色卡的核实与门禁、dev 与跨模型计划、预算；之后只追加 | valid |
+| [`review/2026-11_kb_d37.md`](./review/2026-11_kb_d37.md) | 更公平的评测、派生事实、角色卡与跨模型对战（D37）：指标校准、预演核实与泄漏测试、dev 门禁、跨模型、花费 | valid |
 | [`review/2026-11_kb_d36_prereg.md`](./review/2026-11_kb_d36_prereg.md) | D36 预先登记：多轮进化的候选、门禁、停止边界与 test 计划；之后只追加 | valid |
 | [`review/2026-11_kb_d36.md`](./review/2026-11_kb_d36.md) | 多轮进化：带知识库的 DeepSeek 镜像对战（D36）：各轮改动、逐项门禁、最终 test、观测层对照、花费 | valid |
 | [`review/2026-11_kb_d35_prereg.md`](./review/2026-11_kb_d35_prereg.md) | D35 预先登记：分歧点评测的判据与预算、技术修复的核对；之后只追加 | valid |

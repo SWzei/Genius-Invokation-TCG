@@ -493,7 +493,14 @@ def _action_specs(**kwargs):
                     },
                 )
             )
-    return specs, {"visible_dice": list(visible_dice), "legal_action_count": len(specs)}
+    payload: dict[str, Any] = {"visible_dice": list(visible_dice), "legal_action_count": len(specs)}
+    # D37: the public part of the engine's skill previews (reps.facts); read only with ``facts=1``.
+    from .facts import skill_previews
+
+    previews = skill_previews(request)
+    if previews:
+        payload["previews"] = previews
+    return specs, payload
 
 
 def _classify_action(

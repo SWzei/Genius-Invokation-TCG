@@ -1,0 +1,38 @@
+{
+ "tag": "d37_mech",
+ "policies": {
+  "base2": {
+   "positions": 465,
+   "skill_choices": 288,
+   "best_skill": 203,
+   "skill": 358,
+   "ko_positions": 210,
+   "ko_taken": 168,
+   "ko_rate": 0.8,
+   "best_rate": 0.7049,
+   "skill_rate": 0.7699
+  },
+  "base": {
+   "positions": 465,
+   "ko_positions": 210,
+   "ko_taken": 170,
+   "skill_choices": 285,
+   "best_skill": 201,
+   "skill": 355,
+   "ko_rate": 0.8095,
+   "best_rate": 0.7053,
+   "skill_rate": 0.7634
+  },
+  "v11": {
+   "positions": 465,
+   "skill_choices": 317,
+   "best_skill": 276,
+   "skill": 409,
+   "ko_positions": 210,
+   "ko_taken": 210,
+   "ko_rate": 1.0,
+   "best_rate": 0.8707,
+   "skill_rate": 0.8796
+  }
+ }
+}

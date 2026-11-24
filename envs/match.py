@@ -194,6 +194,9 @@ class MatchRecord:
     final_state_json: str | None = None
     decisions: list[DecisionRecord] = field(default_factory=list)
     events: list[MatchEvent] = field(default_factory=list)
+    # D37: end-of-game public summary per seat (alive / hp / max_hp / defeated /
+    # damage_taken), for outcome metrics beyond the winner. Public facts only.
+    outcome: dict[str, Any] | None = None
 
     @property
     def matchup(self) -> str:
@@ -280,12 +283,32 @@ class PolicyPlayer(Player):
         self.fallbacks = 0
         self.quit_requested = False
         self._step_index = 0
+        # D37: damage each seat took, from the public damage mutations (one player
+        # tallies; ``run_match`` turns it on for seat 0 only).
+        self.tally_damage = False
+        self.damage_taken = [0, 0]
 
     # -- gitcg.Player interface -------------------------------------------------
     def on_notify(self, notification: Any) -> None:
         self.notification = notification
         if self.event_sink is not None:
             self._collect_events(notification)
+        if self.tally_damage:
+            self._tally(notification)
+
+    def _tally(self, notification: Any) -> None:
+        state = getattr(notification, "state", None)
+        if state is None:
+            return
+        owner = {int(c.id): who for who in (0, 1) for c in state.player[who].character}
+        for mutation in getattr(notification, "mutation", ()):
+            if mutation.WhichOneof("mutation") != "damage":
+                continue
+            damage = mutation.damage
+            who = owner.get(int(damage.target_id))
+            if who is None or int(damage.damage_type) == _HEAL_DAMAGE_TYPE:
+                continue
+            self.damage_taken[who] += int(damage.value)
 
     def on_io_error(self, error_msg: str) -> None:
         self.io_errors.append(str(error_msg))
@@ -632,6 +655,7 @@ def run_match(
                 event_sink=event_sink,
             )
         )
+    players[0].tally_damage = True
     game.set_player(0, players[0])
     game.set_player(1, players[1])
 
@@ -693,4 +717,24 @@ def run_match(
         final_state_json=final_json,
         decisions=decisions,
         events=events,
+        outcome=_public_outcome(players[0]),
     )
+
+
+_HEAL_DAMAGE_TYPE = 9      # DAMAGE_TYPE_HEAL
+
+
+def _public_outcome(player: "PolicyPlayer") -> dict[str, Any] | None:
+    """Both seats' characters at the end, from the last public notification (D37)."""
+    state = getattr(player.notification, "state", None)
+    if state is None:
+        return None
+    out: dict[str, Any] = {"alive": [], "hp": [], "max_hp": [], "defeated": [], "damage_taken": list(player.damage_taken)}
+    for who in (0, 1):
+        chars = list(state.player[who].character)
+        alive = [c for c in chars if not c.defeated]
+        out["alive"].append(len(alive))
+        out["hp"].append(sum(max(0, int(c.health)) for c in alive))
+        out["max_hp"].append(sum(int(c.max_health) for c in chars))
+        out["defeated"].append(len(chars) - len(alive))
+    return out

@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34、排查与分歧点评测 D35、多轮进化与镜像对战 D36）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34、排查与分歧点评测 D35、多轮进化与镜像对战 D36、评测指标与派生事实 D37）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -161,6 +161,18 @@
 | 观测层 `elements=1` | 对旧观测层（都无知识，80 对）0.584 [0.522, 0.647]，单侧 p = 0.010，显著；推荐用法 | `reports/bench/d36_test_obs_pairs.md` |
 | 守门 | 锚点 0.438（32 局，对 D34 0.531 不显著）；斩杀 0.938 | `reports/bench/d36_anchor.md` |
 | 保留数据 | `mirror_test150` 已用（主测 150 对 + 观测层对照前 80 对）；`mirror_dev` 前 40 对用于两次第一阶段门禁 | `docs/howto/benchmark.md` §7.9 |
+
+全部是模拟器内结果，不进强度验收。
+
+## 3k. 评测指标、派生事实与跨模型（D37，2026-11-23）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 镜像对战主指标 | **H（生命差，对分 = 两局之和）**，W 同时报告；脚本校准 A/A 拒绝率 0.022，n80 17.5 对（W 32.6）；真实模型对局上平局 56% → 0% | `reports/bench/d37_metric_validation.md` |
+| 推荐的模型接入 | 仍为 `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；`facts=1`、`cards=1` 可选，未测出提升 | `reports/review/2026-11_kb_d37.md` |
+| 派生事实 `facts=1` | 预演每项都发生 0.997（train 2,101 次）；引擎泄漏测试通过；dev 上 `v11` 对 `base` H 0.475（40 对，不显著），`facts=1` 单独 H 0.425（20 对） | `reports/bench/d37_dev_metrics.md` |
+| 跨模型（对 GLM-5.3-Flash，各 10 对） | `base` W 0.50 / H 0.60；`v11` W 0.45 / H 0.20（描述性） | `reports/bench/d37_cross_metrics.md` |
+| 保留数据 | `mirror_dev200` 第 100–149 对已用；第 150–199 对未用；`mirror_train300` 第 60–179 对用于脚本校准 | `docs/howto/benchmark.md` §7.10 |
 
 全部是模拟器内结果，不进强度验收。
 
