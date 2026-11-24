@@ -30,6 +30,7 @@ import hashlib
 import http.client
 import json
 import os
+import threading
 import random
 import re
 import socket
@@ -51,7 +52,9 @@ MODELS_ENV = "GITCG_MODELS_CONFIG"
 CALL_LOG_ENV = "GITCG_LLM_CALL_LOG"
 DEFAULT_MODELS_FILE = REPO_ROOT / "configs" / "models.toml"
 LOCAL_MODELS_FILE = REPO_ROOT / "configs" / "models.local.toml"
-PROTOCOLS = ("openai", "anthropic", "gemini", "mock")
+PROTOCOLS = ("openai", "anthropic", "gemini", "decision", "file", "mock")
+ANSWER_FILE_ENV = "GITCG_ANSWER_FILE"      # D38 "file" protocol: {prompt key: reply text}
+PROMPT_DUMP_ENV = "GITCG_PROMPT_DUMP"      # D38 "file" protocol: unanswered prompts are appended here
 
 # Provider presets: wire protocol, default endpoint, the env var(s) that carry the
 # key. Model ids are deliberately *not* preset -- they change; a profile names one.
@@ -66,6 +69,12 @@ PRESETS: dict[str, dict[str, Any]] = {
     "gemini-native": {"protocol": "gemini",
                       "base_url": "https://generativelanguage.googleapis.com/v1beta",
                       "api_key_env": ("GEMINI_API_KEY", "GOOGLE_API_KEY")},
+    # D38: Gemini Decisions API (``gemini-decision-1``): no generated text, a calibrated
+    # choice among named options (or yes/no) per question; see ``decision_questions``.
+    "gemini-decisions": {"protocol": "decision", "base_url": "https://generativelanguage.googleapis.com/v1beta",
+                         "api_key_env": ("GEMINI_API_KEY", "GOOGLE_API_KEY")},
+    # D38: GroqCloud (OpenAI-compatible).
+    "groq": {"protocol": "openai", "base_url": "https://api.groq.com/openai/v1", "api_key_env": ("GROQ_API_KEY",)},
     "deepseek": {"protocol": "openai", "base_url": "https://api.deepseek.com",
                  "api_key_env": ("DEEPSEEK_API_KEY",)},
     # Zhipu documents the sampling temperature as the open interval (0, 1).
@@ -73,6 +82,9 @@ PRESETS: dict[str, dict[str, Any]] = {
             "api_key_env": ("ZAI_API_KEY", "ZHIPUAI_API_KEY"), "temperature_min": 0.01},
     # Any OpenAI-compatible server (vLLM, Ollama, LM Studio, a gateway ...).
     "openai-compatible": {"protocol": "openai", "api_key_env": ()},
+    # D38: replies come from a file written by someone else (e.g. an isolated agent that
+    # answered the dumped prompts); see ``prompt_key``. No network.
+    "answer-file": {"protocol": "file", "base_url": "file://", "api_key_env": ()},
     "mock": {"protocol": "mock", "base_url": "mock://", "api_key_env": ()},
 }
 PRESETS["claude"] = PRESETS["anthropic"]
@@ -106,6 +118,11 @@ def classify_http_error(status: int, code: str, message: str) -> str:
     lowered = message.lower()
     if status in (401, 403):
         return "auth"
+    # Gemini answers a per-minute free-tier limit with 429 "exceeded your current quota ...
+    # Please retry in 22s": a rate limit, not an exhausted balance (D38).
+    if status == 429 and ("per minute" in lowered or "perminute" in lowered or "please retry in" in lowered) \
+            and "perday" not in lowered and "per day" not in lowered:
+        return "rate_limit"
     if status == 402 or code in _QUOTA_CODES or any(word in lowered for word in _QUOTA_WORDS):
         return "quota"
     if code in _MODEL_CODES or (status in (400, 404) and any(word in lowered for word in _MODEL_WORDS)):
@@ -381,6 +398,40 @@ def _split_system(messages: Sequence[Mapping[str, str]]) -> tuple[str, list[dict
 _OPTION_LINE = re.compile(r"^\[(\d+)\]", re.M)
 
 
+def prompt_key(messages: Sequence[Mapping[str, str]]) -> str:
+    """Stable key of a prompt for the ``file`` protocol."""
+    return hashlib.sha256(json.dumps([dict(m) for m in messages], ensure_ascii=False,
+                                     sort_keys=True).encode("utf-8")).hexdigest()
+
+
+_FILE_LOCK = threading.Lock()
+_ANSWERS: dict[str, tuple[float, dict[str, str]]] = {}
+
+
+def _file_reply(messages: Sequence[Mapping[str, str]]) -> ChatResult:
+    key = prompt_key(messages)
+    path = os.environ.get(ANSWER_FILE_ENV)
+    answers: dict[str, str] = {}
+    if path and Path(path).exists():
+        mtime = Path(path).stat().st_mtime
+        with _FILE_LOCK:
+            cached = _ANSWERS.get(path)
+            if cached is None or cached[0] != mtime:
+                cached = (mtime, json.loads(Path(path).read_text(encoding="utf-8")))
+                _ANSWERS[path] = cached
+        answers = cached[1]
+    chars = sum(len(str(m.get("content", ""))) for m in messages)
+    if key in answers:
+        text = str(answers[key])
+        return ChatResult(text, attempts=1, prompt_tokens=chars // 2, completion_tokens=len(text) // 2,
+                          finish_reason="stop")
+    dump = os.environ.get(PROMPT_DUMP_ENV)
+    if dump:
+        with _FILE_LOCK, open(dump, "a", encoding="utf-8") as handle:
+            handle.write(json.dumps({"key": key, "messages": [dict(m) for m in messages]}, ensure_ascii=False) + "\n")
+    return ChatResult(None, error="missing_answer", detail=f"no answer for prompt {key[:16]}", attempts=1)
+
+
 def _mock_reply(behaviour: str, messages: Sequence[Mapping[str, str]], rng: random.Random) -> str:
     """Offline stand-in for a model. Behaviours: ``first`` | ``last`` | ``random`` |
     ``invalid`` (unparseable) | ``out_of_range`` | ``error`` (transport failure)."""
@@ -461,7 +512,8 @@ class ProviderClient:
 
     def _request(self, messages, max_tokens: int, temperature: float | None, want_json: bool):
         profile = self.profile
-        headers = {"Content-Type": "application/json", **profile.extra_headers}
+        # A named User-Agent: some Cloudflare-fronted APIs (Groq) refuse urllib's default one (403/1010).
+        headers = {"Content-Type": "application/json", "User-Agent": "gitcg-bench/1.0", **profile.extra_headers}
         if profile.protocol == "openai":
             url = profile.base_url if profile.base_url.endswith("/chat/completions") \
                 else f"{profile.base_url}/chat/completions"
@@ -504,6 +556,12 @@ class ProviderClient:
                     "generationConfig": config}
             if system:
                 body["systemInstruction"] = {"parts": [{"text": system}]}
+        elif profile.protocol == "decision":
+            url = f"{profile.base_url}/decisions"
+            headers["x-goog-api-key"] = self._key or ""
+            questions = next((json.loads(m["content"]) for m in messages if m.get("role") == "decision"), {})
+            text = "\n\n".join(str(m["content"]) for m in messages if m.get("role") in ("system", "user"))
+            body = {"model": profile.model, "input": text, "questions": questions}
         else:  # pragma: no cover - guarded by profile validation
             raise ProfileError(f"unsupported protocol {profile.protocol!r}")
         body.update(profile.extra_body)
@@ -533,6 +591,11 @@ class ProviderClient:
                 tokens = int(usage.get("input_tokens", 0) or 0), int(usage.get("output_tokens", 0) or 0)
                 finish = payload.get("stop_reason")
                 self._last_details = (int(usage.get("cache_read_input_tokens", 0) or 0), 0)
+            elif protocol == "decision":
+                usage = payload.get("usage") or {}
+                tokens = int(usage.get("total_input_tokens", 0) or 0), 0
+                text = json.dumps(payload["answers"], ensure_ascii=False)
+                finish = "stop"
             else:  # gemini
                 usage = payload.get("usageMetadata") or {}
                 tokens = (int(usage.get("promptTokenCount", 0) or 0),
@@ -560,12 +623,15 @@ class ProviderClient:
         try:
             payload = json.loads(raw.decode("utf-8", "replace"))
         except ValueError:
-            return "", raw.decode("utf-8", "replace")[:300]
+            return "", raw.decode("utf-8", "replace")[:1000]
+        if isinstance(payload, list) and len(payload) == 1:      # Gemini's OpenAI endpoint wraps errors in a list
+            payload = payload[0]
         error = payload.get("error") if isinstance(payload, dict) else None
+        # Keep enough of the message to see Gemini's "... per minute ... Please retry in 17s" tail (D38).
         if isinstance(error, dict):
             code = str(error.get("code") or error.get("type") or "")
-            return code, str(error.get("message") or error.get("type") or error)[:300]
-        return "", str(error or payload)[:300]
+            return code, str(error.get("message") or error.get("type") or error)[:1000]
+        return "", str(error or payload)[:1000]
 
     @classmethod
     def _error_message(cls, raw: bytes) -> str:
@@ -647,6 +713,8 @@ class ProviderClient:
             prompt_chars = sum(len(str(m.get("content", ""))) for m in messages)
             return ChatResult(text, attempts=1, prompt_tokens=prompt_chars // 2,
                               completion_tokens=len(text) // 2, finish_reason="stop")
+        if profile.protocol == "file":
+            return _file_reply(messages)
         if not self.available:
             return ChatResult(None, error="no_key",
                               detail=f"none of {list(profile.api_key_env)} is set")
@@ -704,6 +772,9 @@ class ProviderClient:
             retries_left -= 1
             delay = min(_MAX_RETRY_AFTER, profile.retry_backoff * (2 ** (attempts - 1)))
             retry_after = {k.lower(): v for k, v in dict(response_headers).items()}.get("retry-after")
+            if not retry_after and last.error == "rate_limit":          # Gemini: "Please retry in 22.5s"
+                hint = re.search(r"retry in ([0-9.]+)s", last.detail or "")
+                retry_after = hint.group(1) if hint else None
             if retry_after:
                 try:
                     delay = min(_MAX_RETRY_AFTER, max(delay, float(retry_after)))

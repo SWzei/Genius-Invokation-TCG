@@ -1,0 +1,218 @@
+[
+ [
+  "d38_glm4：`llm:glm-4-flash-250414#kb=kbt3-trig,reply=reason_first,elements=1` 对 `llm:glm-4-flash-250414#reply=reason_first,elements=1`",
+  {
+   "pairs": 50,
+   "w_ties": 40,
+   "rules": {
+    "loss": {
+     "rate": 0.1,
+     "ci95": [
+      0.016,
+      0.184
+     ],
+     "won": 5,
+     "even": 0,
+     "lost": 45,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.5,
+     "ci95": [
+      0.4374,
+      0.5626
+     ],
+     "won": 5,
+     "even": 40,
+     "lost": 5,
+     "p_one": 0.623
+    },
+    "order": {
+     "rate": 0.4,
+     "ci95": [
+      0.2628,
+      0.5372
+     ],
+     "won": 20,
+     "even": 0,
+     "lost": 30,
+     "p_one": 0.9405
+    },
+    "K": {
+     "rate": 0.46,
+     "ci95": [
+      0.3521,
+      0.5679
+     ],
+     "won": 13,
+     "even": 20,
+     "lost": 17,
+     "p_one": 0.8192
+    },
+    "H": {
+     "rate": 0.4,
+     "ci95": [
+      0.2628,
+      0.5372
+     ],
+     "won": 20,
+     "even": 0,
+     "lost": 30,
+     "p_one": 0.9405
+    },
+    "D": {
+     "rate": 0.46,
+     "ci95": [
+      0.3205,
+      0.5995
+     ],
+     "won": 23,
+     "even": 0,
+     "lost": 27,
+     "p_one": 0.7601
+    },
+    "any_against": {
+     "rate": 0.34,
+     "ci95": [
+      0.2074,
+      0.4726
+     ],
+     "won": 17,
+     "even": 0,
+     "lost": 33,
+     "p_one": 0.9923
+    },
+    "any_for": {
+     "rate": 0.52,
+     "ci95": [
+      0.3801,
+      0.6599
+     ],
+     "won": 26,
+     "even": 0,
+     "lost": 24,
+     "p_one": 0.4439
+    },
+    "win": {
+     "rate": 0.9,
+     "ci95": [
+      0.816,
+      0.984
+     ],
+     "won": 45,
+     "even": 0,
+     "lost": 5,
+     "p_one": 0.0
+    }
+   }
+  }
+ ],
+ [
+  "d38_glm4：`llm:glm-4-flash-250414#kb=kbt3-trig,reply=reason_first,elements=1,facts=1` 对 `llm:glm-4-flash-250414#reply=reason_first,elements=1`",
+  {
+   "pairs": 50,
+   "w_ties": 31,
+   "rules": {
+    "loss": {
+     "rate": 0.24,
+     "ci95": [
+      0.1204,
+      0.3596
+     ],
+     "won": 12,
+     "even": 0,
+     "lost": 38,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.55,
+     "ci95": [
+      0.4648,
+      0.6352
+     ],
+     "won": 12,
+     "even": 31,
+     "lost": 7,
+     "p_one": 0.1796
+    },
+    "order": {
+     "rate": 0.58,
+     "ci95": [
+      0.4418,
+      0.7182
+     ],
+     "won": 29,
+     "even": 0,
+     "lost": 21,
+     "p_one": 0.1611
+    },
+    "K": {
+     "rate": 0.61,
+     "ci95": [
+      0.497,
+      0.723
+     ],
+     "won": 23,
+     "even": 15,
+     "lost": 12,
+     "p_one": 0.0448
+    },
+    "H": {
+     "rate": 0.59,
+     "ci95": [
+      0.4537,
+      0.7263
+     ],
+     "won": 29,
+     "even": 1,
+     "lost": 20,
+     "p_one": 0.1264
+    },
+    "D": {
+     "rate": 0.6,
+     "ci95": [
+      0.4628,
+      0.7372
+     ],
+     "won": 30,
+     "even": 0,
+     "lost": 20,
+     "p_one": 0.1013
+    },
+    "any_against": {
+     "rate": 0.52,
+     "ci95": [
+      0.3801,
+      0.6599
+     ],
+     "won": 26,
+     "even": 0,
+     "lost": 24,
+     "p_one": 0.4439
+    },
+    "any_for": {
+     "rate": 0.66,
+     "ci95": [
+      0.5274,
+      0.7926
+     ],
+     "won": 33,
+     "even": 0,
+     "lost": 17,
+     "p_one": 0.0164
+    },
+    "win": {
+     "rate": 0.86,
+     "ci95": [
+      0.7628,
+      0.9572
+     ],
+     "won": 43,
+     "even": 0,
+     "lost": 7,
+     "p_one": 0.0
+    }
+   }
+  }
+ ]
+]

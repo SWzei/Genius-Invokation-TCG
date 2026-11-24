@@ -343,3 +343,40 @@ python -m bench.facts_check --probe T --out NAME
 **信息合法性**：
 - 预演来自引擎发给本方的行动请求（与官方客户端的伤害预览同源），在源头只保留技能对角色的伤害、治疗、附着。
 - `tests/test_facts.py` 的引擎泄漏测试：对方隐藏手牌不同而公开局面相同时，提示逐字相同。
+
+### 7.11 D38：小模型、Decision 模型与子代理作答
+
+**新增模型配置**（`configs/models.toml`，追加；密钥只从环境变量读取）：
+
+| profile | 接入（`common/llm_providers.py` 预设） | 密钥变量 | 免费档限制（2026-11 实测） |
+|---|---|---|---|
+| `glm-4-flash-250414` | `glm`（OpenAI 兼容），非思考 | `GLM_API_KEY` | 免费模型；10 并发无问题，可跑满镜像对战 |
+| `gemini-decision-1` | `gemini-decisions`：协议 `decision`，POST `/v1beta/decisions`，不生成文本 | `GEMINI_API_KEY` | 每分钟 5 万输入 token；约 12–14 局 / 小时（2 并发） |
+| `gemini-35-flash-lite` | `gemini`（OpenAI 兼容），思考强度 low | `GEMINI_API_KEY` | 每分钟 15 次、每天 500 次请求（每天约 4 局） |
+| `groq-gpt-oss-120b` | `groq`（OpenAI 兼容），推理强度 low | `GROQ_API_KEY` | 每分钟 8 千 token、每天 20 万 token（每天约 1 局） |
+| `subagent-sonnet` | `answer-file`：协议 `file`，从答案文件取回复 | — | 不联网；用于会话内子代理作答 |
+
+**Decision 模型**（`agents/llm_policy.py`）：
+- 行动决策 → 一道选择题，每个合法选项是一个候选（`o0`…`oN`），取概率最大者；
+- 换牌、重掷 → 每张牌 / 每颗骰子一道是非题（`q0`…），> 0.5 记为"换"，再映射回合法选项；
+- 去掉"回复格式"段（不生成文本），其余提示与生成式模型相同；没有非法回复重试。
+
+**限额处理**：
+- Gemini 的每分钟 429（"Please retry in Xs"）按可重试处理并等待提示的秒数；每天限额（"per day"）仍按致命错误停用客户端，余下决策由脚本代答（降级，整对剔除）。
+- Groq 拒绝 urllib 的默认 `User-Agent`，客户端默认发送 `gitcg-bench/1.0`。
+
+**子代理作答（answer-file）**：没有 API 密钥、但能在会话里启动隔离子代理时，用来做题目评测（不适合整局对战）。
+
+```bash
+# 1. 导出提示：每个缺答案的提示按 prompt_key（消息的 sha256）追加到导出文件，本次决策记为 missing_answer
+GITCG_PROMPT_DUMP=dump.jsonl python -m bench.scenarios eval --name v2 --split dev --kinds lethal \
+    --subjects "llm:subagent-sonnet#kb=kbt3-trig,reply=reason_first,elements=1" --tag T_dump
+# 2. 按批交给互相独立的子代理，只写答案；合并为 {prompt_key: 回复文本} 的 answers.json
+# 3. 用答案重跑同一评测，按原规则判分
+GITCG_ANSWER_FILE=answers.json python -m bench.scenarios eval --name v2 --split dev --kinds lethal --subjects ... --tag T
+```
+
+- 两种条件分开导出、分开交给不同子代理，子代理不知道另一种条件存在；
+- 局限：同一批题共享子代理上下文；只能靠指令约束子代理不读其他文件。
+
+**保留数据**：`mirror_dev200` 第 150–199 对已在 D38 用完（GLM-4-Flash 与 Decision 1）。今后的独立 dev 估计需要新建锁文件或新的种子块。

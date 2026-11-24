@@ -197,3 +197,51 @@ price_in = 0.15
 price_cached_in = 0.003
 price_out = 0.60
 extra_body = { thinking = { type = "enabled" }, reasoning_effort = "low" }
+
+# ---- D38：小模型（KB 提升对比）。价格为按公开价目估算，实际以账单为准；免费层不扣费但有速率限制。
+[profiles.gemini-35-flash-lite]
+provider = "gemini"               # GEMINI_API_KEY；OpenAI 兼容端点
+model = "gemini-3.5-flash-lite"
+temperature = 0.0
+max_tokens = 1024
+timeout = 120
+retries = 6
+price_in = 0.10
+price_out = 0.40
+extra_body = { reasoning_effort = "low" }
+
+[profiles.gemini-decision-1]
+provider = "gemini-decisions"     # GEMINI_API_KEY；Decisions API：给每个选项打概率，不生成文本
+model = "gemini-decision-1"
+timeout = 60
+retries = 8
+retry_backoff = 4.0
+price_in = 0.10
+price_out = 0.0
+
+[profiles.groq-gpt-oss-120b]
+provider = "groq"                 # GROQ_API_KEY
+model = "openai/gpt-oss-120b"
+temperature = 0.0
+max_tokens = 1024
+timeout = 120
+retries = 20
+retry_backoff = 4.0
+price_in = 0.15
+price_out = 0.60
+extra_body = { reasoning_effort = "low" }
+
+[profiles.glm-4-flash-250414]
+provider = "glm"                  # 免费档（D38 实测 10 并发可用）；非思考
+model = "glm-4-flash-250414"
+temperature = 0.0                 # 客户端按智谱要求抬到 0.01
+max_tokens = 512
+timeout = 90
+retries = 8
+retry_backoff = 2.0
+price_in = 0.0
+price_out = 0.0
+
+[profiles.subagent-sonnet]
+provider = "answer-file"          # D38：回复来自隔离子代理（Agent 工具 sonnet 档）写好的答案文件，见 GITCG_ANSWER_FILE
+model = "agent-sonnet"

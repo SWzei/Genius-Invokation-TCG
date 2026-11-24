@@ -1,4 +1,4 @@
-# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34、排查与分歧点评测 D35、多轮进化与镜像对战 D36、评测指标与派生事实 D37）
+# STATUS — 当前状态（2026-10-27；2026-11 增补：审查 D27、MASD-ADM 兼容层 D28、实验平台 D29、平台接入与 Benchmark D30、DeepSeek 与知识库评测 D31、知识接入分阶段优化 D32、针对性优化与防过拟合检验 D33、模型对战驱动的知识库分层进化 D34、排查与分歧点评测 D35、多轮进化与镜像对战 D36、评测指标与派生事实 D37、小模型上的知识库 D38）
 
 > 只写“现在有效”的事实。历史与一次性结果见 `reports/`；失败归因见 `docs/failures/`。
 > 所有胜率默认是**纯策略**、固定 20 套脚本池、双方各半、配对种子；门禁口径见 `docs/EVAL_PROTOCOL.md`。
@@ -173,7 +173,19 @@
 | 推荐的模型接入 | 仍为 `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；`facts=1`、`cards=1` 可选，未测出提升 | `reports/review/2026-11_kb_d37.md` |
 | 派生事实 `facts=1` | 预演每项都发生 0.997（train 2,101 次）；引擎泄漏测试通过；dev 上 `v11` 对 `base` H 0.475（40 对，不显著），`facts=1` 单独 H 0.425（20 对） | `reports/bench/d37_dev_metrics.md` |
 | 跨模型（对 GLM-5.3-Flash，各 10 对） | `base` W 0.50 / H 0.60；`v11` W 0.45 / H 0.20（描述性） | `reports/bench/d37_cross_metrics.md` |
-| 保留数据 | `mirror_dev200` 第 100–149 对已用；第 150–199 对未用；`mirror_train300` 第 60–179 对用于脚本校准 | `docs/howto/benchmark.md` §7.10 |
+| 保留数据 | `mirror_dev200` 第 100–149 对由 D37 使用，第 150–199 对由 D38 使用，dev 锁文件已无未用的对；`mirror_train300` 第 60–179 对用于脚本校准 | `docs/howto/benchmark.md` §7.10–7.11 |
+
+全部是模拟器内结果，不进强度验收。
+
+## 3l. 小模型上的知识库（D38，2026-11-24）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 知识库 v1.0 对小模型 | **没有显著提升**。`mirror_dev200` 第 150–199 对，胜利优先、平局按 K→H→D：GLM-4-Flash 0.400 [0.263, 0.537]（p = 0.94）；Gemini Decision 1 0.460 [0.321, 0.600]（p = 0.76）；Holm 后都是 1.0 | `reports/bench/d38_glm4_tiebreak.md`、`d38_decision_tiebreak.md` |
+| 派生事实 `facts=1` 对小模型 | GLM-4-Flash 知识库 + `facts=1` 对不带：0.580（p = 0.16），不显著；是待验证的假设 | `reports/bench/d38_glm4_metrics.md` |
+| Sonnet（会话内子代理，局面题） | 斩杀 0.922 对 0.875（p = 0.227），情境 0.95 对 0.98，不显著；不是 Sonnet 4.6，没有整局对战 | `reports/bench/d38_sonnet_lethal.md` |
+| 可用的免费模型接入 | `glm-4-flash-250414`（可跑满镜像对战）、`gemini-decision-1`（约 12–14 局 / 小时）；`gemini-35-flash-lite`、`groq-gpt-oss-120b` 受每日额度限制（每天约 4 局、1 局），需付费档 | `docs/howto/benchmark.md` §7.11 |
+| 推荐的模型接入 | 不变：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；知识库不作为小模型的推荐配置 | `reports/review/2026-11_kb_d38.md` |
 
 全部是模拟器内结果，不进强度验收。
 

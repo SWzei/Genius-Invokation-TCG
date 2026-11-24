@@ -31,7 +31,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field, replace
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from common.llm import extract_json_object
 from reps.describe import DecisionDescriber, find_mask_option
@@ -211,6 +211,55 @@ def parse_reply(context: Any, protocol: str, listed: int, raw: str | None) -> tu
     return index, reason, None
 
 
+# --------------------------------------------------------------------------- #
+# D38: decision models (Gemini Decisions API). The same prompt minus the reply format;
+# the options become named criteria of a ``choice`` question, mulligan / reroll become
+# one yes/no question per card / die. No text is generated.
+# --------------------------------------------------------------------------- #
+DECISION_INSTRUCTIONS = "根据上面的局面，从合法选项中选出“我方”此刻最好的一个行动。"
+
+
+def decision_messages(context: Any, describer: DecisionDescriber, messages: Sequence[Mapping[str, str]],
+                      protocol: str, listed: int, reply: str = "choice_first") -> list[dict[str, str]]:
+    formats = {"reason_first": _PROTOCOL_REASON_FIRST, "checklist": _PROTOCOL_CHECKLIST}.get(reply, _PROTOCOL)
+    system = SYSTEM_PROMPT.replace("只输出一个 JSON 对象，不要输出任何其他文字。", "").rstrip()
+    user = str(messages[-1]["content"]).replace("\n" + formats[protocol], "")
+    if protocol == "index":
+        options = describer.options(context)
+        questions: dict[str, Any] = {"action": {"type": "choice", "instructions": DECISION_INSTRUCTIONS,
+                                                "criteria": {f"o{i}": options[i]["text"] for i in range(listed)}}}
+    else:
+        state = describer.state(context)
+        if protocol == "reroll_dice":
+            items = [(i, f"是否重掷位置 [{i}] 的骰子（{name}）？") for i, name in enumerate(state["me"]["dice"])]
+        else:
+            items = [(i, f"是否把位置 [{i}] 的起始手牌（{card['name']}）换回牌库重抽？")
+                     for i, card in enumerate(state["me"]["hand"])]
+        questions = {f"q{i}": {"type": "noul", "instructions": text} for i, text in items}
+    return [{"role": "system", "content": system}, {"role": "user", "content": user},
+            {"role": "decision", "content": json.dumps(questions, ensure_ascii=False)}]
+
+
+def parse_decision(context: Any, protocol: str, listed: int, raw: str | None) -> tuple[int | None, str, str | None]:
+    """Map Decisions API answers onto a legal option -> (option index, reason, error)."""
+    try:
+        answers = json.loads(raw or "")
+    except ValueError:
+        return None, "", "unparseable"
+    if protocol == "index":
+        answer = answers.get("action") or {}
+        key = str(answer.get("choice", ""))
+        if not key.startswith("o") or not key[1:].isdigit() or not 0 <= int(key[1:]) < listed:
+            return None, "", "no_choice"
+        return int(key[1:]), f"p={float(answer.get('confidence', 0)):.2f}", None
+    positions = sorted(int(k[1:]) for k, a in answers.items()
+                       if k.startswith("q") and k[1:].isdigit() and float(a.get("noul", 0)) > 0.5)
+    index = find_mask_option(context, positions)
+    if index is None:
+        return None, "", "positions_out_of_range"
+    return index, "yes=" + ",".join(map(str, positions)), None
+
+
 class LLMPolicy:
     """A model profile playing through the ``Policy`` protocol."""
 
@@ -307,6 +356,9 @@ class LLMPolicy:
         messages, protocol, listed = build_messages(
             context, self.describer, knowledge_text=pack.text if pack is not None else "",
             detail=self.config.detail, max_options=self.config.max_options, reply=self.config.reply)
+        decision = getattr(getattr(self.client, "profile", None), "protocol", "") == "decision"
+        if decision:
+            messages = decision_messages(context, self.describer, messages, protocol, listed, self.config.reply)
         prompt_text = json.dumps(messages, ensure_ascii=False, sort_keys=True)
         trace = DecisionTrace(
             step_index=int(context.step_index), request_type=request, n_options=len(codes),
@@ -316,7 +368,7 @@ class LLMPolicy:
             knowledge=pack.as_dict() if pack is not None else {},
         )
         if getattr(self, "keep_prompts", False):
-            trace.prompt = messages[-1]["content"]
+            trace.prompt = messages[1 if decision else -1]["content"]
         index: int | None = None
         attempts_left = 1 + max(0, int(self.config.retries_on_invalid))
         while attempts_left > 0 and index is None:
@@ -342,11 +394,12 @@ class LLMPolicy:
                 if result.error == "empty_content" and attempts_left > 0 and self._budget_left():
                     continue
                 break
-            index, trace.reason, error = parse_reply(context, protocol, listed, result.text)
+            index, trace.reason, error = (parse_decision if decision else parse_reply)(context, protocol, listed,
+                                                                                     result.text)
             trace.error = error
             if trace.first_reply_legal is None:
                 trace.first_reply_legal, trace.first_error = index is not None, error
-            if index is None and attempts_left > 0 and self._budget_left():
+            if index is None and attempts_left > 0 and self._budget_left() and not decision:
                 messages = messages + [
                     {"role": "assistant", "content": result.text or ""},
                     {"role": "user", "content": f"上一条回复无法使用（{error}）。请严格按要求只输出一个 JSON 对象。"},
