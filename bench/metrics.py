@@ -14,6 +14,7 @@ pair value is antisymmetric: swapping subject and rival negates it.
 
     python -m bench.metrics report --tag T [T ...] --out NAME          # any mirror run
     python -m bench.metrics validate --known T1 T2 --null T3 --out NAME  # D37 calibration
+    python -m bench.metrics tiebreak --tag T --out NAME                  # wins first, ties by K -> H -> D
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ import datetime as _dt
 import json
 import math
 import random
+from pathlib import Path
 from statistics import NormalDist
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -256,6 +258,101 @@ def render_validation(v: Mapping[str, Any], title: str) -> str:
     return "\n".join(lines)
 
 
+TIEBREAK_ORDER = ("K", "H", "D")
+
+
+def _sign(x: float) -> int:
+    return 1 if x > EPS else (-1 if x < -EPS else 0)
+
+
+def pair_outcome(pair: Mapping[str, float], rule: str) -> float:
+    """Wins first; a W tie is settled by objective factors (D37 follow-up).
+
+    ``rule``: ``loss`` / ``win`` (all ties lost / won: the bounds), ``none`` (ties stay 0.5),
+    ``K`` / ``H`` / ``D`` (one factor), ``order`` (first non-zero of K, H, D),
+    ``any_for`` (a tie is won if any factor favours the subject, lost if all that are
+    non-zero oppose it: the most favourable choice of factors) and ``any_against``
+    (the mirror image: the least favourable choice).
+    """
+    w = _sign(pair["W"])
+    if w:
+        return 1.0 if w > 0 else 0.0
+    signs = [_sign(pair[m]) for m in TIEBREAK_ORDER]
+    if rule == "loss":
+        return 0.0
+    if rule == "win":
+        return 1.0
+    if rule in TIEBREAK_ORDER:
+        s = signs[TIEBREAK_ORDER.index(rule)]
+    elif rule == "order":
+        s = next((x for x in signs if x), 0)
+    elif rule == "any_for":
+        s = 1 if 1 in signs else (-1 if -1 in signs else 0)
+    elif rule == "any_against":
+        s = -1 if -1 in signs else (1 if 1 in signs else 0)
+    else:
+        s = 0
+    return 0.5 if s == 0 else (1.0 if s > 0 else 0.0)
+
+
+TIEBREAK_RULES = (("loss", "平局全记负（下界）"), ("none", "平局记 0.5（只看胜负）"), ("order", "**K→H→D 依次判定（主规则）**"),
+                  ("K", "只用击倒差"), ("H", "只用生命差"), ("D", "只用伤害占比"),
+                  ("any_against", "任一因素不利即判负（最不利的因素选择）"),
+                  ("any_for", "任一因素有利即判胜（最有利的因素选择）"), ("win", "平局全记胜（上界）"))
+
+
+def tiebreak(pairs: Sequence[Mapping[str, float]]) -> dict[str, Any]:
+    out: dict[str, Any] = {"pairs": len(pairs), "w_ties": sum(1 for p in pairs if not _sign(p["W"])), "rules": {}}
+    for rule, _ in TIEBREAK_RULES:
+        scores = [pair_outcome(p, rule) for p in pairs]
+        s = stats([2 * x - 1 for x in scores])          # +1 / 0 / -1 -> same sign test and CI machinery
+        n = len(scores)
+        rate = sum(scores) / n if n else None
+        half = 1.96 * s.get("sd", 0) / 2 / math.sqrt(n) if n > 1 else 0.0
+        out["rules"][rule] = {"rate": round(rate, 4) if rate is not None else None,
+                              "ci95": [round(max(0.0, rate - half), 4), round(min(1.0, rate + half), 4)] if n else None,
+                              "won": s.get("better", 0), "even": s.get("even", 0), "lost": s.get("worse", 0),
+                              "p_one": s.get("p_one")}
+    return out
+
+
+def replay_pairs(path: str, ranges: Sequence[str] = ()) -> dict[str, list[dict[str, float]]]:
+    """``bench.facts_check`` replays (train) -> pairs from the knowledge side, optionally split by rep ranges."""
+    rows = []
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        c, side = r["cell"], int(r["side"])
+        score = 0.5 if r["winner"] is None else (1.0 if int(r["winner"]) == side else 0.0)
+        rows.append({"cell": f"{c['seed']}|{c['deck']}|{side}", "group": c["group"], "rep": int(c["rep"]),
+                     "side": side, "score": score, "error": None, "outcome": r["outcome"]})
+    groups = {"全部": rows}
+    for spec in ranges:
+        lo, hi = (int(x) for x in spec.split("-"))
+        groups[f"第 {lo}–{hi} 对"] = [r for r in rows if lo <= r["rep"] <= hi]
+    return {name: pairs_from_rows(rs)[0] for name, rs in groups.items()}
+
+
+def render_tiebreak(results: Sequence[tuple[str, Mapping[str, Any]]], title: str) -> str:
+    lines = [f"# {title}", "", f"生成于 {_dt.datetime.now().isoformat(timespec='seconds')}。", ""]
+    for name, r in results:
+        lines += [f"## {name}（{r['pairs']} 对，其中胜负平局 {r['w_ties']} 对）", "",
+                  "| 平局判定规则 | 胜率 [95% CI] | 胜 / 平 / 负（按对） | 单侧 p |", "|---|---|---|---|"]
+        for rule, label in TIEBREAK_RULES:
+            x = r["rules"][rule]
+            if x["rate"] is None:
+                continue
+            lines.append(f"| {label} | {x['rate']:.3f} [{x['ci95'][0]:.3f}, {x['ci95'][1]:.3f}] "
+                         f"| {x['won']} / {x['even']} / {x['lost']} | {x['p_one']:.4f} |")
+        lines.append("")
+    lines += ["口径：按对计算，受试者（KB 一方）在一对两局中的结果。先看胜负（W 对分），W 平局（同一座位两局都赢）时按客观因素判定："
+              "K 击倒差、H 生命差、D 伤害占比都是两局之和，只读公开终局（`bench.metrics`）。"
+              "胜率 =（胜 + 平/2）/ 对数，95% CI 为正态近似，单侧符号检验（H1：KB 一方更好）。"
+              "\"任一因素有利即判胜\"在因素之间为 KB 挑选，是偏向 KB 的上限，不是公平估计。", ""]
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Outcome metrics for mirror pairs (D37).")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -269,9 +366,27 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("--null", nargs="+", required=True)
     v.add_argument("--out", required=True)
     v.add_argument("--title", default="评测指标校准（脚本策略）")
+    t = sub.add_parser("tiebreak", help="wins first, ties settled by objective factors, with the rate interval")
+    t.add_argument("--tag", nargs="*", default=[],
+                   help="mirror runs with outcomes, one section per subject; 'a,b' pools stages of one comparison")
+    t.add_argument("--pool", action="store_true")
+    t.add_argument("--replays", default=None, help="bench.facts_check replays.jsonl (train)")
+    t.add_argument("--rep-ranges", nargs="*", default=[], help="extra sections of the replays, e.g. 0-19 20-49")
+    t.add_argument("--out", required=True)
+    t.add_argument("--title", default="胜利优先、平局按客观因素判定")
     args = parser.parse_args(argv)
     out = ensure_dir(reports_dir("bench"))
-    if args.command == "report":
+    if args.command == "tiebreak":
+        results: list[tuple[str, dict[str, Any]]] = []
+        if args.replays:
+            for name, pairs in replay_pairs(args.replays, args.rep_ranges).items():
+                results.append((f"train 重放 {name}", tiebreak(pairs)))
+        for spec in args.tag:                    # "a,b" = stages of one comparison, pooled
+            for a in arms(spec.split(","), pool=args.pool or "," in spec):
+                results.append((f"{a['tag']}：`{a['subject']}` 对 `{a['rival']}`", tiebreak(a["values"])))
+        (out / f"{args.out}.json").write_text(json.dumps(results, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        text = render_tiebreak(results, args.title)
+    elif args.command == "report":
         rows = arms(args.tag, pool=args.pool)
         (out / f"{args.out}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         text = render_report(rows, args.title)

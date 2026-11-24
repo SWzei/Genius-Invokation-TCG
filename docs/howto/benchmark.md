@@ -318,6 +318,8 @@ python -m bench.mirror_mine --tag d36_train_v10 --mulligan --probe <probe tag> -
 ```bash
 # 任意镜像轮次的多维指标（W 胜负 / H 生命差 / K 击倒差 / D 伤害占比；对分、单侧符号检验、CI）
 python -m bench.metrics report --tag T --out NAME
+# 胜利优先、平局按 K→H→D 依次判定，并给出胜率区间（理论上下界、单因素、因素挑选的上下限）；"a,b" 合并分阶段的轮次
+python -m bench.metrics tiebreak --tag T1 S1,S2 [--replays data/bench/<facts_check>/replays.jsonl --rep-ranges 0-19 20-49] --out NAME
 # 指标校准（脚本策略，零模型费用）：已知差距 + A/A
 python -m bench.run --suite mirror_train300 --subjects heuristic --rival noisy:0.1:heuristic --rep-from 60 --replicates 180 --tag T1
 python -m bench.metrics validate --known T1 T2 --null T3 --out NAME

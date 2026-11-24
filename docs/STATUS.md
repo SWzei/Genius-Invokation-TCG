@@ -169,6 +169,7 @@
 | 项 | 状态 | 证据 |
 |---|---|---|
 | 镜像对战主指标 | **H（生命差，对分 = 两局之和）**，W 同时报告；脚本校准 A/A 拒绝率 0.022，n80 17.5 对（W 32.6）；真实模型对局上平局 56% → 0% | `reports/bench/d37_metric_validation.md` |
+| 胜利优先的胜率区间 | `bench.metrics tiebreak`：先看胜负，平局按 K→H→D 判定。已有数据上 KB 对无 KB：train 重放 50 对 0.540 [0.401, 0.679]，对 GLM 10 对 0.600，都不显著 | `reports/bench/d37_tiebreak.md` |
 | 推荐的模型接入 | 仍为 `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；`facts=1`、`cards=1` 可选，未测出提升 | `reports/review/2026-11_kb_d37.md` |
 | 派生事实 `facts=1` | 预演每项都发生 0.997（train 2,101 次）；引擎泄漏测试通过；dev 上 `v11` 对 `base` H 0.475（40 对，不显著），`facts=1` 单独 H 0.425（20 对） | `reports/bench/d37_dev_metrics.md` |
 | 跨模型（对 GLM-5.3-Flash，各 10 对） | `base` W 0.50 / H 0.60；`v11` W 0.45 / H 0.20（描述性） | `reports/bench/d37_cross_metrics.md` |

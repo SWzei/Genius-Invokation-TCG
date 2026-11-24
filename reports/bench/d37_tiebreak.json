@@ -1,0 +1,758 @@
+[
+ [
+  "train 重放 全部",
+  {
+   "pairs": 50,
+   "w_ties": 28,
+   "rules": {
+    "loss": {
+     "rate": 0.22,
+     "ci95": [
+      0.104,
+      0.336
+     ],
+     "won": 11,
+     "even": 0,
+     "lost": 39,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.5,
+     "ci95": [
+      0.4071,
+      0.5929
+     ],
+     "won": 11,
+     "even": 28,
+     "lost": 11,
+     "p_one": 0.5841
+    },
+    "order": {
+     "rate": 0.54,
+     "ci95": [
+      0.4005,
+      0.6795
+     ],
+     "won": 27,
+     "even": 0,
+     "lost": 23,
+     "p_one": 0.3359
+    },
+    "K": {
+     "rate": 0.49,
+     "ci95": [
+      0.3729,
+      0.6071
+     ],
+     "won": 17,
+     "even": 15,
+     "lost": 18,
+     "p_one": 0.6321
+    },
+    "H": {
+     "rate": 0.58,
+     "ci95": [
+      0.4418,
+      0.7182
+     ],
+     "won": 29,
+     "even": 0,
+     "lost": 21,
+     "p_one": 0.1611
+    },
+    "D": {
+     "rate": 0.54,
+     "ci95": [
+      0.4005,
+      0.6795
+     ],
+     "won": 27,
+     "even": 0,
+     "lost": 23,
+     "p_one": 0.3359
+    },
+    "any_against": {
+     "rate": 0.48,
+     "ci95": [
+      0.3401,
+      0.6199
+     ],
+     "won": 24,
+     "even": 0,
+     "lost": 26,
+     "p_one": 0.6641
+    },
+    "any_for": {
+     "rate": 0.6,
+     "ci95": [
+      0.4628,
+      0.7372
+     ],
+     "won": 30,
+     "even": 0,
+     "lost": 20,
+     "p_one": 0.1013
+    },
+    "win": {
+     "rate": 0.78,
+     "ci95": [
+      0.664,
+      0.896
+     ],
+     "won": 39,
+     "even": 0,
+     "lost": 11,
+     "p_one": 0.0
+    }
+   }
+  }
+ ],
+ [
+  "train 重放 第 0–19 对",
+  {
+   "pairs": 20,
+   "w_ties": 10,
+   "rules": {
+    "loss": {
+     "rate": 0.3,
+     "ci95": [
+      0.0939,
+      0.5061
+     ],
+     "won": 6,
+     "even": 0,
+     "lost": 14,
+     "p_one": 0.9793
+    },
+    "none": {
+     "rate": 0.55,
+     "ci95": [
+      0.3926,
+      0.7074
+     ],
+     "won": 6,
+     "even": 10,
+     "lost": 4,
+     "p_one": 0.377
+    },
+    "order": {
+     "rate": 0.7,
+     "ci95": [
+      0.4939,
+      0.9061
+     ],
+     "won": 14,
+     "even": 0,
+     "lost": 6,
+     "p_one": 0.0577
+    },
+    "K": {
+     "rate": 0.55,
+     "ci95": [
+      0.3773,
+      0.7227
+     ],
+     "won": 7,
+     "even": 8,
+     "lost": 5,
+     "p_one": 0.3872
+    },
+    "H": {
+     "rate": 0.7,
+     "ci95": [
+      0.4939,
+      0.9061
+     ],
+     "won": 14,
+     "even": 0,
+     "lost": 6,
+     "p_one": 0.0577
+    },
+    "D": {
+     "rate": 0.6,
+     "ci95": [
+      0.3797,
+      0.8203
+     ],
+     "won": 12,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.2517
+    },
+    "any_against": {
+     "rate": 0.6,
+     "ci95": [
+      0.3797,
+      0.8203
+     ],
+     "won": 12,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.2517
+    },
+    "any_for": {
+     "rate": 0.7,
+     "ci95": [
+      0.4939,
+      0.9061
+     ],
+     "won": 14,
+     "even": 0,
+     "lost": 6,
+     "p_one": 0.0577
+    },
+    "win": {
+     "rate": 0.8,
+     "ci95": [
+      0.6201,
+      0.9799
+     ],
+     "won": 16,
+     "even": 0,
+     "lost": 4,
+     "p_one": 0.0059
+    }
+   }
+  }
+ ],
+ [
+  "train 重放 第 20–49 对",
+  {
+   "pairs": 30,
+   "w_ties": 18,
+   "rules": {
+    "loss": {
+     "rate": 0.1667,
+     "ci95": [
+      0.031,
+      0.3023
+     ],
+     "won": 5,
+     "even": 0,
+     "lost": 25,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.4667,
+     "ci95": [
+      0.3522,
+      0.5811
+     ],
+     "won": 5,
+     "even": 18,
+     "lost": 7,
+     "p_one": 0.8062
+    },
+    "order": {
+     "rate": 0.4333,
+     "ci95": [
+      0.253,
+      0.6137
+     ],
+     "won": 13,
+     "even": 0,
+     "lost": 17,
+     "p_one": 0.8192
+    },
+    "K": {
+     "rate": 0.45,
+     "ci95": [
+      0.2917,
+      0.6083
+     ],
+     "won": 10,
+     "even": 7,
+     "lost": 13,
+     "p_one": 0.7976
+    },
+    "H": {
+     "rate": 0.5,
+     "ci95": [
+      0.318,
+      0.682
+     ],
+     "won": 15,
+     "even": 0,
+     "lost": 15,
+     "p_one": 0.5722
+    },
+    "D": {
+     "rate": 0.5,
+     "ci95": [
+      0.318,
+      0.682
+     ],
+     "won": 15,
+     "even": 0,
+     "lost": 15,
+     "p_one": 0.5722
+    },
+    "any_against": {
+     "rate": 0.4,
+     "ci95": [
+      0.2217,
+      0.5783
+     ],
+     "won": 12,
+     "even": 0,
+     "lost": 18,
+     "p_one": 0.8998
+    },
+    "any_for": {
+     "rate": 0.5333,
+     "ci95": [
+      0.3518,
+      0.7149
+     ],
+     "won": 16,
+     "even": 0,
+     "lost": 14,
+     "p_one": 0.4278
+    },
+    "win": {
+     "rate": 0.7667,
+     "ci95": [
+      0.6127,
+      0.9206
+     ],
+     "won": 23,
+     "even": 0,
+     "lost": 7,
+     "p_one": 0.0026
+    }
+   }
+  }
+ ],
+ [
+  "d37_cross：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1` 对 `llm:glm-53-flash#reply=reason_first,elements=1`",
+  {
+   "pairs": 10,
+   "w_ties": 8,
+   "rules": {
+    "loss": {
+     "rate": 0.1,
+     "ci95": [
+      0.0,
+      0.296
+     ],
+     "won": 1,
+     "even": 0,
+     "lost": 9,
+     "p_one": 0.999
+    },
+    "none": {
+     "rate": 0.5,
+     "ci95": [
+      0.3539,
+      0.6461
+     ],
+     "won": 1,
+     "even": 8,
+     "lost": 1,
+     "p_one": 0.75
+    },
+    "order": {
+     "rate": 0.6,
+     "ci95": [
+      0.2799,
+      0.9201
+     ],
+     "won": 6,
+     "even": 0,
+     "lost": 4,
+     "p_one": 0.377
+    },
+    "K": {
+     "rate": 0.65,
+     "ci95": [
+      0.3949,
+      0.9051
+     ],
+     "won": 5,
+     "even": 3,
+     "lost": 2,
+     "p_one": 0.2266
+    },
+    "H": {
+     "rate": 0.6,
+     "ci95": [
+      0.2799,
+      0.9201
+     ],
+     "won": 6,
+     "even": 0,
+     "lost": 4,
+     "p_one": 0.377
+    },
+    "D": {
+     "rate": 0.65,
+     "ci95": [
+      0.356,
+      0.944
+     ],
+     "won": 6,
+     "even": 1,
+     "lost": 3,
+     "p_one": 0.2539
+    },
+    "any_against": {
+     "rate": 0.6,
+     "ci95": [
+      0.2799,
+      0.9201
+     ],
+     "won": 6,
+     "even": 0,
+     "lost": 4,
+     "p_one": 0.377
+    },
+    "any_for": {
+     "rate": 0.7,
+     "ci95": [
+      0.4006,
+      0.9994
+     ],
+     "won": 7,
+     "even": 0,
+     "lost": 3,
+     "p_one": 0.1719
+    },
+    "win": {
+     "rate": 0.9,
+     "ci95": [
+      0.704,
+      1.0
+     ],
+     "won": 9,
+     "even": 0,
+     "lost": 1,
+     "p_one": 0.0107
+    }
+   }
+  }
+ ],
+ [
+  "d37_cross：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1,facts=1,cards=1` 对 `llm:glm-53-flash#reply=reason_first,elements=1`",
+  {
+   "pairs": 10,
+   "w_ties": 9,
+   "rules": {
+    "loss": {
+     "rate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "won": 0,
+     "even": 0,
+     "lost": 10,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.45,
+     "ci95": [
+      0.352,
+      0.548
+     ],
+     "won": 0,
+     "even": 9,
+     "lost": 1,
+     "p_one": 1.0
+    },
+    "order": {
+     "rate": 0.2,
+     "ci95": [
+      0.0,
+      0.4613
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.9893
+    },
+    "K": {
+     "rate": 0.3,
+     "ci95": [
+      0.0833,
+      0.5167
+     ],
+     "won": 1,
+     "even": 4,
+     "lost": 5,
+     "p_one": 0.9844
+    },
+    "H": {
+     "rate": 0.2,
+     "ci95": [
+      0.0,
+      0.4613
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.9893
+    },
+    "D": {
+     "rate": 0.2,
+     "ci95": [
+      0.0,
+      0.4613
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.9893
+    },
+    "any_against": {
+     "rate": 0.2,
+     "ci95": [
+      0.0,
+      0.4613
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.9893
+    },
+    "any_for": {
+     "rate": 0.2,
+     "ci95": [
+      0.0,
+      0.4613
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.9893
+    },
+    "win": {
+     "rate": 0.9,
+     "ci95": [
+      0.704,
+      1.0
+     ],
+     "won": 9,
+     "even": 0,
+     "lost": 1,
+     "p_one": 0.0107
+    }
+   }
+  }
+ ],
+ [
+  "d37_dev_s1+d37_dev_s2：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1,facts=1,cards=1` 对 `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`",
+  {
+   "pairs": 40,
+   "w_ties": 29,
+   "rules": {
+    "loss": {
+     "rate": 0.075,
+     "ci95": [
+      0.0,
+      0.1577
+     ],
+     "won": 3,
+     "even": 0,
+     "lost": 37,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.4375,
+     "ci95": [
+      0.3576,
+      0.5174
+     ],
+     "won": 3,
+     "even": 29,
+     "lost": 8,
+     "p_one": 0.9673
+    },
+    "order": {
+     "rate": 0.5,
+     "ci95": [
+      0.3431,
+      0.6569
+     ],
+     "won": 20,
+     "even": 0,
+     "lost": 20,
+     "p_one": 0.5627
+    },
+    "K": {
+     "rate": 0.4875,
+     "ci95": [
+      0.3539,
+      0.6211
+     ],
+     "won": 14,
+     "even": 11,
+     "lost": 15,
+     "p_one": 0.6445
+    },
+    "H": {
+     "rate": 0.475,
+     "ci95": [
+      0.3183,
+      0.6317
+     ],
+     "won": 19,
+     "even": 0,
+     "lost": 21,
+     "p_one": 0.6821
+    },
+    "D": {
+     "rate": 0.4125,
+     "ci95": [
+      0.26,
+      0.565
+     ],
+     "won": 16,
+     "even": 1,
+     "lost": 23,
+     "p_one": 0.9002
+    },
+    "any_against": {
+     "rate": 0.35,
+     "ci95": [
+      0.2003,
+      0.4997
+     ],
+     "won": 14,
+     "even": 0,
+     "lost": 26,
+     "p_one": 0.9808
+    },
+    "any_for": {
+     "rate": 0.55,
+     "ci95": [
+      0.3939,
+      0.7061
+     ],
+     "won": 22,
+     "even": 0,
+     "lost": 18,
+     "p_one": 0.3179
+    },
+    "win": {
+     "rate": 0.8,
+     "ci95": [
+      0.6745,
+      0.9255
+     ],
+     "won": 32,
+     "even": 0,
+     "lost": 8,
+     "p_one": 0.0001
+    }
+   }
+  }
+ ],
+ [
+  "d37_attr_facts：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1,facts=1` 对 `llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`",
+  {
+   "pairs": 20,
+   "w_ties": 16,
+   "rules": {
+    "loss": {
+     "rate": 0.1,
+     "ci95": [
+      0.0,
+      0.2349
+     ],
+     "won": 2,
+     "even": 0,
+     "lost": 18,
+     "p_one": 1.0
+    },
+    "none": {
+     "rate": 0.5,
+     "ci95": [
+      0.3995,
+      0.6005
+     ],
+     "won": 2,
+     "even": 16,
+     "lost": 2,
+     "p_one": 0.6875
+    },
+    "order": {
+     "rate": 0.5,
+     "ci95": [
+      0.2752,
+      0.7248
+     ],
+     "won": 10,
+     "even": 0,
+     "lost": 10,
+     "p_one": 0.5881
+    },
+    "K": {
+     "rate": 0.55,
+     "ci95": [
+      0.3773,
+      0.7227
+     ],
+     "won": 7,
+     "even": 8,
+     "lost": 5,
+     "p_one": 0.3872
+    },
+    "H": {
+     "rate": 0.425,
+     "ci95": [
+      0.2085,
+      0.6415
+     ],
+     "won": 8,
+     "even": 1,
+     "lost": 11,
+     "p_one": 0.8204
+    },
+    "D": {
+     "rate": 0.4,
+     "ci95": [
+      0.1797,
+      0.6203
+     ],
+     "won": 8,
+     "even": 0,
+     "lost": 12,
+     "p_one": 0.8684
+    },
+    "any_against": {
+     "rate": 0.3,
+     "ci95": [
+      0.0939,
+      0.5061
+     ],
+     "won": 6,
+     "even": 0,
+     "lost": 14,
+     "p_one": 0.9793
+    },
+    "any_for": {
+     "rate": 0.55,
+     "ci95": [
+      0.3263,
+      0.7737
+     ],
+     "won": 11,
+     "even": 0,
+     "lost": 9,
+     "p_one": 0.4119
+    },
+    "win": {
+     "rate": 0.9,
+     "ci95": [
+      0.7651,
+      1.0
+     ],
+     "won": 18,
+     "even": 0,
+     "lost": 2,
+     "p_one": 0.0002
+    }
+   }
+  }
+ ]
+]
