@@ -245,3 +245,28 @@ price_out = 0.0
 [profiles.subagent-sonnet]
 provider = "answer-file"          # D38：回复来自隔离子代理（Agent 工具 sonnet 档）写好的答案文件，见 GITCG_ANSWER_FILE
 model = "agent-sonnet"
+
+# D38 追加（2026-11-24，用户要求）：Gemma 4 26B（MoE，激活约 4B），Google AI Studio 免费档
+[profiles.gemma-4-26b]
+provider = "gemini"               # GEMINI_API_KEY；OpenAI 兼容端点
+model = "gemma-4-26b-a4b-it"
+temperature = 0.0
+max_tokens = 1024
+timeout = 180
+retries = 8
+retry_backoff = 4.0
+price_in = 0.0
+price_out = 0.0
+
+# D38 追加（2026-11-24）：同上，但这个模型常返回 503（"high demand"），且把思考写在正文 <thought> 里。
+# 加大重试次数与输出上限；镜像对战用这个 profile（上面的 gemma-4-26b 只用于连通性测试）。
+[profiles.gemma-4-26b-r30]
+provider = "gemini"
+model = "gemma-4-26b-a4b-it"
+temperature = 0.0
+max_tokens = 4096
+timeout = 180
+retries = 30
+retry_backoff = 4.0
+price_in = 0.0
+price_out = 0.0

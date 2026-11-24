@@ -184,8 +184,9 @@
 | 知识库 v1.0 对小模型 | **没有显著提升**。`mirror_dev200` 第 150–199 对，胜利优先、平局按 K→H→D：GLM-4-Flash 0.400 [0.263, 0.537]（p = 0.94）；Gemini Decision 1 0.460 [0.321, 0.600]（p = 0.76）；Holm 后都是 1.0 | `reports/bench/d38_glm4_tiebreak.md`、`d38_decision_tiebreak.md` |
 | 派生事实 `facts=1` 对小模型 | GLM-4-Flash 知识库 + `facts=1` 对不带：0.580（p = 0.16），不显著；是待验证的假设 | `reports/bench/d38_glm4_metrics.md` |
 | Sonnet（会话内子代理，局面题） | 斩杀 0.922 对 0.875（p = 0.227），情境 0.95 对 0.98，不显著；不是 Sonnet 4.6，没有整局对战 | `reports/bench/d38_sonnet_lethal.md` |
-| 可用的免费模型接入 | `glm-4-flash-250414`（可跑满镜像对战）、`gemini-decision-1`（约 12–14 局 / 小时）；`gemini-35-flash-lite`、`groq-gpt-oss-120b` 受每日额度限制（每天约 4 局、1 局），需付费档 | `docs/howto/benchmark.md` §7.11 |
-| 推荐的模型接入 | 不变：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；知识库不作为小模型的推荐配置 | `reports/review/2026-11_kb_d38.md` |
+| 可用的免费模型接入 | `glm-4-flash-250414`（可跑满镜像对战）、`gemini-decision-1`（约 12–14 局 / 小时）；`gemini-35-flash-lite`、`groq-gpt-oss-120b` 受每日额度限制（每天约 4 局、1 局），`gemma-4-26b-r30` 受每分钟 1.6 万 token 与 503 过载限制（2026-11-24 实测每分钟约 2 次调用），需付费档 | `docs/howto/benchmark.md` §7.11 |
+| 知识层面 vs 对局（事后汇总，探索性） | 情境规则题上知识库显著提高正确率，且越弱的模型提升越大：GLM-4.7-Flash +0.218、DeepSeek +0.118（同题，均 p < 0.001），Sonnet −0.03；对局胜率上没有这个模式（DeepSeek 两次保留数据事后合并 0.539，p = 0.044；小模型都不显著） | `reports/bench/d38_posthoc.md` |
+| 推荐的模型接入 | 不变：`llm:deepseek-flash#kb=kbt3-trig,reply=reason_first,elements=1`；知识库不作为小模型对局的推荐配置 | `reports/review/2026-11_kb_d38.md` |
 
 全部是模拟器内结果，不进强度验收。
 

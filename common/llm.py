@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -212,11 +213,17 @@ def build_llm_client(
     return LLMClient(resolved)
 
 
+_THOUGHT_BLOCK = re.compile(r"<(thought|think)>.*?</\1>", re.DOTALL)
+
+
 def extract_json_object(text: str | None) -> dict[str, Any] | None:
     """Best-effort parse of a JSON object from an LLM message."""
     if not text:
         return None
-    text = text.strip()
+    # D38: some open models (Gemma 4 on AI Studio) put their reasoning inline in
+    # ``<thought>...</thought>`` (or ``<think>``) before the answer; braces in it must not
+    # be mistaken for the reply.
+    text = _THOUGHT_BLOCK.sub("", text).strip()
     if text.startswith("```"):
         text = text.strip("`")
         if text.startswith("json"):

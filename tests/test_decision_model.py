@@ -136,3 +136,12 @@ def test_answer_file_dumps_missing_prompts_and_replays_answers(tmp_path, monkeyp
     second = client.complete(messages)
     assert second.ok and second.text == '{"index": 1}'
     assert len(dump.read_text(encoding="utf-8").splitlines()) == 1             # answered prompts are not dumped again
+
+
+def test_inline_thought_blocks_are_ignored_when_parsing_a_reply():
+    from common.llm import extract_json_object
+
+    gemma = '<thought>选项里 {"choice": 0} 不好</thought>```json\n{"reason": "击倒", "choice": 2}\n```'
+    assert extract_json_object(gemma) == {"reason": "击倒", "choice": 2}
+    assert extract_json_object('<think>{x}</think>{"choice": 1}') == {"choice": 1}
+    assert extract_json_object('{"choice": 3}') == {"choice": 3}                 # plain replies unchanged

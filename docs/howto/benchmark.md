@@ -354,12 +354,17 @@ python -m bench.facts_check --probe T --out NAME
 | `gemini-decision-1` | `gemini-decisions`：协议 `decision`，POST `/v1beta/decisions`，不生成文本 | `GEMINI_API_KEY` | 每分钟 5 万输入 token；约 12–14 局 / 小时（2 并发） |
 | `gemini-35-flash-lite` | `gemini`（OpenAI 兼容），思考强度 low | `GEMINI_API_KEY` | 每分钟 15 次、每天 500 次请求（每天约 4 局） |
 | `groq-gpt-oss-120b` | `groq`（OpenAI 兼容），推理强度 low | `GROQ_API_KEY` | 每分钟 8 千 token、每天 20 万 token（每天约 1 局） |
+| `gemma-4-26b-r30` | `gemini`（OpenAI 兼容），模型 `gemma-4-26b-a4b-it`；重试 30 次、输出上限 4096 | `GEMINI_API_KEY` | 每分钟 30 次、1.6 万 token，每天 1.44 万次；2026-11-24 常返回 503 过载，实测每分钟约 2 次调用 |
 | `subagent-sonnet` | `answer-file`：协议 `file`，从答案文件取回复 | — | 不联网；用于会话内子代理作答 |
 
 **Decision 模型**（`agents/llm_policy.py`）：
 - 行动决策 → 一道选择题，每个合法选项是一个候选（`o0`…`oN`），取概率最大者；
 - 换牌、重掷 → 每张牌 / 每颗骰子一道是非题（`q0`…），> 0.5 记为"换"，再映射回合法选项；
 - 去掉"回复格式"段（不生成文本），其余提示与生成式模型相同；没有非法回复重试。
+
+**思考写在正文里的模型**（Gemma 4）：回复以 `<thought>…</thought>` 开头，接口不允许关闭；`common.llm.extract_json_object` 解析前先去掉 `<thought>` / `<think>` 段。
+
+**事后汇总**：`python -m scripts.d38_posthoc_summary --out NAME` 列出所有"同一模型带 KB 对不带"的题目与对局比较，按全部口径计算（只读已有数据）。
 
 **限额处理**：
 - Gemini 的每分钟 429（"Please retry in Xs"）按可重试处理并等待提示的秒数；每天限额（"per day"）仍按致命错误停用客户端，余下决策由脚本代答（降级，整对剔除）。
